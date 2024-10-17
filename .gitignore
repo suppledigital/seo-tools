@@ -59,3 +59,5 @@ jspm_packages/
 
 # Temporary files
 *.swp
+
+package-lock.json
