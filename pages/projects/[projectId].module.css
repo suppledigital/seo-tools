@@ -1,0 +1,306 @@
+/* Container Styling */
+.projects {
+    padding: 20px;
+}
+.projects h1.title {
+    text-align: center;
+}
+/* Table Styles */
+.projects table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+.projects thead th {
+    background-color: #f2f2f2;
+    padding: 10px;
+    text-align: left;
+}
+.projects thead{
+    position: sticky;
+    top: 0;
+    display: table-header-group;
+    z-index: 1000;
+}
+
+.projects tbody td {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+}
+
+.projects tr:nth-child(even) {
+    background-color: #fafafa;
+}
+/* URL Cell Styling */
+.urlCell {
+    position: relative;
+}/* Button Styling */
+.saveButton, .startButton {
+    padding: 10px 20px;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.saveButton:hover, .startButton:hover {
+    background-color: #005bb5;
+}
+/* Badge Styles */
+.badge {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 3px;
+    border-radius: 12px;
+    font-size: 12px;
+    cursor: pointer;
+}
+.pageTypeBadge {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.contentTypeBadge {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.badgeSet {
+    background-color: #d4edda; /* Light green */
+    color: #155724;
+}  
+.badgeNotSet {
+    background-color: #f8d7da; /* Light red */
+    color: #721c24;
+}
+/* Generate Content Button */
+.generateCell {
+    text-align: center;
+    color: #fff;
+    background-color: #66bb6a;
+    padding: 10px;
+    border-radius: 5px;
+}
+.contentTypeSelected {
+background-color: #d4edda;
+color: #155724;
+}
+
+.contentTypeNotSelected {
+background-color: #f8d7da;
+color: #721c24;
+}
+/* Additional Info Styling */
+.additionalInfoCell {
+    /*display: flex;
+    flex-wrap: wrap;*/
+    position: relative;
+}
+
+.infoBlock {
+    padding: 5px;
+    margin: 3px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    cursor: pointer;
+}
+  
+.set {
+    background-color: #a5d6a7; /* Green when set */
+    color: #155724;
+}
+.required {
+    background-color: #f8d7da; /* Red when required but not set */
+    color: #721c24;
+}
+
+.addBlock {
+    background-color: #42a5f5;
+    color: white;
+    padding: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.additionalInfoDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 100;
+}
+.dropdownItem {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.dropdownItem:hover {
+    background-color: #f0f0f0;
+}
+
+/* Modal Styling */
+.modal {
+    display: block;
+    position: fixed;
+    z-index: 2000;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modalContent {
+    background-color: #fff;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 400px;
+}
+
+.modalContent h2 {
+    margin-top: 0;
+}
+
+.modalContent textarea {
+    width: 100%;
+    height: 150px;
+    margin-bottom: 10px;
+}
+
+.modalContent .close {
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+/* Additional Styles */
+.pageTypeSelect, .contentTypeSelect {
+    padding: 5px;
+    margin: 3px 2px;
+    font-size: 12px;
+}
+
+
+  
+/* Menu Bar Styles */
+.menu-bar {
+    background-color: #57d6ed;
+    overflow: hidden;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.menu-bar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-bar li {
+    float: left;
+}
+
+.menu-bar li a {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.menu-bar li a:hover {
+    background-color: #ddd;
+    color: #000;
+}
+
+.sticky {
+    position: fixed;
+    top: 0;
+    width: calc(100% - 40px); /* Adjust for body margin */
+    z-index: 1000;
+    margin-top:0px;
+}
+
+
+
+
+/* Keywords Styling */
+.projects td.keywords-cell div {
+    display: flex;
+    flex-direction: column;
+}
+
+.projects td.keywords-cell div span {
+    margin-bottom: 5px;
+}
+
+
+
+
+
+/* Generate Content Button */
+.projects .generate-content-btn {
+    padding: 8px 15px;
+    background-color: #66bb6a;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.projects .generate-content-btn:hover {
+    background-color: #57a05f;
+}
+
+
+
+/* Page Type Specific Colors */
+.projects .page-type-badge.homepage {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.page-type-badge.service-page {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+.projects .page-type-badge.location-page {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+
+
+/* Responsive Table */
+@media screen and (max-width: 768px) {
+    .projects table, .projects thead, .projects tbody, .projects th, .projects td, .projects tr {
+        display: block;
+      }
+    
+      .projects th, .projects td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+      }
+    
+      .projects th::before, .projects td::before {
+        position: absolute;
+        left: 10px;
+        text-align: left;
+        font-weight: bold;
+      }
+    
+      .projects th::before {
+        content: attr(data-label);
+      }
+    
+      .projects td::before {
+        content: attr(data-label);
+      }
+}

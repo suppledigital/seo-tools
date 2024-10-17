@@ -1,0 +1,36 @@
+/* styles/global.css */
+body {
+  font-family: Arial, sans-serif;
+}
+
+#top-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-icon {
+  display: flex;
+  align-items: center;
+}
+
+.user-icon button {
+  margin-left: 10px;
+}
+
+.modal {
+  /* Modal styles */
+}
+
+.info-block {
+  cursor: pointer;
+}
+
+.info-block.set {
+  font-weight: bold;
+}
+
+.add-block {
+  cursor: pointer;
+  font-weight: bold;
+}

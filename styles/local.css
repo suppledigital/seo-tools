@@ -1,0 +1,370 @@
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6); /* Darker background for focus */
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 1200px; /* Wider modal */
+    display: flex;
+    border-radius: 10px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Left Panel (Group & Entry Creation) */
+.modal-content > div:first-child {
+    width: 30%;
+    padding-right: 20px;
+    border-right: 1px solid #ddd;
+}
+
+.modal-content h2 {
+    font-size: 22px;
+    margin-bottom: 25px;
+}
+
+.modal-content h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-block;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+
+#groupForm, #entryForm {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+#groupForm input, #entryForm input, #entryForm select, #entryForm textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+#saveGroupBtn, #saveEntryBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #28a745;
+    padding: 8px 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+#saveGroupBtn i, #saveEntryBtn i {
+    margin-right: 8px;
+}
+
+#optionsContainer {
+    margin-top: 10px;
+}
+
+/* Right Panel (Groups and Entries Display) */
+.modal-content > div:last-child {
+    width: 70%;
+    padding-left: 20px;
+    overflow-y: auto;
+}
+
+#groupsAndEntriesContainer {
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.group {
+    margin-bottom: 20px;
+}
+
+.group h3 {
+    background-color: #343a40;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.group ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.group ul li {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.group ul li:hover {
+    background-color: #f8f9fa;
+}
+
+.group ul li span {
+    font-weight: bold;
+}
+
+/* Sortable List Styling */
+.sortable-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.sortable-list li {
+    margin: 5px 0;
+    padding: 10px;
+    background-color: #e9ecef;
+    border: 1px solid #ddd;
+    cursor: move;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sortable-list li input[type="text"] {
+    width: calc(100% - 40px);
+}
+
+.sortable-list li .remove-item {
+    background-color: #dc3545;
+    color: white;
+    padding: 5px 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.sortable-list li .remove-item:hover {
+    background-color: #c82333;
+}
+
+.ui-state-highlight {
+    height: 50px;
+    background-color: #e0e0e0;
+    border: 1px dashed #ddd;
+    border-radius: 5px;
+}
+.sortable {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sortable li {
+    margin: 5px 0;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    cursor: move;
+}
+
+.ui-state-highlight {
+    height: 40px;
+    background-color: #e0e0e0;
+    border: 1px dashed #ddd;
+}
+
+#saveOrderBtn {
+    background-color: #28a745;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#saveOrderBtn:hover {
+    background-color: #218838;
+}
+
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    display: none;
+    z-index: 1000;
+}
+
+.fa-trash {
+    color: red;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.fa-trash:hover {
+    color: darkred;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust the gap between the toggle and delete button as needed */
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.btn-delete {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: red;
+}
+.script-modal .code-container {
+    background-color: #f4f4f4;
+    padding: 15px;
+    margin-top: 10px;
+    position: relative;
+    border-radius: 4px;
+}
+.script-modal .code-container code {
+    display: block;
+    white-space: pre-wrap;
+}
+
+.script-modal  .code-icon {
+    cursor: pointer;
+    margin-left: 10px;
+    color: #007bff;
+    font-size: 16px;
+}
+.script-modal  {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.script-modal .modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+}
+.script-modal .close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+}
+.script-modal .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
