@@ -6,7 +6,6 @@ import axios from 'axios';
 import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.full.css';
 import { getSession } from 'next-auth/react';
-import pool from '../../server/db'; // Import pool directly
 
 export default function ProjectPage({ initialData }) {
   const router = useRouter();
@@ -514,6 +513,8 @@ export async function getServerSideProps(context) {
       },
     };
   }
+  const pool = (await import('../../server/db')).default;
+
 
   // Query the database directly
   try {
