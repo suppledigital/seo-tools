@@ -1,7 +1,7 @@
 // pages/api/projects/index.js
-import pool from '../../../server/db'; // Adjust the path to your db file
+import pool from '../../../server/db';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]'; // Adjust the path if necessary
+import { authOptions } from '../auth/[...nextauth]';
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);

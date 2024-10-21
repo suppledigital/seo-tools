@@ -1,3 +1,4 @@
+// pages/projects/[projectId].js
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styles from './[projectId].module.css';
@@ -5,7 +6,7 @@ import axios from 'axios';
 import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.full.css';
 import { getSession } from 'next-auth/react';
-import ProjectInfoModal from '../../components/ProjectInfoModal';
+import pool from '../../server/db'; // Import pool directly
 
 export default function ProjectPage({ initialData }) {
   const router = useRouter();
@@ -496,6 +497,8 @@ export default function ProjectPage({ initialData }) {
 }
 
 // Fetch data on the server side
+// pages/projects/[projectId].js
+
 export async function getServerSideProps(context) {
   const { projectId } = context.params;
 
@@ -512,32 +515,48 @@ export async function getServerSideProps(context) {
     };
   }
 
-  // Fetch project data from your API route, including session cookies
+  // Query the database directly
   try {
-    console.log('inside project ID DB_HOST:', process.env.DB_HOST);
-    console.log('inside project ID DB_USER:', process.env.DB_USER);
-    console.log('cookie', context.req.headers.cookie);
-    console.log('fetch url', `${process.env.BASE_URL}/api/projects/${projectId}`);
-    const res = await fetch(`${process.env.BASE_URL}/api/projects/${projectId}`, {
-      headers: {
-        // Pass along the cookie from the request to include the session
-        Cookie: context.req.headers.cookie || '',
-      },
-    });
+    const [projectRows] = await pool.query(
+      'SELECT * FROM projects WHERE project_id = ?',
+      [projectId]
+    );
+    const project = projectRows[0];
 
-    // Check if the response is OK
-    if (!res.ok) {
+    if (!project) {
       return {
         notFound: true,
       };
     }
 
-    const projectData = await res.json();
-   // console.log(projectData);
+    // Convert Date objects to strings
+    if (project.created_at instanceof Date) {
+      project.created_at = project.created_at.toISOString();
+    }
+    if (project.updated_at instanceof Date) {
+      project.updated_at = project.updated_at.toISOString();
+    }
+
+    let entries = [];
+    if (project.initialised) {
+      const [entryRows] = await pool.query(
+        'SELECT * FROM entries WHERE project_id = ?',
+        [projectId]
+      );
+      entries = entryRows.map((entry) => {
+        if (entry.created_at instanceof Date) {
+          entry.created_at = entry.created_at.toISOString();
+        }
+        if (entry.updated_at instanceof Date) {
+          entry.updated_at = entry.updated_at.toISOString();
+        }
+        return entry;
+      });
+    }
 
     return {
       props: {
-        initialData: projectData,
+        initialData: { project, entries },
       },
     };
   } catch (error) {
