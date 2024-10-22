@@ -337,22 +337,26 @@ export default function ProjectPage({ initialData }) {
   };
   
   const fetchKeywordAnalysis = async (keyword, country) => {
-    try {
-      const response = await axios.post('/api/seranking/analyze-keywords', {
-        keyword,
-        country,
-      });
-      setSidebarContent((prevContent) => ({
-        ...prevContent,
-        keywordData: response.data[0], // Assuming response is an array
-      }));
-    } catch (error) {
-      console.error('Error fetching keyword analysis:', error);
-      alert('Error fetching keyword analysis.');
-    } finally {
-      setLoadingAnalyzeKeyword(false);
-    }
-  };
+  try {
+    const response = await axios.post('/api/seranking/analyze-keywords', {
+      keyword,
+      country,
+    });
+
+    const keywordData = response.data && response.data[0] ? response.data[0] : {};
+
+    setSidebarContent((prevContent) => ({
+      ...prevContent,
+      keywordData,
+    }));
+  } catch (error) {
+    console.error('Error fetching keyword analysis:', error);
+    alert('Error fetching keyword analysis.');
+  } finally {
+    setLoadingAnalyzeKeyword(false);
+  }
+};
+
   
   const fetchSerpResults = async (keyword, country) => {
     try {
@@ -799,6 +803,7 @@ export default function ProjectPage({ initialData }) {
             <tbody>
               {entries.map((entry) => (
                 <tr key={entry.entry_id} data-entry-id={entry.entry_id}>
+                  
                   <td className={styles.urlCell}>
                     {entry.url}
                     <i
@@ -1074,7 +1079,8 @@ export default function ProjectPage({ initialData }) {
                         />
                       </div>
                     </div>
-                    <div className={styles.trendBlock}>
+                    {sidebarContent.keywordData.history_trend ? (
+                      <div className={styles.trendBlock}>
                       <div className={styles.blockHeader}>Trend</div>
                       <div className={styles.blockContent}>
                         <Bar
@@ -1123,6 +1129,14 @@ export default function ProjectPage({ initialData }) {
                         />
                       </div>
                     </div>
+                  ) : (
+                    <div className={styles.trendBlock}>
+                      <div className={styles.blockHeader}>Trend</div>
+                      <div className={styles.blockContent}>
+                        <div>No trend data available.</div>
+                      </div>
+                    </div>
+                  )}
                     <div className={styles.volumeBlock}>
                       <div className={styles.blockHeader}>Volume</div>
                       <div className={styles.blockContent}>

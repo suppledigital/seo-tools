@@ -66,9 +66,9 @@ export default async function handler(req, res) {
         }
       );
 
-      console.log('Engine ID:', engine_id);
-      console.log('Keyword:', keyword);
-      console.log('Task Response Data:', taskResponse.data);
+      //console.log('Engine ID:', engine_id);
+      //console.log('Keyword:', keyword);
+      //console.log('Task Response Data:', taskResponse.data);
 
       const taskId = taskResponse.data[0]?.task_id || taskResponse.data.task_id;
 
