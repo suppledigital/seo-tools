@@ -1,11 +1,43 @@
 // pages/projects/[projectId].js
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useRef } from 'react';
+
 import styles from './[projectId].module.css';
 import axios from 'axios';
 import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.full.css';
 import { getSession } from 'next-auth/react';
+import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,      // Added
+  BarController,   // Added
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { CircularProgressbar } from 'react-circular-progressbar';
+
+import 'react-circular-progressbar/dist/styles.css';
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,      // Registered
+  BarController,   // Registered
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default function ProjectPage({ initialData }) {
   const router = useRouter();
@@ -25,6 +57,18 @@ export default function ProjectPage({ initialData }) {
   const [loadingEntries, setLoadingEntries] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState('');
+  // Sidebar State
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [sidebarContent, setSidebarContent] = useState(null);
+  const [selectedKeyword, setSelectedKeyword] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState('AU'); // Default to 'AU'
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [loadingAnalyzeKeyword, setLoadingAnalyzeKeyword] = useState(false);
+  const [loadingSerpResults, setLoadingSerpResults] = useState(false);
+  const sidebarRef = useRef(null);
+  const chartInstanceRef = useRef(null);
+
+
 
 
 
@@ -45,6 +89,32 @@ export default function ProjectPage({ initialData }) {
       setHotInstance(hot);
     }
   }, [project]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setIsSidebarOpen(false);
+      }
+    };
+  
+    if (isSidebarOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+  
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isSidebarOpen]);
+  useEffect(() => {
+    // Trigger a resize of the chart when the sidebar width changes
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.resize();
+    }
+  }, [sidebarExpanded]);
+  
+  
 
   const saveData = async () => {
     if (hotInstance) {
@@ -75,6 +145,7 @@ export default function ProjectPage({ initialData }) {
       alert('Error saving project information.');
     }
   };
+  
   const handleDeleteEntry = async (entryId) => {
     if (confirm('Are you sure you want to delete this entry?')) {
       try {
@@ -113,10 +184,56 @@ export default function ProjectPage({ initialData }) {
     console.log('Lookup URL:', url);
   };
   
-  const handleKeywordLookup = (keyword) => {
-    // Placeholder for future functionality
-    console.log('Lookup Keyword:', keyword);
+  const handleKeywordLookup = (e, keyword) => {
+    e.stopPropagation();
+    setSelectedKeyword(keyword);
+    setIsSidebarOpen(true);
+    setSidebarContent(null); // Reset previous content
+    setLoadingAnalyzeKeyword(true);
+    setLoadingSerpResults(true);
+  
+    // Call the functions to fetch data
+    fetchKeywordAnalysis(keyword, selectedCountry);
+    fetchSerpResults(keyword, selectedCountry);
   };
+  
+  
+  const fetchKeywordAnalysis = async (keyword, country) => {
+    try {
+      const response = await axios.post('/api/seranking/analyze-keywords', {
+        keyword,
+        country,
+      });
+      setSidebarContent((prevContent) => ({
+        ...prevContent,
+        keywordData: response.data[0], // Assuming response is an array
+      }));
+    } catch (error) {
+      console.error('Error fetching keyword analysis:', error);
+      alert('Error fetching keyword analysis.');
+    } finally {
+      setLoadingAnalyzeKeyword(false);
+    }
+  };
+  
+  const fetchSerpResults = async (keyword, country) => {
+    try {
+      const response = await axios.post('/api/seranking/serp-results', {
+        keyword,
+        country,
+      });
+      setSidebarContent((prevContent) => ({
+        ...prevContent,
+        serpResults: response.data, // Assuming response is an array
+      }));
+    } catch (error) {
+      console.error('Error fetching SERP results:', error);
+      alert('Error fetching SERP results.');
+    } finally {
+      setLoadingSerpResults(false);
+    }
+  };
+  
   
   const loadPrompt = async (entryId) => {
     const entry = entries.find((e) => e.entry_id === entryId);
@@ -632,7 +749,7 @@ export default function ProjectPage({ initialData }) {
                     Primary: {entry.primary_keyword}
                     <i
                       className={`fas fa-search ${styles.lookupIcon}`}
-                      onClick={() => handleKeywordLookup(entry.primary_keyword)}
+                      onClick={(e) => handleKeywordLookup(e, entry.primary_keyword)}
                     ></i>
                     <br />
                     Secondary: {entry.secondary_keyword}
@@ -748,6 +865,200 @@ export default function ProjectPage({ initialData }) {
           </div>
         </div>
       )}
+      {isSidebarOpen && (
+        <div
+          ref={sidebarRef}
+          className={`${styles.sidebar} ${sidebarExpanded ? styles.sidebarExpanded : ''}`}
+        >
+          <i
+            className={`fas ${
+              sidebarExpanded ? 'fa-arrow-right' : 'fa-arrow-left'
+            } ${styles.sidebarToggleIcon}`}
+            onClick={() => setSidebarExpanded(!sidebarExpanded)}
+          ></i>
+          <div className={styles.sidebarHeader}>
+            <span>{selectedKeyword}</span>
+            <select
+              value={selectedCountry}
+              onChange={(e) => {
+                setSelectedCountry(e.target.value);
+                // Re-fetch data with the new country
+                setLoadingAnalyzeKeyword(true);
+                setLoadingSerpResults(true);
+                fetchKeywordAnalysis(selectedKeyword, e.target.value);
+                fetchSerpResults(selectedKeyword, e.target.value);
+              }}
+            >
+              <option value="AU">Australia</option>
+              <option value="US">United States</option>
+              <option value="UK">United Kingdom</option>
+              <option value="NZ">New Zealand</option>
+              {/* Add more countries as needed */}
+            </select>
+          </div>
+          <div className={styles.sidebarContent}>
+            {loadingAnalyzeKeyword ? (
+              <div>Loading keyword analysis...</div>
+            ) : (
+              sidebarContent && sidebarContent.keywordData && (
+                <div className={styles.keywordAnalysis}>
+                  <h3>Keyword Analysis</h3>
+                  <div className={styles.analysisGrid}>
+                    {/* Row 1: Difficulty Chart, Trend Chart, Volume */}
+                    <div className={styles.difficultyBlock}>
+                      <div className={styles.blockHeader}>Difficulty</div>
+                      <div className={styles.blockContent}>
+                        <CircularProgressbar
+                          value={sidebarContent.keywordData.difficulty}
+                          text={`${sidebarContent.keywordData.difficulty}%`}
+                          styles={{
+                            path: { stroke: '#0070f3' },
+                            text: { fill: '#000' },
+                            trail: { stroke: '#d6d6d6' },
+                            background: { fill: '#fff' },
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className={styles.trendBlock}>
+                      <div className={styles.blockHeader}>Trend</div>
+                      <div className={styles.blockContent}>
+                        <Bar
+                          ref={(chart) => {
+                            if (chart) {
+                              chartInstanceRef.current = chart;
+                            }
+                          }}
+                          data={{
+                            labels: Object.keys(sidebarContent.keywordData.history_trend),
+                            datasets: [
+                              {
+                                label: 'Search Volume',
+                                data: Object.values(sidebarContent.keywordData.history_trend),
+                                backgroundColor: '#0070f3',
+                              },
+                            ],
+                          }}
+                          options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                              legend: {
+                                display: false,
+                              },
+                            },
+                            scales: {
+                              x: {
+                                ticks: {
+                                  display: false, // Hide x-axis labels if desired
+                                },
+                                grid: {
+                                  display: false,
+                                },
+                              },
+                              y: {
+                                ticks: {
+                                  display: false, // Hide y-axis labels if desired
+                                },
+                                grid: {
+                                  display: false,
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className={styles.volumeBlock}>
+                      <div className={styles.blockHeader}>Volume</div>
+                      <div className={styles.blockContent}>
+                        <span className={styles.volumeValue}>
+                          {sidebarContent.keywordData.volume}
+                        </span>
+                      </div>
+                    </div>
+                    {/* Row 2: CPC and Competition */}
+                    <div className={styles.cpcBlock}>
+                      <div className={styles.blockHeader}>CPC</div>
+                      <div className={styles.blockContent}>
+                        <span className={styles.cpcValue}>
+                          ${sidebarContent.keywordData.cpc}
+                        </span>
+                      </div>
+                    </div>
+                    <div className={styles.competitionBlock}>
+                      <div className={styles.blockHeader}>Competition</div>
+                      <div className={styles.blockContent}>
+                        <span className={styles.competitionValue}>
+                          {sidebarContent.keywordData.competition}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            )}
+      
+            {loadingSerpResults ? (
+              <div>Loading SERP results...</div>
+            ) : (
+              sidebarContent && sidebarContent.serpResults && (
+                <div className={styles.serpResultsContainer}>
+                  <h3>SERP Results</h3>
+                  <div className={styles.serpResults}>
+                    <table className={styles.serpTable}>
+                      <tbody>
+                        {sidebarContent.serpResults.map((result, index) => (
+                          <tr key={index}>
+                            {/* Position Column */}
+                            <td className={styles.positionCell}>{result.position}</td>
+
+                            {/* Result Information Column */}
+                            <td className={styles.resultInfoCell}>
+                              {/* URL Row */}
+                              <div className={styles.urlRow}>
+                                <a href={result.url} target="_blank" rel="noopener noreferrer">
+                                  <i className="fas fa-external-link-alt"></i>
+                                </a>
+                                {/* Future implementation icon */}
+                                <i className="fas fa-search" onClick={() => {/* Implement later */}}></i>
+                                <span className={styles.resultUrl}>{result.url}</span>
+                              </div>
+                              {/* Title Row */}
+                              <div className={styles.titleRow}>
+                                <strong>{result.title}</strong>
+                              </div>
+                              {/* Snippet Row */}
+                              <div className={styles.snippetRow}>
+                                <em>{result.snippet}</em>
+                              </div>
+                            </td>
+
+                            {/* Stats Column */}
+                            <td className={styles.statsCell}>
+                              {index < 10 && (
+                                <i className="fas fa-sync-alt" onClick={() => {/* Refresh action */}}></i>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {sidebarExpanded && (
+                    <div className={styles.futureContent}>
+                      {/* Future content will go here */}
+                    </div>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+        </div>
+      )}
+      
+
+
   
     </div>
   );

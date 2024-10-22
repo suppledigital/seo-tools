@@ -13,12 +13,7 @@ export const authOptions ={
   ],
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      console.log('Environment Variables:', {
-        NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? 'SET' : 'NOT SET',
-        NEXTAUTH_URL: process.env.NEXTAUTH_URL ? 'SET' : 'NOT SET',
-        DB_HOST: process.env.DB_HOST ? 'SET' : 'NOT SET',
-        // ...add other variables as needed
-      });
+      
       return true;
     },
   },

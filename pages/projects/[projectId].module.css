@@ -199,15 +199,6 @@
   }
   
  
-  .lookupIcon {
-    margin-left: 5px;
-    cursor: pointer;
-    color: #0070f3;
-  }
-  
-  .lookupIcon:hover {
-    color: #005bb5;
-  }
     
 .contentTypeSelected {
 background-color: #d4edda;
@@ -422,7 +413,270 @@ color: #721c24;
     color: #0070f3;
   }
   
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background-color: #ededed;
+    border-left: 1px solid #ddd;
+    overflow-y: auto;
+    transition: width 0.3s;
+    z-index: 1000;
+  }
+  
+  .sidebarExpanded {
+    width: 80%; /* Expand to 90% of the screen */
+  }
+  
+  .sidebarHeader {
+    display: flex;
+    align-items: center;
+    padding:0px 20px;
 
+  }
+  
+  .sidebarHeader select {
+    margin-left: 10px;
+
+  }
+  
+  .sidebarToggleIcon {
+    margin-left: auto;
+    cursor: pointer;
+    padding:20px;
+
+  }
+  
+  .sidebarContent {
+    padding: 10px;
+  }
+  /* Adjustments for Sidebar Expansion */
+.sidebarContent {
+    transition: all 0.3s ease;
+  }
+  
+ 
+  .keywordAnalysis,
+  .serpResults {
+    margin-bottom: 20px;
+  }
+  .keywordAnalysis {
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  /* Keyword Analysis Grid */
+.analysisGrid {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to single column */
+    gap: 10px;
+  }
+/* Keyword Analysis Grid */
+.analysisGrid {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column */
+    gap: 10px;
+  }
+  .sidebarExpanded .analysisGrid {
+    grid-template-columns: repeat(3, 1fr) 1fr; /* 3 columns of equal size + 1 last column */
+    grid-template-rows: auto auto; /* Two rows */
+
+}
+  
+  .difficultyBlock,
+.trendBlock,
+.volumeBlock,
+.cpcBlock,
+.competitionBlock {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+}
+.sidebarExpanded .difficultyBlock
+{
+    grid-row: 1 / 3; /* Spans across both rows */
+    grid-column: span 1; /* Each occupies a column */
+
+}
+.sidebarExpanded .trendBlock{
+    grid-column: 2;
+    grid-row: 1 / 3; /* Spans across both rows */
+}
+.sidebarExpanded .volumeBlock{
+    grid-column: 3;
+    grid-row: 1 / 3; /* Spans across both rows */
+}
+.sidebarExpanded .cpcBlock{
+    grid-column: 4;
+    grid-row: 1; /* First row of the last column */
+}
+
+.sidebarExpanded .competitionBlock{
+    grid-column: 4;
+    grid-row: 2; /* Second row of the last column */
+}
+
+.blockHeader {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .blockContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;  /* Take full width of the container */
+    height: 100%; /* Adjust to fit the container height */
+    overflow: hidden; /* Prevent overflow */
+  }
+  /* Ensure charts take full width */
+.blockContent canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+  .blockContent svg{
+    max-width: 100%;  /* Ensure the SVG scales within the container */
+    max-height: 100%;
+    height: auto;    /* Maintain aspect ratio */
+    width: auto;
+  }
+  
+  
+  /* Expanded sidebar size */
+.sidebarExpanded .difficultyBlock .blockContent {
+    height: 150px; /* Adjust as needed */
+  }
+  
+  .trendBlock .blockContent {
+    height: 150px; /* Adjust as needed */
+  }
+  
+  .volumeValue,
+  .cpcValue,
+  .competitionValue {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  /* Second Row: CPC and Competition */
+  .cpcBlock,
+  .competitionBlock {
+    grid-column: span 1;
+  }
+  
+  .cpcBlock,
+.competitionBlock {
+  grid-column: 1 / -1; /* Span all columns in default view */
+}
+.sidebarExpanded .cpcBlock,
+.sidebarExpanded .competitionBlock {
+  grid-column: auto; /* Each takes up one column when expanded */
+}
+  /* SERP Results Container */
+.serpResultsContainer {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff; /* Add background color */
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+
+/* SERP Results Table */
+.serpResults {
+    width: 100%;
+  }
+  .sidebarExpanded .serpResults {
+    width: 50%;
+  }
+  /* Optional: Placeholder for future content */
+.futureContent {
+    width: 50%;
+  }
+  .sidebarExpanded .futureContent {
+    display: block; /* Show when sidebar is expanded */
+  }
+  
+  .serpTable tbody tr {
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .positionCell {
+    width: 40px;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .resultInfoCell {
+    padding: 5px;
+  }
+  .urlRow {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .urlRow i {
+    cursor: pointer;
+  }
+  
+  .resultUrl {
+    word-break: break-all;
+  }
+  
+  .titleRow {
+    margin-top: 5px;
+  }
+  
+  .snippetRow {
+    margin-top: 5px;
+  }
+  
+  .statsCell {
+    width: 50px;
+    text-align: center;
+  }
+  
+  .statsCell i {
+    cursor: pointer;
+  }
+  
+
+  .serpResults {
+    display: flex;
+  }
+  
+  
+  .difficultyChart {
+    width: 100px;
+    margin-bottom: 10px;
+  }
+  
+ /* Add to your CSS file or style section */
+.historyTrendChart {
+    width: 100%;
+    height: 300px; /* Adjust height as needed */
+    position: relative;
+  }
+  
+  
+  .serpTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .serpTable th,
+  .serpTable td {
+    border: 1px solid #ddd;
+    padding: 5px;
+  }
+  
+  .serpTable th {
+    background-color: #f2f2f2;
+  }
+  
 
 /* Responsive Table */
 @media screen and (max-width: 768px) {
