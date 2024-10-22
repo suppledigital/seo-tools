@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         phrase: keyword,
         database: database,
         export_columns: exportColumns,
-        display_limit: 10,
+        display_limit: 20,
       },
     });
     const relatedKeywords = parseSemrushResponse(relatedResponse.data);
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
         phrase: keyword,
         database: database,
         export_columns: exportColumns,
-        display_limit: 10,
+        display_limit: 20,
       },
     });
     const broadMatchKeywords = parseSemrushResponse(broadResponse.data);
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
         phrase: keyword,
         database: database,
         export_columns: exportColumns,
-        display_limit: 10,
+        display_limit: 20,
       },
     });
     const phraseQuestions = parseSemrushResponse(questionsResponse.data);
