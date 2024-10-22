@@ -2,7 +2,7 @@
 import pool from '../../../../server/db';
 import axios from 'axios';
 
-export default async function handler(req, res) {
+/*export default async function handler(req, res) {
   const { projectId } = req.query;
 
   if (req.method === 'POST') {
@@ -37,7 +37,33 @@ export default async function handler(req, res) {
     res.setHeader('Allow', ['POST']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
+}*/
+// pages/api/projects/[projectId]/run-prompt.js
+
+export default async function handler(req, res) {
+  const { projectId } = req.query;
+
+  if (req.method === 'POST') {
+    const { entry_id, prompt } = req.body;
+
+    try {
+      const response = await runPrompt(prompt);
+
+      if (!response) {
+        return res.status(500).json({ message: 'Error calling AI API' });
+      }
+
+      res.status(200).json({ data: response });
+    } catch (error) {
+      console.error('Error running prompt:', error);
+      res.status(500).json({ message: 'Error running prompt' });
+    }
+  } else {
+    res.setHeader('Allow', ['POST']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
 }
+
 
 async function runPrompt(prompt) {
   const apiUrl = 'https://api.anthropic.com/v1/messages';

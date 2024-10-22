@@ -10,6 +10,8 @@
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    font-size: 14px; /* Reduced font size */
+
 }
 .projects thead th {
     background-color: #f2f2f2;
@@ -27,14 +29,57 @@
     border-bottom: 1px solid #ddd;
     padding: 10px;
 }
+.projects thead th,
+.projects tbody td {
+  padding: 8px; /* Reduced padding */
+}
 
 .projects tr:nth-child(even) {
     background-color: #fafafa;
 }
+.projects tbody tr:hover {
+    background-color: #f9f9f9;
+  }
+  
+/* Set Column Widths */
+.projects th:nth-child(1),
+.projects td:nth-child(1) {
+  width: 20%; /* URL */
+}
+
+.projects th:nth-child(2),
+.projects td:nth-child(2) {
+  width: 15%; /* Keywords */
+}
+
+.projects th:nth-child(3),
+.projects td:nth-child(3) {
+  width: 25%; /* Additional Info */
+}
+
+.projects th:nth-child(4),
+.projects td:nth-child(4) {
+  width: 25%; /* Generated Content */
+}
+
+.projects th:nth-child(5),
+.projects td:nth-child(5) {
+  width: 15%; /* Actions */
+}
+
 /* URL Cell Styling */
 .urlCell {
     position: relative;
-}/* Button Styling */
+}
+/* Select Input Styles */
+.urlCell select {
+    padding: 3px 8px;
+    margin: 2px;
+    font-size: 12px;
+    border-radius: 12px;
+  }
+
+/* Button Styling */
 .saveButton, .startButton {
     padding: 10px 20px;
     background-color: #0070f3;
@@ -49,10 +94,11 @@
 /* Badge Styles */
 .badge {
     display: inline-block;
-    padding: 5px 10px;
-    margin: 3px;
+    padding: 3px 8px;
+    margin: 2px;
+     font-size: 12px;
     border-radius: 12px;
-    font-size: 12px;
+   
     cursor: pointer;
 }
 .pageTypeBadge {
@@ -73,14 +119,96 @@
     background-color: #f8d7da; /* Light red */
     color: #721c24;
 }
-/* Generate Content Button */
+/* Remove background color from generateCell */
 .generateCell {
     text-align: center;
-    color: #fff;
-    background-color: #66bb6a;
     padding: 10px;
     border-radius: 5px;
-}
+  }
+  /* Styles for action buttons */
+.actionButton {
+    padding: 8px 12px;
+    margin: 5px 5px 0 0;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .actionButton:hover {
+    background-color: #005bb5;
+  }
+  
+  /* Lookup icon styles */
+  .lookupIcon {
+    margin-left: 5px;
+    cursor: pointer;
+    color: #0070f3;
+  }
+  
+  .lookupIcon:hover {
+    color: #005bb5;
+  }
+  
+  /* Styles for the generated content cell */
+  .generatedContentCell {
+    max-width: 300px;
+    height:10px;
+    overflow-y:hidden;
+    
+  }
+  .generatedContent{
+    display: block;
+    overflow-y:scroll;
+    height: 100px;
+  }
+  /* Content Action Icons */
+.contentActions {
+    margin-top: 5px;
+  }
+  
+  .contentActionIcon {
+    margin-right: 10px;
+    cursor: pointer;
+    color: #0070f3;
+  }
+  
+  .contentActionIcon:hover {
+    color: #005bb5;
+  }
+  
+  /* Modal Text Content */
+  .modalTextContent {
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+  }
+  .deleteButton {
+    padding: 8px 12px;
+    margin: 5px 0 0 0;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .deleteButton:hover {
+    background-color: #c82333;
+  }
+  
+ 
+  .lookupIcon {
+    margin-left: 5px;
+    cursor: pointer;
+    color: #0070f3;
+  }
+  
+  .lookupIcon:hover {
+    color: #005bb5;
+  }
+    
 .contentTypeSelected {
 background-color: #d4edda;
 color: #155724;
@@ -103,6 +231,7 @@ color: #721c24;
     background-color: #f0f0f0;
     border-radius: 5px;
     cursor: pointer;
+    display:inline-block;
 }
   
 .set {
@@ -238,7 +367,15 @@ color: #721c24;
 .projects td.keywords-cell div span {
     margin-bottom: 5px;
 }
-
+.keywordsCell {
+    font-size: 14px;
+  }
+  
+  .keywordsCell span {
+    display: block;
+    margin-bottom: 3px;
+  }
+  
 
 
 
@@ -275,6 +412,16 @@ color: #721c24;
     color: #155724;
 }
 
+/* Spinner Styles */
+.fa-spinner {
+    margin-right: 5px;
+  }
+  
+  .contentSpinner {
+    font-size: 24px;
+    color: #0070f3;
+  }
+  
 
 
 /* Responsive Table */

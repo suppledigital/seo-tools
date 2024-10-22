@@ -22,6 +22,11 @@ export default function ProjectPage({ initialData }) {
   const [additionalInfoOptions, setAdditionalInfoOptions] = useState([]);
   const [showAdditionalInfoDropdown, setShowAdditionalInfoDropdown] = useState(false);
   const [selectedEntryId, setSelectedEntryId] = useState(null);
+  const [loadingEntries, setLoadingEntries] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState('');
+
+
 
   useEffect(() => {
     if (project && !project.initialised) {
@@ -70,6 +75,173 @@ export default function ProjectPage({ initialData }) {
       alert('Error saving project information.');
     }
   };
+  const handleDeleteEntry = async (entryId) => {
+    if (confirm('Are you sure you want to delete this entry?')) {
+      try {
+        await axios.delete(`/api/entries/${entryId}`, {
+          withCredentials: true,
+        });
+        // Update the entries state
+        setEntries((prevEntries) =>
+          prevEntries.filter((entry) => entry.entry_id !== entryId)
+        );
+      } catch (error) {
+        console.error('Error deleting entry:', error);
+        alert('Error deleting entry.');
+      }
+    }
+  };
+  
+  const handleCopyContent = (content) => {
+    navigator.clipboard.writeText(content);
+    alert('Content copied to clipboard!');
+  };
+  
+  const handleEditContent = (entryId) => {
+    // Implement edit functionality (e.g., open a modal for editing)
+    console.log('Edit content for entry:', entryId);
+  };
+  
+  const handleViewContent = (content) => {
+    setModalContent(content);
+    setIsModalOpen(true);
+  };
+  
+  
+  const handleUrlLookup = (url) => {
+    // Placeholder for future functionality
+    console.log('Lookup URL:', url);
+  };
+  
+  const handleKeywordLookup = (keyword) => {
+    // Placeholder for future functionality
+    console.log('Lookup Keyword:', keyword);
+  };
+  
+  const loadPrompt = async (entryId) => {
+    const entry = entries.find((e) => e.entry_id === entryId);
+  
+    if (!entry.page_type || !entry.content_type) {
+      alert('Please select both Page Type and Content Type for this entry.');
+      return;
+    }
+  
+    try {
+      const response = await axios.get('/api/prompts', {
+        params: {
+          page_type: entry.page_type,
+          content_type: entry.content_type,
+        },
+        withCredentials: true,
+      });
+  
+      const promptTemplate = response.data.prompt_text;
+  
+      // Update the entry with the prompt text
+      setEntries((prevEntries) =>
+        prevEntries.map((e) =>
+          e.entry_id === entryId ? { ...e, prompt_text: promptTemplate } : e
+        )
+      );
+    } catch (error) {
+      console.error('Error loading prompt:', error);
+      alert('Error loading prompt.');
+    }
+  };
+  
+  const handleGenerateContent = async (entryId) => {
+
+    // Set loading state to true
+    setLoadingEntries((prevState) => ({
+      ...prevState,
+      [entryId]: true,
+    }));
+
+    const entry = entries.find((e) => e.entry_id === entryId);
+  
+     // Ensure that both page_type and content_type are set
+    if (!entry.page_type || !entry.content_type) {
+      alert('Please select both Page Type and Content Type for this entry.');
+      // Reset loading state
+      setLoadingEntries((prevState) => ({
+        ...prevState,
+        [entryId]: false,
+      }));
+      return;
+    }
+  
+    try {
+      // Fetch the prompt from the database
+      const response = await axios.get('/api/prompts', {
+        params: {
+          page_type: entry.page_type,
+          content_type: entry.content_type,
+        },
+        withCredentials: true,
+      });
+  
+      const promptTemplate = response.data.prompt_text;
+  
+      if (!promptTemplate) {
+        alert('No prompt found for this Page Type and Content Type combination.');
+         // Reset loading state
+        setLoadingEntries((prevState) => ({
+          ...prevState,
+          [entryId]: false,
+        }));
+        return;
+          return;
+        }
+  
+      // Replace placeholders in the prompt with actual data
+      const prompt = promptTemplate
+        .replace('{url}', entry.url)
+        .replace('{keywords}', entry.primary_keyword || entry.secondary_keyword || '')
+        // Add more replacements as needed
+        ;
+  
+      // Call the API to run the prompt
+      const runPromptResponse = await axios.post(
+        `/api/projects/${projectId}/run-prompt`,
+        {
+          entry_id: entryId,
+          prompt,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+  
+      const responseData = runPromptResponse.data.data;
+  
+      // Update the entry with the generated content
+      setEntries((prevEntries) =>
+        prevEntries.map((e) =>
+          e.entry_id === entryId ? { ...e, generated_content: responseData } : e
+        )
+      );
+  
+      // Save the generated content to the database
+      await axios.post('/api/entries/save-generated-content', {
+        entry_id: entryId,
+        generated_content: responseData,
+      });
+  
+      alert('Content generated successfully!');
+    } catch (error) {
+      console.error('Error generating content:', error);
+      alert('Error generating content.');
+    }
+    finally {
+      // Reset loading state
+      setLoadingEntries((prevState) => ({
+        ...prevState,
+        [entryId]: false,
+      }));
+    }
+  };
+  
+  
 
   const handleBadgeClick = (entryId, field, currentValue) => {
     // Set the editing field to show the dropdown
@@ -364,14 +536,20 @@ export default function ProjectPage({ initialData }) {
                 <th>URL</th>
                 <th>Keywords</th>
                 <th>Additional Info</th>
-                <th>Generate Content</th>
+                <th>Prompt</th> 
+                <th>Actions</th>
               </tr>
             </thead>
+
             <tbody>
               {entries.map((entry) => (
                 <tr key={entry.entry_id} data-entry-id={entry.entry_id}>
                   <td className={styles.urlCell}>
                     {entry.url}
+                    <i
+                      className={`fas fa-search ${styles.lookupIcon}`}
+                      onClick={() => handleUrlLookup(entry.url)}
+                    ></i>
                     <br />
                     {entry.editingField === 'page_type' ? (
                       <select
@@ -394,14 +572,8 @@ export default function ProjectPage({ initialData }) {
                           'Homepage',
                           'Service Page',
                           'Location Page',
-                          'About Us Page',
-                          'Contact Us Page',
-                          'Blog Post',
                           'Product Page',
-                          'Category Page',
-                          'FAQ Page',
-                          'Testimonial Page',
-                          'Gallery Page',
+                          'Product Category Page',
                         ].map((type) => (
                           <option key={type} value={type}>
                             {type}
@@ -458,13 +630,83 @@ export default function ProjectPage({ initialData }) {
                   </td>
                   <td className={styles.keywordsCell}>
                     Primary: {entry.primary_keyword}
+                    <i
+                      className={`fas fa-search ${styles.lookupIcon}`}
+                      onClick={() => handleKeywordLookup(entry.primary_keyword)}
+                    ></i>
                     <br />
                     Secondary: {entry.secondary_keyword}
+                    <i
+                      className={`fas fa-search ${styles.lookupIcon}`}
+                      onClick={() => handleKeywordLookup(entry.secondary_keyword)}
+                    ></i>
                   </td>
                   <td className={styles.additionalInfoCell}>
                     {renderAdditionalInfoBlocks(entry)}
                   </td>
-                  <td className={styles.generateCell}>Generate</td>
+                  <td className={styles.generatedContentCell}>
+                    {loadingEntries[entry.entry_id] ? (
+                      <i className={`fas fa-spinner fa-spin ${styles.contentSpinner}`}></i>
+                    ) : entry.generated_content ? (
+                      <>
+                        <span className={styles.generatedContent}>
+                          {entry.generated_content}
+                        </span>
+                        <div className={styles.contentActions}>
+                          <i
+                            className={`fas fa-copy ${styles.contentActionIcon}`}
+                            title="Copy to Clipboard"
+                            onClick={() => handleCopyContent(entry.generated_content)}
+                          ></i>
+                          <i
+                            className={`fas fa-redo ${styles.contentActionIcon}`}
+                            title="Regenerate"
+                            onClick={() => handleGenerateContent(entry.entry_id)}
+                          ></i>
+                          <i
+                            className={`fas fa-edit ${styles.contentActionIcon}`}
+                            title="Edit"
+                            onClick={() => handleEditContent(entry.entry_id)}
+                          ></i>
+                          <i
+                            className={`fas fa-eye ${styles.contentActionIcon}`}
+                            title="View"
+                            onClick={() => handleViewContent(entry.generated_content)}
+                          ></i>
+                        </div>
+                      </>
+                    ) : (
+                      'No content generated yet.'
+                    )}
+                  </td>
+
+
+                  <td className={styles.actionsCell}>
+                    <button
+                      className={styles.actionButton}
+                      onClick={() => handleGenerateContent(entry.entry_id)}
+                      disabled={loadingEntries[entry.entry_id]}
+                    >
+                      {loadingEntries[entry.entry_id] ? (
+                        <>
+                          <i className="fas fa-spinner fa-spin"></i> Generating...
+                        </>
+                      ) : entry.generated_content ? (
+                        'Regenerate'
+                      ) : (
+                        'Generate'
+                      )}
+                    </button>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleDeleteEntry(entry.entry_id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+
+
+
                 </tr>
               ))}
             </tbody>
@@ -491,9 +733,26 @@ export default function ProjectPage({ initialData }) {
           </div>
         </div>
       )}
+       {/* New Modal for Viewing Generated Content */}
+      {isModalOpen && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <span
+              className={styles.close}
+              onClick={() => setIsModalOpen(false)}
+            >
+              &times;
+            </span>
+            <h2>Generated Content</h2>
+            <div className={styles.modalTextContent}>{modalContent}</div>
+          </div>
+        </div>
+      )}
+  
     </div>
   );
 }
+
 
 // Fetch data on the server side
 // pages/projects/[projectId].js
