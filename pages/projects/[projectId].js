@@ -65,6 +65,14 @@ export default function ProjectPage({ initialData }) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [loadingAnalyzeKeyword, setLoadingAnalyzeKeyword] = useState(false);
   const [loadingSerpResults, setLoadingSerpResults] = useState(false);
+  const [serpResultsLimit, setSerpResultsLimit] = useState(10);
+  const [serpResultsExpanded, setSerpResultsExpanded] = useState(false);
+  const [loadingSemrushData, setLoadingSemrushData] = useState(false);
+  const [selectedRelatedKeywords, setSelectedRelatedKeywords] = useState([]);
+  const [selectedBroadMatchKeywords, setSelectedBroadMatchKeywords] = useState([]);
+  const [selectedPhraseQuestions, setSelectedPhraseQuestions] = useState([]);
+  
+
   const sidebarRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
@@ -146,6 +154,88 @@ export default function ProjectPage({ initialData }) {
     }
   };
   
+  const handleCheckboxChange = (tableType, keyword, isChecked) => {
+    let setterFunction;
+    let selectedKeywords;
+  
+    if (tableType === 'related') {
+      setterFunction = setSelectedRelatedKeywords;
+      selectedKeywords = selectedRelatedKeywords;
+    } else if (tableType === 'broad') {
+      setterFunction = setSelectedBroadMatchKeywords;
+      selectedKeywords = selectedBroadMatchKeywords;
+    } else if (tableType === 'phrase') {
+      setterFunction = setSelectedPhraseQuestions;
+      selectedKeywords = selectedPhraseQuestions;
+    }
+  
+    if (isChecked) {
+      setterFunction([...selectedKeywords, keyword]);
+    } else {
+      setterFunction(selectedKeywords.filter((k) => k !== keyword));
+    }
+  };
+  const handleSetAs = async (tableType, infoType, selectedKeywords) => {
+    if (selectedKeywords.length === 0) {
+      alert('No keywords selected.');
+      return;
+    }
+  
+    try {
+      // Build the info value
+      const infoValue = selectedKeywords.join(', ');
+  
+      // Call the API to save the info
+      await axios.post('/api/entries/save-info', {
+        entry_id: currentEntryId,
+        info_type: infoType === 'PAA' ? 'paa_terms' : 'lsi_terms',
+        info_value: infoValue,
+      });
+  
+      // Update the entries state
+      setEntries((prevEntries) =>
+        prevEntries.map((entry) =>
+          entry.entry_id === currentEntryId
+            ? {
+                ...entry,
+                [infoType === 'PAA' ? 'paa_terms' : 'lsi_terms']: infoValue,
+              }
+            : entry
+        )
+      );
+  
+      alert(`${infoType} terms saved successfully!`);
+  
+      // Clear selected keywords
+      if (tableType === 'related') {
+        setSelectedRelatedKeywords([]);
+      } else if (tableType === 'broad') {
+        setSelectedBroadMatchKeywords([]);
+      } else if (tableType === 'phrase') {
+        setSelectedPhraseQuestions([]);
+      }
+    } catch (error) {
+      console.error(`Error saving ${infoType} terms:`, error);
+      alert(`Error saving ${infoType} terms.`);
+    }
+  };
+  
+  const handleSetAllAs = (tableType, infoType) => {
+    let allKeywords;
+  
+    if (tableType === 'related') {
+      allKeywords = sidebarContent.semrushData.relatedKeywords.map((item) => item.keyword);
+    } else if (tableType === 'broad') {
+      allKeywords = sidebarContent.semrushData.broadMatchKeywords.map((item) => item.keyword);
+    } else if (tableType === 'phrase') {
+      allKeywords = sidebarContent.semrushData.phraseQuestions.map((item) => item.keyword);
+    }
+  
+    handleSetAs(tableType, infoType, allKeywords);
+  };
+  
+  
+  
   const handleDeleteEntry = async (entryId) => {
     if (confirm('Are you sure you want to delete this entry?')) {
       try {
@@ -184,19 +274,38 @@ export default function ProjectPage({ initialData }) {
     console.log('Lookup URL:', url);
   };
   
-  const handleKeywordLookup = (e, keyword) => {
+  const handleKeywordLookup = (e, keyword, entryId) => {
     e.stopPropagation();
+    setCurrentEntryId(entryId);
     setSelectedKeyword(keyword);
     setIsSidebarOpen(true);
     setSidebarContent(null); // Reset previous content
     setLoadingAnalyzeKeyword(true);
-    setLoadingSerpResults(true);
+    //setLoadingSerpResults(true);
+    setLoadingSemrushData(true);
   
-    // Call the functions to fetch data
+    // Fetch data functions
     fetchKeywordAnalysis(keyword, selectedCountry);
-    fetchSerpResults(keyword, selectedCountry);
+    //fetchSerpResults(keyword, selectedCountry);
+    fetchSemrushData(keyword, selectedCountry);
   };
-  
+  const fetchSemrushData = async (keyword, country) => {
+    try {
+      const response = await axios.post('/api/semrush/keyword-data', {
+        keyword,
+        country,
+      });
+      setSidebarContent((prevContent) => ({
+        ...prevContent,
+        semrushData: response.data,
+      }));
+    } catch (error) {
+      console.error('Error fetching SEMRush data:', error);
+      alert('Error fetching SEMRush data.');
+    } finally {
+      setLoadingSemrushData(false);
+    }
+  };
   
   const fetchKeywordAnalysis = async (keyword, country) => {
     try {
@@ -749,14 +858,14 @@ export default function ProjectPage({ initialData }) {
                     Primary: {entry.primary_keyword}
                     <i
                       className={`fas fa-search ${styles.lookupIcon}`}
-                      onClick={(e) => handleKeywordLookup(e, entry.primary_keyword)}
-                    ></i>
+                      onClick={(e) => handleKeywordLookup(e, entry.primary_keyword, entry.entry_id)}
+                      ></i>
                     <br />
                     Secondary: {entry.secondary_keyword}
                     <i
                       className={`fas fa-search ${styles.lookupIcon}`}
-                      onClick={() => handleKeywordLookup(entry.secondary_keyword)}
-                    ></i>
+                      onClick={(e) => handleKeywordLookup(e, entry.primary_keyword, entry.entry_id)}
+                      ></i>
                   </td>
                   <td className={styles.additionalInfoCell}>
                     {renderAdditionalInfoBlocks(entry)}
@@ -998,17 +1107,187 @@ export default function ProjectPage({ initialData }) {
                 </div>
               )
             )}
+            {loadingSemrushData ? (
+              <div>Loading Keywords data...</div>
+            ) : (
+            !loadingSemrushData && sidebarContent && sidebarContent.semrushData && (
+              <div className={styles.keywordTablesContainer}>
+                <div className={styles.keywordTablesGrid}>
+                  {/* Related Keywords */}
+                  <div className={styles.keywordTable}>
+                    <h3>Related Keywords</h3>
+                    {sidebarContent.semrushData.relatedKeywords.length === 0 ? (
+                      <div>No Data Found</div>
+                    ) : (
+                      <>
+                        
+                        <div class={styles.scrollable}>
+
+                          <table>
+                            <thead>
+                              <tr>
+                                <th></th> {/* For checkbox */}
+                                <th>Keyword</th>
+                                <th>Volume</th>
+                                <th>CPC</th>
+                                <th>Competition</th>
+                                <th>KD%</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {sidebarContent.semrushData.relatedKeywords.map((item, index) => (
+                                <tr key={index}>
+                                  <td>
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedRelatedKeywords.includes(item.keyword)}
+                                      onChange={(e) => handleCheckboxChange('related', item.keyword, e.target.checked)}
+                                    />
+                                  </td>
+                                  <td>{item.keyword}</td>
+                                  <td>{item.volume}</td>
+                                  <td>{item.cpc}</td>
+                                  <td>{item.competition}</td>
+                                  <td>{item.kd}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className={styles.buttonContainer}>
+                          <button onClick={() => handleSetAs('related', 'LSI', selectedRelatedKeywords)}>
+                            Set Selected as LSI
+                          </button>
+                          <button onClick={() => handleSetAllAs('related', 'LSI')}>
+                            Set All as LSI
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className={styles.keywordTable}>
+                    <h3>Broad Match Keywords</h3>
+                    {sidebarContent.semrushData.broadMatchKeywords.length === 0 ? (
+                      <div>No Data Found</div>
+                    ) : (
+                      <>
+                       <div class={styles.scrollable}>
+                          <table>
+                            <thead>
+                              <tr>
+                                <th></th> {/* For checkbox */}
+                                <th>Keyword</th>
+                                <th>Volume</th>
+                                <th>CPC</th>
+                                <th>Competition</th>
+                                <th>KD%</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {sidebarContent.semrushData.broadMatchKeywords.map((item, index) => (
+                                <tr key={index}>
+                                  <td>
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedBroadMatchKeywords.includes(item.keyword)}
+                                      onChange={(e) => handleCheckboxChange('related', item.keyword, e.target.checked)}
+                                    />
+                                  </td>
+                                  <td>{item.keyword}</td>
+                                  <td>{item.volume}</td>
+                                  <td>{item.cpc}</td>
+                                  <td>{item.competition}</td>
+                                  <td>{item.kd}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className={styles.buttonContainer}>
+                          <button onClick={() => handleSetAs('related', 'LSI', selectedBroadMatchKeywords)}>
+                            Set Selected as LSI
+                          </button>
+                          <button onClick={() => handleSetAllAs('related', 'LSI')}>
+                            Set All as LSI
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className={styles.keywordTable}>
+                  <h3>Phrase Questions</h3>
+                   {sidebarContent.semrushData.phraseQuestions.length === 0 ? (
+                      <div>No Data Found</div>
+                    ) : (
+                      <>
+                        
+                        <div class={styles.scrollable}>
+                          <table>
+                            <thead>
+                              <tr>
+                                <th></th> {/* For checkbox */}
+                                <th>Keyword</th>
+                                <th>Volume</th>
+                                <th>CPC</th>
+                                <th>Competition</th>
+                                <th>KD%</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {sidebarContent.semrushData.phraseQuestions.map((item, index) => (
+                                <tr key={index}>
+                                  <td>
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedPhraseQuestions.includes(item.keyword)}
+                                      onChange={(e) => handleCheckboxChange('phrase', item.keyword, e.target.checked)}
+                                    />
+                                  </td>
+                                  <td>{item.keyword}</td>
+                                  <td>{item.volume}</td>
+                                  <td>{item.cpc}</td>
+                                  <td>{item.competition}</td>
+                                  <td>{item.kd}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className={styles.buttonContainer}>
+                          <button onClick={() => handleSetAs('phrase', 'PAA', selectedPhraseQuestions)}>
+                            Set Selected as PAA
+                          </button>
+                          <button onClick={() => handleSetAllAs('phrase', 'PAA')}>
+                            Set All as PAA
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+
+
+
+
+            
+
+                
+                </div>
+              </div>
+            )
+            )}
+
       
             {loadingSerpResults ? (
               <div>Loading SERP results...</div>
             ) : (
-              sidebarContent && sidebarContent.serpResults && (
+              !loadingSerpResults && sidebarContent && sidebarContent.serpResults && (
                 <div className={styles.serpResultsContainer}>
                   <h3>SERP Results</h3>
-                  <div className={styles.serpResults}>
+                  <div className={`${styles.serpResults} ${serpResultsExpanded ? styles.serpResultsExpanded : ''}`}>
                     <table className={styles.serpTable}>
                       <tbody>
-                        {sidebarContent.serpResults.map((result, index) => (
+                        {sidebarContent.serpResults.slice(0, serpResultsLimit).map((result, index) => (
                           <tr key={index}>
                             {/* Position Column */}
                             <td className={styles.positionCell}>{result.position}</td>
@@ -1045,6 +1324,17 @@ export default function ProjectPage({ initialData }) {
                       </tbody>
                     </table>
                   </div>
+                  {sidebarContent.serpResults.length > 10 && !serpResultsExpanded && (
+                    <button
+                    className={styles.showMoreButton}
+                    onClick={() => {
+                      setSerpResultsLimit(sidebarContent.serpResults.length);
+                      setSerpResultsExpanded(true);
+                    }}
+                    >
+                    Show More
+                    </button>
+                    )}
                   {sidebarExpanded && (
                     <div className={styles.futureContent}>
                       {/* Future content will go here */}

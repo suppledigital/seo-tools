@@ -589,6 +589,10 @@ color: #721c24;
 .serpResults {
     width: 100%;
   }
+  .serpResultsExpanded {
+    max-height: 400px; /* Adjust the height as needed */
+    overflow-y: auto;
+  }
   .sidebarExpanded .serpResults {
     width: 50%;
   }
@@ -675,6 +679,57 @@ color: #721c24;
   
   .serpTable th {
     background-color: #f2f2f2;
+  }
+  
+  /* Container for the keyword tables */
+.keywordTablesContainer {
+    margin-top: 20px;
+  }
+  
+  /* Grid layout for tables */
+  .keywordTablesGrid {
+    display: grid;
+    gap: 10px;
+  }
+  
+  /* Default: single column */
+  .keywordTablesGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Expanded: multiple columns */
+  .sidebarExpanded .keywordTablesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* Styles for each table */
+  .keywordTable {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .keywordTable table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .keywordTable th,
+  .keywordTable td {
+    border: 1px solid #ddd;
+    padding: 5px;
+  }
+  
+  .keywordTable th {
+    background-color: #f2f2f2;
+  }
+  
+  /* Optional: Adjust table height and make scrollable if needed */
+  .keywordTable .scrollable {
+    max-height: 300px; /* Adjust as needed */
+    overflow-y: auto;
+    height:300px;
+    margin-bottom:10px;
   }
   
 
