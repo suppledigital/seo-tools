@@ -71,6 +71,8 @@ export default function ProjectPage({ initialData }) {
   const [selectedRelatedKeywords, setSelectedRelatedKeywords] = useState([]);
   const [selectedBroadMatchKeywords, setSelectedBroadMatchKeywords] = useState([]);
   const [selectedPhraseQuestions, setSelectedPhraseQuestions] = useState([]);
+  const [keywordInput, setKeywordInput] = useState('');
+
   
 
   const sidebarRef = useRef(null);
@@ -115,12 +117,17 @@ export default function ProjectPage({ initialData }) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isSidebarOpen]);
+
   useEffect(() => {
     // Trigger a resize of the chart when the sidebar width changes
     if (chartInstanceRef.current) {
       chartInstanceRef.current.resize();
     }
   }, [sidebarExpanded]);
+
+  useEffect(() => {
+    setKeywordInput(selectedKeyword);
+  }, [selectedKeyword]);
   
   
 
@@ -153,6 +160,28 @@ export default function ProjectPage({ initialData }) {
       alert('Error saving project information.');
     }
   };
+  const handleKeywordSearch = () => {
+    if (!keywordInput.trim()) {
+      alert('Please enter a keyword.');
+      return;
+    }
+  
+    setSelectedKeyword(keywordInput.trim());
+    setLoadingAnalyzeKeyword(true);
+    setLoadingSerpResults(true);
+    setLoadingSemrushData(true);
+  
+    // Reset selected keywords
+    setSelectedRelatedKeywords([]);
+    setSelectedBroadMatchKeywords([]);
+    setSelectedPhraseQuestions([]);
+  
+    // Fetch data functions
+    fetchKeywordAnalysis(keywordInput.trim(), selectedCountry);
+    fetchSerpResults(keywordInput.trim(), selectedCountry);
+    fetchSemrushData(keywordInput.trim(), selectedCountry);
+  };
+  
   
   const handleCheckboxChange = (tableType, keyword, isChecked) => {
     let setterFunction;
@@ -986,7 +1015,21 @@ export default function ProjectPage({ initialData }) {
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
           ></i>
           <div className={styles.sidebarHeader}>
-            <span>{selectedKeyword}</span>
+
+            <div className={styles.keywordInputContainer}>
+              <input
+                type="text"
+                value={keywordInput}
+                onChange={(e) => setKeywordInput(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleKeywordSearch();
+                  }
+                }}
+                placeholder="Enter keyword"
+              />
+              <i className="fas fa-paper-plane" onClick={handleKeywordSearch}></i>
+            </div><br/>
             <select
               value={selectedCountry}
               onChange={(e) => {
@@ -994,8 +1037,10 @@ export default function ProjectPage({ initialData }) {
                 // Re-fetch data with the new country
                 setLoadingAnalyzeKeyword(true);
                 setLoadingSerpResults(true);
+                setLoadingSemrushData(true);
                 fetchKeywordAnalysis(selectedKeyword, e.target.value);
                 fetchSerpResults(selectedKeyword, e.target.value);
+                fetchSemrushData(selectedKeyword, e.target.value);
               }}
             >
               <option value="AU">Australia</option>
@@ -1190,7 +1235,7 @@ export default function ProjectPage({ initialData }) {
                                     <input
                                       type="checkbox"
                                       checked={selectedBroadMatchKeywords.includes(item.keyword)}
-                                      onChange={(e) => handleCheckboxChange('related', item.keyword, e.target.checked)}
+                                      onChange={(e) => handleCheckboxChange('broad', item.keyword, e.target.checked)}
                                     />
                                   </td>
                                   <td>{item.keyword}</td>
@@ -1204,10 +1249,10 @@ export default function ProjectPage({ initialData }) {
                           </table>
                         </div>
                         <div className={styles.buttonContainer}>
-                          <button onClick={() => handleSetAs('related', 'LSI', selectedBroadMatchKeywords)}>
+                          <button onClick={() => handleSetAs('broad', 'LSI', selectedBroadMatchKeywords)}>
                             Set Selected as LSI
                           </button>
-                          <button onClick={() => handleSetAllAs('related', 'LSI')}>
+                          <button onClick={() => handleSetAllAs('broad', 'LSI')}>
                             Set All as LSI
                           </button>
                         </div>

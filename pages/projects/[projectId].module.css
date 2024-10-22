@@ -731,6 +731,29 @@ color: #721c24;
     height:300px;
     margin-bottom:10px;
   }
+  /* Container for the keyword input and icon */
+.keywordInputContainer {
+    display: flex;
+    align-items: center;
+  }
+  
+  .keywordInputContainer input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .keywordInputContainer i {
+    margin-left: 8px;
+    cursor: pointer;
+    color: #0070f3;
+  }
+  
+  .keywordInputContainer i:hover {
+    color: #005bb5;
+  }
+  
   
 
 /* Responsive Table */
