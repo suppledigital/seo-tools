@@ -1,5 +1,5 @@
 // pages/api/prompts.js
-import pool from '../../server/db';
+import pool from '../../../lib/db';
 
 export default async function handler(req, res) {
   const { page_type, content_type } = req.query;

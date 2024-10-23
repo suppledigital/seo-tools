@@ -135,7 +135,7 @@ export default function ProjectPage({ initialData }) {
     if (hotInstance) {
       const data = hotInstance.getData();
       try {
-        await axios.post(`/api/projects/${projectId}/save-data`, {
+        await axios.post(`/api/content/projects/${projectId}/save-data`, {
           data: data,
         });
         alert('Data saved successfully!');
@@ -149,7 +149,7 @@ export default function ProjectPage({ initialData }) {
 
   const handleSaveProjectInfo = async (formData) => {
     try {
-      await axios.post('/api/projects/save-info', {
+      await axios.post('/api/content/projects/save-info', {
         project_id: projectId,
         form_data: formData,
       });
@@ -215,7 +215,7 @@ export default function ProjectPage({ initialData }) {
       const infoValue = selectedKeywords.join(', ');
   
       // Call the API to save the info
-      await axios.post('/api/entries/save-info', {
+      await axios.post('/api/content/entries/save-info', {
         entry_id: currentEntryId,
         info_type: infoType === 'PAA' ? 'paa_terms' : 'lsi_terms',
         info_value: infoValue,
@@ -268,7 +268,7 @@ export default function ProjectPage({ initialData }) {
   const handleDeleteEntry = async (entryId) => {
     if (confirm('Are you sure you want to delete this entry?')) {
       try {
-        await axios.delete(`/api/entries/${entryId}`, {
+        await axios.delete(`/api/content/entries/${entryId}`, {
           withCredentials: true,
         });
         // Update the entries state
@@ -320,7 +320,7 @@ export default function ProjectPage({ initialData }) {
   };
   const fetchSemrushData = async (keyword, country) => {
     try {
-      const response = await axios.post('/api/semrush/keyword-data', {
+      const response = await axios.post('/api/content/semrush/keyword-data', {
         keyword,
         country,
       });
@@ -338,7 +338,7 @@ export default function ProjectPage({ initialData }) {
   
   const fetchKeywordAnalysis = async (keyword, country) => {
   try {
-    const response = await axios.post('/api/seranking/analyze-keywords', {
+    const response = await axios.post('/api/content/seranking/analyze-keywords', {
       keyword,
       country,
     });
@@ -360,7 +360,7 @@ export default function ProjectPage({ initialData }) {
   
   const fetchSerpResults = async (keyword, country) => {
     try {
-      const response = await axios.post('/api/seranking/serp-results', {
+      const response = await axios.post('/api/content/seranking/serp-results', {
         keyword,
         country,
       });
@@ -386,7 +386,7 @@ export default function ProjectPage({ initialData }) {
     }
   
     try {
-      const response = await axios.get('/api/prompts', {
+      const response = await axios.get('/api/content/prompts', {
         params: {
           page_type: entry.page_type,
           content_type: entry.content_type,
@@ -431,7 +431,7 @@ export default function ProjectPage({ initialData }) {
   
     try {
       // Fetch the prompt from the database
-      const response = await axios.get('/api/prompts', {
+      const response = await axios.get('/api/content/prompts', {
         params: {
           page_type: entry.page_type,
           content_type: entry.content_type,
@@ -461,7 +461,7 @@ export default function ProjectPage({ initialData }) {
   
       // Call the API to run the prompt
       const runPromptResponse = await axios.post(
-        `/api/projects/${projectId}/run-prompt`,
+        `/api/content/projects/${projectId}/run-prompt`,
         {
           entry_id: entryId,
           prompt,
@@ -481,7 +481,7 @@ export default function ProjectPage({ initialData }) {
       );
   
       // Save the generated content to the database
-      await axios.post('/api/entries/save-generated-content', {
+      await axios.post('/api/content/entries/save-generated-content', {
         entry_id: entryId,
         generated_content: responseData,
       });
@@ -518,7 +518,7 @@ export default function ProjectPage({ initialData }) {
         [field]: newValue,
       };
 
-      await axios.post('/api/entries/save-classification', payload, {
+      await axios.post('/api/content/entries/save-classification', payload, {
         withCredentials: true,
       });
 
@@ -554,7 +554,7 @@ export default function ProjectPage({ initialData }) {
         info_type: currentInfoType,
         info_value: infoModalValue,
       };
-      await axios.post('/api/entries/save-info', payload, {
+      await axios.post('/api/content/entries/save-info', payload, {
         withCredentials: true,
       });
 
@@ -664,7 +664,7 @@ export default function ProjectPage({ initialData }) {
         // Update the database with new classifications
         for (const entry of updatedEntries) {
           await axios.post(
-            '/api/entries/save-classification',
+            '/api/content/entries/save-classification',
             {
               entry_id: entry.entry_id,
               page_type: entry.page_type,
@@ -1433,7 +1433,7 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  const pool = (await import('../../server/db')).default;
+  const pool = (await import('../../../lib/db')).default;
 
 
   // Query the database directly

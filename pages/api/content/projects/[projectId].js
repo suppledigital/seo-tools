@@ -1,5 +1,5 @@
 // pages/api/projects/[projectId].js
-import pool from '../../../server/db'; // Adjust path if necessary
+import pool from '../../../../lib/db'; // Adjust path if necessary
 
 export default async function handler(req, res) {
   const { projectId } = req.query;

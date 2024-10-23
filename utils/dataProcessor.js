@@ -1,5 +1,5 @@
 // utils/dataProcessor.js
-import pool from '../server/db'; // Adjust path
+import pool from '../lib/db'; // Adjust path
 
 export async function processDataAndSave(project_id, data) {
   if (data[0][0]?.toLowerCase() === 'url') {

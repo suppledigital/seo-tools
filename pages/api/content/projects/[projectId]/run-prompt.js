@@ -1,5 +1,5 @@
 // pages/api/projects/[projectId]/run-prompt.js
-import pool from '../../../../server/db';
+import pool from '../../../../../lib/db';
 import axios from 'axios';
 
 /*export default async function handler(req, res) {

@@ -1,7 +1,7 @@
 // pages/api/entries/save-classification.js
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]'; // Adjust the path if necessary
-import pool from '../../../server/db';
+import { authOptions } from '../../auth/[...nextauth]'; // Adjust the path if necessary
+import pool from '../../../../lib/db';
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);

@@ -1,6 +1,6 @@
 // pages/api/projects/[projectId]/save-data.js
-import pool from '../../../../server/db'; // Adjust path
-import { processDataAndSave } from '../../../../utils/dataProcessor'; // We'll define this utility function
+import pool from '../../../../../lib/db'; // Adjust path
+import { processDataAndSave } from '../../../../../utils/dataProcessor'; // We'll define this utility function
 
 export default async function handler(req, res) {
   const { projectId } = req.query;

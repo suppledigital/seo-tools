@@ -1,5 +1,5 @@
 import { getSession } from 'next-auth/react';
-import pool from '../../../server/db';
+import pool from '../../../../lib/db';
 
 export default async function handler(req, res) {
   const session = await getSession({ req });
