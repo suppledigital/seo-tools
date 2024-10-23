@@ -1065,7 +1065,8 @@ export default function ProjectPage({ initialData }) {
                   <div className={styles.analysisGrid}>
                     {/* Row 1: Difficulty Chart, Trend Chart, Volume */}
                     <div className={styles.difficultyBlock}>
-                      <div className={styles.blockHeader}>Difficulty</div>
+                      <div className={styles.blockHeader} style={{ display:'flex' }}><span>Difficulty</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
+
                       <div className={styles.blockContent}>
                         <CircularProgressbar
                           value={sidebarContent.keywordData.difficulty}
@@ -1081,7 +1082,7 @@ export default function ProjectPage({ initialData }) {
                     </div>
                     {sidebarContent.keywordData.history_trend ? (
                       <div className={styles.trendBlock}>
-                      <div className={styles.blockHeader}>Trend</div>
+                      <div className={styles.blockHeader} style={{ display:'flex' }}><span>Trend</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
                       <div className={styles.blockContent}>
                         <Bar
                           ref={(chart) => {
@@ -1131,14 +1132,14 @@ export default function ProjectPage({ initialData }) {
                     </div>
                   ) : (
                     <div className={styles.trendBlock}>
-                      <div className={styles.blockHeader}>Trend</div>
+                      <div className={styles.blockHeader} style={{ display:'flex' }}><span>Trend</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
                       <div className={styles.blockContent}>
                         <div>No trend data available.</div>
                       </div>
                     </div>
                   )}
                     <div className={styles.volumeBlock}>
-                      <div className={styles.blockHeader}>Volume</div>
+                     <div className={styles.blockHeader} style={{ display:'flex' }}><span>Volume</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
                       <div className={styles.blockContent}>
                         <span className={styles.volumeValue}>
                           {sidebarContent.keywordData.volume}
@@ -1147,7 +1148,7 @@ export default function ProjectPage({ initialData }) {
                     </div>
                     {/* Row 2: CPC and Competition */}
                     <div className={styles.cpcBlock}>
-                      <div className={styles.blockHeader}>CPC</div>
+                      <div className={styles.blockHeader} style={{ display:'flex' }}><span>CPC</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
                       <div className={styles.blockContent}>
                         <span className={styles.cpcValue}>
                           ${sidebarContent.keywordData.cpc}
@@ -1155,7 +1156,7 @@ export default function ProjectPage({ initialData }) {
                       </div>
                     </div>
                     <div className={styles.competitionBlock}>
-                      <div className={styles.blockHeader}>Competition</div>
+                     <div className={styles.blockHeader} style={{ display:'flex' }}><span>Competition</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
                       <div className={styles.blockContent}>
                         <span className={styles.competitionValue}>
                           {sidebarContent.keywordData.competition}
@@ -1174,7 +1175,7 @@ export default function ProjectPage({ initialData }) {
                 <div className={styles.keywordTablesGrid}>
                   {/* Related Keywords */}
                   <div className={styles.keywordTable}>
-                    <h3>Related Keywords</h3>
+                    <h3 style={{ display: 'flex' }}><span>Related Keywords</span> <img src="/assets/semrush_rect.png" alt="SEMrush Logo" style={{ width: '100px', height: 'auto' }} /></h3> 
                     {sidebarContent.semrushData.relatedKeywords.length === 0 ? (
                       <div>No Data Found</div>
                     ) : (
@@ -1225,8 +1226,8 @@ export default function ProjectPage({ initialData }) {
                     )}
                   </div>
                   <div className={styles.keywordTable}>
-                    <h3>Broad Match Keywords</h3>
-                    {sidebarContent.semrushData.broadMatchKeywords.length === 0 ? (
+                  <h3 style={{ display: 'flex' }}><span>Broad Match Keywords</span> <img src="/assets/semrush_rect.png" alt="SEMrush Logo" style={{ width: '100px', height: 'auto' }} /></h3> 
+                  {sidebarContent.semrushData.broadMatchKeywords.length === 0 ? (
                       <div>No Data Found</div>
                     ) : (
                       <>
@@ -1274,7 +1275,7 @@ export default function ProjectPage({ initialData }) {
                     )}
                   </div>
                   <div className={styles.keywordTable}>
-                  <h3>Phrase Questions</h3>
+                  <h3 style={{ display: 'flex' }}><span>Phrase Questions</span> <img src="/assets/semrush_rect.png" alt="SEMrush Logo" style={{ width: '100px', height: 'auto' }} /></h3> 
                    {sidebarContent.semrushData.phraseQuestions.length === 0 ? (
                       <div>No Data Found</div>
                     ) : (

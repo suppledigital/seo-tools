@@ -731,6 +731,11 @@ color: #721c24;
     height:300px;
     margin-bottom:10px;
   }
+
+  .keywordTable .scrollable td,.keywordTable .scrollable thead{
+    font-size:10px;
+    padding:5px;
+  }
   /* Container for the keyword input and icon */
 .keywordInputContainer {
     display: flex;
