@@ -34,6 +34,9 @@ export default function Home() {
           <Link href="/content" className={styles.link}>Content Tool</Link>
         </li>
         <li className={styles.listItem}>
+          <Link href="/audit" className={styles.link}>Site Audit</Link>
+        </li>
+        <li className={styles.listItem}>
           <Link href="/keywords" className={styles.link}>Keywords Tool</Link>
         </li>
       </ul>
