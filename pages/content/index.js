@@ -2,28 +2,19 @@ import { useSession, signIn, signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
+import styles from './index.module.css'; // Import the CSS module
 
 export default function ContentHome() {
-  // Ensure useSession is always called
   const { data: session, status } = useSession();
   const [projects, setProjects] = useState([]);
   const [newProjectName, setNewProjectName] = useState('');
   const [showModal, setShowModal] = useState(false);
 
-  // Log session status for debugging
-  console.log("Content Tool - Session status:", status);
-  console.log("Content Tool - Session data:", session);
-
   useEffect(() => {
     if (status === 'authenticated') {
-      // Fetch projects when the user is authenticated
       axios.get('/api/content/projects')
-        .then((response) => {
-          setProjects(response.data.projects);
-        })
-        .catch((error) => {
-          console.error('Error fetching projects:', error);
-        });
+        .then((response) => setProjects(response.data.projects))
+        .catch((error) => console.error('Error fetching projects:', error));
     }
   }, [status]);
 
@@ -34,12 +25,8 @@ export default function ContentHome() {
         setShowModal(false);
         setNewProjectName('');
         axios.get('/api/content/projects')
-          .then((response) => {
-            setProjects(response.data.projects);
-          })
-          .catch((error) => {
-            console.error('Error fetching projects:', error);
-          });
+          .then((response) => setProjects(response.data.projects))
+          .catch((error) => console.error('Error fetching projects:', error));
       })
       .catch((error) => {
         console.error('Error adding project:', error);
@@ -53,24 +40,23 @@ export default function ContentHome() {
 
   if (status === 'unauthenticated') {
     return (
-      <div>
-        <h1>Please Sign In</h1>
-        <button onClick={() => signIn('google')}>Sign in with Google</button>
+      <div className={styles.container}>
+        <h1 className={styles.title}>Please Sign In</h1>
+        <button className={styles.button} onClick={() => signIn('google')}>Sign in with Google</button>
       </div>
     );
   }
 
   return (
-    <div>
-      <h1>Content Projects</h1>
-      <p>Welcome, {session?.user?.email}</p>
-      <button onClick={() => signOut()}>Sign Out</button>
-      <div id="content">
-        <div id="add-project-btn">
-          <button onClick={() => setShowModal(true)}>Add New Project</button>
-        </div>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Content Projects</h1>
+      <p className={styles.welcomeText}>Welcome, {session?.user?.email}</p>
+      <button className={styles.button} onClick={() => signOut()}>Sign Out</button>
+
+      <div>
+        <button className={styles.button} onClick={() => setShowModal(true)}>Add New Project</button>
         <br />
-        <table>
+        <table className={styles.table}>
           <thead>
             <tr>
               <th>Project Name</th>
@@ -82,9 +68,7 @@ export default function ContentHome() {
               <tr key={project.project_id}>
                 <td>{project.project_name}</td>
                 <td>
-                  <Link href={`content/projects/${project.project_id}`}>
-                    Open
-                  </Link>
+                  <Link href={`/content/projects/${project.project_id}`}>Open</Link>
                 </td>
               </tr>
             ))}
@@ -92,12 +76,12 @@ export default function ContentHome() {
         </table>
 
         {showModal && (
-          <div className="modal">
-            <div className="modal-content">
-              <span className="close" onClick={() => setShowModal(false)}>&times;</span>
-              <h2>Add New Project</h2>
+          <div className={styles.modal}>
+            <div className={styles.modalContent}>
+              <span className={styles.modalClose} onClick={() => setShowModal(false)}>&times;</span>
+              <h2 className={styles.modalHeader}>Add New Project</h2>
               <form onSubmit={handleAddProject}>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                   <label htmlFor="project_name">Project Name:</label>
                   <input
                     type="text"
@@ -106,9 +90,10 @@ export default function ContentHome() {
                     required
                     value={newProjectName}
                     onChange={(e) => setNewProjectName(e.target.value)}
+                    className={styles.input}
                   />
                 </div>
-                <button type="submit">Add Project</button>
+                <button className={styles.button} type="submit">Add Project</button>
               </form>
             </div>
           </div>
