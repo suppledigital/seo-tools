@@ -251,24 +251,38 @@ export default function AuditHome() {
       chartInstances.current[title].destroy();
     }
     const labels = ['LCP', 'CLS', 'INP'];
-    const datasets = ['histogram'].map((key) => {
-      return {
-        label: key,
-        data: labels.map((label) => data[label.toLowerCase()][key]),
-        backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
-        stack: 'Stack 0',
-      };
+    const backgroundColors = ['#28a745', '#ffc107', '#dc3545'];
+    const datasets = [];
+  
+    labels.forEach((label, index) => {
+      const metric = data[label.toLowerCase()];
+      if (metric && metric.histogram) {
+        datasets.push({
+          label: label,
+          data: metric.histogram,
+          backgroundColor: backgroundColors[index],
+          stack: 'Stack 0',
+        });
+      } else {
+        // If data is missing, push zeros or skip
+        datasets.push({
+          label: label,
+          data: [0, 0, 0],
+          backgroundColor: backgroundColors[index],
+          stack: 'Stack 0',
+        });
+      }
     });
-
+  
     chartInstances.current[title] = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels,
+        labels: ['Good', 'Needs Improvement', 'Poor'],
         datasets,
       },
       options: {
         plugins: {
-          legend: { display: false },
+          legend: { display: true },
         },
         scales: {
           x: { stacked: true },
@@ -277,6 +291,7 @@ export default function AuditHome() {
       },
     });
   };
+  
 
   const generateColors = (num) => {
     const colors = [
@@ -328,6 +343,31 @@ export default function AuditHome() {
         {loadingAudit && <div className={styles.loading}>Running Audit...</div>}
   
         {auditResults && (
+            <>
+             <h2>{auditResults.domain_props.domain}</h2>
+                <p>Audit Time: {auditResults.audit_time}</p>
+
+                {/* Domain Properties Grid */}
+                <div className={styles.domainPropsGrid}>
+                <div className={styles.domainPropItem}>
+                    <h4>Backlinks</h4>
+                    <p>{auditResults.domain_props.backlinks}</p>
+                </div>
+                <div className={styles.domainPropItem}>
+                    <h4>Indexed in Bing</h4>
+                    <p>{auditResults.domain_props.index_bing}</p>
+                </div>
+                <div className={styles.domainPropItem}>
+                    <h4>Indexed in Google</h4>
+                    <p>{auditResults.domain_props.index_google}</p>
+                </div>
+                <div className={styles.domainPropItem}>
+                    <h4>Total Pages Checked</h4>
+                    <p>{auditResults.total_pages}</p>
+                </div>
+                </div>
+
+            
           <div className={styles.results}>
             <div className={styles.summary}>
               <div className={styles.summaryItem}>
@@ -413,6 +453,7 @@ export default function AuditHome() {
               </div>
             </div>
           </div>
+          </>
         )}
       </div>
     </div>
