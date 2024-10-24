@@ -38,31 +38,29 @@ export default function AuditHome() {
   const chromeUXMobileRef = useRef(null);
   const chromeUXDesktopRef = useRef(null);
   // Add these declarations along with your existing refs
-    const trafficTrendChartRef = useRef(null);
-    const organicVsPaidChartRef = useRef(null);
-    const topKeywordsChartRef = useRef(null);
-    const [sortedOrganicKeywords, setSortedOrganicKeywords] = useState([]);
-    const [sortedPaidKeywords, setSortedPaidKeywords] = useState([]);
-    const [selectedCompetitors, setSelectedCompetitors] = useState([]);
-    const carouselSettings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        adaptiveHeight: true,
-        responsive: [
-          {
-            breakpoint: 768,
-            settings: {
-              slidesToShow: 1,
-              slidesToScroll: 1,
-            }
-          }
-        ]
-      };
-      
-
+  const trafficTrendChartRef = useRef(null);
+  const organicVsPaidChartRef = useRef(null);
+  const topKeywordsChartRef = useRef(null);
+  const [sortedOrganicKeywords, setSortedOrganicKeywords] = useState([]);
+  const [sortedPaidKeywords, setSortedPaidKeywords] = useState([]);
+  const [selectedCompetitors, setSelectedCompetitors] = useState([]);
+  const carouselSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    adaptiveHeight: true,
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
 
   useEffect(() => {
     // Fetch existing audits on component load
@@ -105,8 +103,9 @@ export default function AuditHome() {
       setSelectedOption('');
     }
   };
-// Scroll Advertising Table
-const scrollAdvertisingTable = (direction) => {
+
+  // Scroll Advertising Table
+  const scrollAdvertisingTable = (direction) => {
     const container = document.querySelector(`.${styles.advertisingTableWrapper}`);
     if (container) {
       const scrollAmount = 200; // Adjust scroll speed as needed
@@ -117,7 +116,7 @@ const scrollAdvertisingTable = (direction) => {
       }
     }
   };
-  
+
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
   };
@@ -131,10 +130,15 @@ const scrollAdvertisingTable = (direction) => {
       // Extract domain if input is URL
       let domain = inputValue;
       if (inputType === 'url') {
-        domain = new URL(inputValue).hostname;
+        try {
+          domain = new URL(inputValue).hostname;
+        } catch (error) {
+          alert('Invalid URL format.');
+          return;
+        }
       }
       // Remove 'www.' from domain
-    domain = domain.replace(/^www\./, '');
+      domain = domain.replace(/^www\./, '');
 
       if (selectedOption.includes('Start Audit')) {
         // Start Audit
@@ -204,10 +208,10 @@ const scrollAdvertisingTable = (direction) => {
   const fetchDomainOverview = async (domain) => {
     setLoadingOverview(true);
     setOverviewData(null);
-  
+
     try {
       domain = domain.replace(/^www\./, '');
-  
+
       const endpoints = [
         { name: 'overview', url: `/api/audit/overview/overview?domain=${encodeURIComponent(domain)}` },
         { name: 'history', url: `/api/audit/overview/history?domain=${encodeURIComponent(domain)}&type=organic` },
@@ -216,9 +220,9 @@ const scrollAdvertisingTable = (direction) => {
         { name: 'advertising', url: `/api/audit/overview/advertising?domain=${encodeURIComponent(domain)}` },
         { name: 'competitors', url: `/api/audit/overview/competitors?domain=${encodeURIComponent(domain)}&type=adv` },
       ];
-  
+
       const data = {};
-  
+
       for (const endpoint of endpoints) {
         try {
           const response = await axios.get(endpoint.url);
@@ -227,13 +231,17 @@ const scrollAdvertisingTable = (direction) => {
           if (error.response?.status === 429) {
             alert('Rate limit exceeded. Please try again later.');
             break;
+          } else if (error.response?.status === 404) {
+            console.warn(`Data for ${endpoint.name} not found.`);
+            data[endpoint.name] = {}; // Assign empty object or default as needed
           } else {
             console.error(`Error fetching ${endpoint.name}:`, error);
+            data[endpoint.name] = {}; // Assign empty object to prevent undefined
           }
         }
         await wait(500); // Adjust the delay as needed
       }
-  
+
       setOverviewData(data);
       setLoadingOverview(false);
     } catch (error) {
@@ -241,8 +249,7 @@ const scrollAdvertisingTable = (direction) => {
       setLoadingOverview(false);
     }
   };
-  
-  
+
   // Utility function to wait for a specified time
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -280,31 +287,19 @@ const scrollAdvertisingTable = (direction) => {
     };
   }, [auditResults]);
 
-  /*useEffect(() => {
-    if (overviewData) {
-      // Render charts for Domain Overview
-      renderOverviewCharts();
-    }
-  }, [overviewData]);
-  useEffect(() => {
-    if (overviewData && overviewData.competitors) {
-      const defaultCompetitors = overviewData.competitors.slice(0, 4);
-      setSelectedCompetitors(defaultCompetitors);
-    }
-  }, [overviewData]);*/
   useEffect(() => {
     if (overviewData) {
       // Sort Organic Keywords by traffic_percent descending
       const sortedOrganic = [...organicData].sort((a, b) => b.traffic_percent - a.traffic_percent);
       setSortedOrganicKeywords(sortedOrganic);
-  
+
       // Sort Paid Keywords by traffic_percent descending
       const sortedPaid = [...paidData].sort((a, b) => b.traffic_percent - a.traffic_percent);
       setSortedPaidKeywords(sortedPaid);
-  
+
       // Render charts for Domain Overview
       renderOverviewCharts();
-  
+
       // Automatically select default competitors if desired
       if (overviewData.competitors && overviewData.competitors.length > 0) {
         const defaultCompetitors = overviewData.competitors.slice(0, 4);
@@ -312,26 +307,25 @@ const scrollAdvertisingTable = (direction) => {
       }
     }
   }, [overviewData]);
-  
+
   useEffect(() => {
     if (selectedCompetitors.length > 0) {
       renderKeywordShareChart();
       renderCompetitivePositioningChart();
     }
   }, [selectedCompetitors]);
-  
-  
+
   const renderKeywordShareChart = () => {
     const ctx = document.getElementById('keywordShareChart').getContext('2d');
-    
+
     // Destroy existing chart if any
     if (chartInstances.current['keywordShareChart']) {
       chartInstances.current['keywordShareChart'].destroy();
     }
-  
-    const labels = selectedCompetitors.map(c => c.domain);
-    const data = selectedCompetitors.map(c => c.common_keywords);
-  
+
+    const labels = selectedCompetitors.map((c) => c.domain);
+    const data = selectedCompetitors.map((c) => c.common_keywords);
+
     chartInstances.current['keywordShareChart'] = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -356,93 +350,133 @@ const scrollAdvertisingTable = (direction) => {
       },
     });
   };
-  
+
   const renderCompetitivePositioningChart = () => {
     // Ensure overviewData is available
     if (!overviewData || !overviewData.overview || !overviewData.competitors) {
       console.error('Overview data or competitors data is missing.');
       return;
     }
-  
+
     const ctx = document.getElementById('competitivePositioningChart').getContext('2d');
-  
+
     // Destroy existing chart if any
     if (chartInstances.current['competitivePositioningChart']) {
       chartInstances.current['competitivePositioningChart'].destroy();
     }
-  
+
     const ownOrganicTrafficSum = overviewData.overview.organic.traffic_sum || 1; // Prevent division by zero
-  
+
     // Calculate total organic traffic including competitors
-    const totalOrganicTraffic = ownOrganicTrafficSum + selectedCompetitors.reduce((acc, c) => acc + (c.traffic_sum || 0), 0);
-  
-    // Prepare data for competitors
-    const competitorData = selectedCompetitors.map(c => ({
-      x: c.common_keywords || 0, // Number of common keywords
-      y: Number(((c.traffic_sum / totalOrganicTraffic) * 100).toFixed(2)) || 0, // Organic traffic share as percentage
-      r: (c.common_keywords || 0) * 2, // Radius based on competition
-      label: c.domain,
-      isOwnDomain: false,
-    }));
-  
-    // Prepare data for your own domain
+    const totalOrganicTraffic =
+      ownOrganicTrafficSum +
+      selectedCompetitors.reduce((acc, c) => acc + (c.traffic_sum || 0), 0);
+
+    // Determine the maximum competition value among competitors and your domain
+    const maxCompetition = Math.max(
+      ...selectedCompetitors.map((c) => c.common_keywords || 0),
+      overviewData.overview.organic.keywords_count || 0
+    );
+
+    const fixedMaxRadius = 15; // Fixed radius for the highest competition
+
+    // Generate unique colors for each competitor and your domain
+    const colorPalette = [
+      'rgba(255, 99, 132, 0.7)', // Red
+      'rgba(54, 162, 235, 0.7)', // Blue
+      'rgba(255, 206, 86, 0.7)', // Yellow
+      'rgba(75, 192, 192, 0.7)', // Teal
+      'rgba(153, 102, 255, 0.7)', // Purple
+      'rgba(255, 159, 64, 0.7)', // Orange
+      'rgba(201, 203, 207, 0.7)', // Grey
+      'rgba(0, 204, 102, 0.7)', // Green
+      'rgba(102, 102, 255, 0.7)', // Indigo
+      'rgba(255, 102, 255, 0.7)', // Pink
+    ];
+
+    // Assign colors to competitors
+    const competitorColors = selectedCompetitors.map((_, idx) => colorPalette[idx % colorPalette.length]);
+
+    // Create datasets for each competitor
+    const competitorDatasets = selectedCompetitors.map((c, idx) => {
+        const x = c.common_keywords || 0;
+        const y = Number(((c.traffic_sum / totalOrganicTraffic) * 100).toFixed(2)) || 0;
+        const r = 10; // Fixed radius for debugging
+      
+        console.log(`Competitor: ${c.domain}, x: ${x}, y: ${y}, r: ${r}`);
+      
+        return {
+          label: c.domain,
+          data: [{ x, y, r }],
+          backgroundColor: competitorColors[idx],
+          borderColor: competitorColors[idx].replace('0.7', '1'),
+          borderWidth: 1,
+          hoverBackgroundColor: competitorColors[idx].replace('0.7', '0.9'),
+          hoverBorderColor: competitorColors[idx].replace('0.7', '1'),
+        };
+      });
+      
+
+    // Create dataset for your own domain
     const ownDataPoint = {
       x: overviewData.overview.organic.keywords_count || 0, // Number of organic keywords
       y: Number(((ownOrganicTrafficSum / totalOrganicTraffic) * 100).toFixed(2)) || 0, // Organic traffic share as percentage
-      r: 15, // Larger radius for emphasis
-      label: overviewData.overview.organic.base_domain || 'Your Domain',
-      isOwnDomain: true,
+      r: maxCompetition > 0
+        ? (overviewData.overview.organic.keywords_count / maxCompetition) * fixedMaxRadius
+        : fixedMaxRadius,
     };
-    console.log('Competitor Data:', competitorData);
-console.log('Own Data Point:', ownDataPoint);
 
-  
-    // Combine competitor data and your domain data
-    const data = [...competitorData, ownDataPoint];
-  
+    const ownDataset = {
+      label: overviewData.overview.organic.base_domain || 'Your Domain',
+      data: [ownDataPoint],
+      backgroundColor: 'rgba(255, 99, 132, 0.9)', // Distinct color for your domain
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1,
+      hoverBackgroundColor: 'rgba(255, 99, 132, 1)',
+      hoverBorderColor: 'rgba(255, 99, 132, 1)',
+    };
+    //console.log("OwnDataSet:", ownDataset);
+
+    // Combine all datasets
+    const allDatasets = [...competitorDatasets, ownDataset];
+    console.log("allDatasets:", allDatasets);
+
+
     chartInstances.current['competitivePositioningChart'] = new Chart(ctx, {
       type: 'bubble',
       data: {
-        datasets: [
-          {
-            label: 'Competitors',
-            data: competitorData,
-            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1,
-            hoverBackgroundColor: 'rgba(54, 162, 235, 0.7)',
-            hoverBorderColor: 'rgba(54, 162, 235, 1)',
-          },
-          {
-            label: 'Your Domain',
-            data: [ownDataPoint],
-            backgroundColor: 'rgba(255, 99, 132, 0.7)', // Distinct color for your domain
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1,
-            hoverBackgroundColor: 'rgba(255, 99, 132, 0.9)',
-            hoverBorderColor: 'rgba(255, 99, 132, 1)',
-          },
-        ],
+        datasets: allDatasets,
       },
       options: {
         responsive: true,
         plugins: {
           tooltip: {
             callbacks: {
-              label: function(context) {
-                const label = context.raw.label || '';
+              label: function (context) {
+                const label = context.dataset.label || '';
                 const x = context.raw.x;
                 const y = context.raw.y;
                 return `${label}: (${x} Common Keywords, ${y}%)`;
-              }
-            }
+              },
+            },
           },
-          legend: { 
+          legend: {
             display: true,
             position: 'right', // Position legend on the right
             labels: {
               boxWidth: 20,
               padding: 15,
+              generateLabels: function (chart) {
+                const datasets = chart.data.datasets;
+                return datasets.map((dataset) => ({
+                  text: dataset.label,
+                  fillStyle: dataset.backgroundColor,
+                  strokeStyle: dataset.borderColor,
+                  lineWidth: dataset.borderWidth,
+                  hidden: false,
+                  index: dataset.label, // Use label as index
+                }));
+              },
             },
           },
         },
@@ -466,10 +500,6 @@ console.log('Own Data Point:', ownDataPoint);
       },
     });
   };
-  
-  
-  
-  
 
   const renderHealthScoreChart = () => {
     if (healthScoreRef.current && auditResults) {
@@ -565,14 +595,14 @@ console.log('Own Data Point:', ownDataPoint);
 
   const renderChromeUXCharts = () => {
     // Render ChromeUX Mobile
-    if (chromeUXMobileRef.current && auditResults.chromeux.mobile) {
+    if (chromeUXMobileRef.current && auditResults.chromeux?.mobile) {
       const ctx = chromeUXMobileRef.current.getContext('2d');
       const mobileData = auditResults.chromeux.mobile;
       renderChromeUXChart(ctx, mobileData, 'ChromeUX Mobile');
     }
 
     // Render ChromeUX Desktop
-    if (chromeUXDesktopRef.current && auditResults.chromeux.desktop) {
+    if (chromeUXDesktopRef.current && auditResults.chromeux?.desktop) {
       const ctx = chromeUXDesktopRef.current.getContext('2d');
       const desktopData = auditResults.chromeux.desktop;
       renderChromeUXChart(ctx, desktopData, 'ChromeUX Desktop');
@@ -639,7 +669,7 @@ console.log('Own Data Point:', ownDataPoint);
       },
       useSortBy
     );
-  
+
     return (
       <table {...getTableProps()} className={styles.sortableTable}>
         <thead>
@@ -686,8 +716,9 @@ console.log('Own Data Point:', ownDataPoint);
       </table>
     );
   };
-// Define columns for Organic Keywords
-const organicColumns = useMemo(
+
+  // Define columns for Organic Keywords
+  const organicColumns = useMemo(
     () => [
       {
         Header: 'Keyword',
@@ -737,7 +768,7 @@ const organicColumns = useMemo(
     ],
     []
   );
-  
+
   const organicData = useMemo(() => {
     if (!overviewData?.organicKeywords) return [];
     return overviewData.organicKeywords.map((keyword) => ({
@@ -751,8 +782,9 @@ const organicColumns = useMemo(
       competition: keyword.competition,
     }));
   }, [overviewData]);
-  // Define columns for Paid Keywords (if applicable)
-const paidColumns = useMemo(
+
+  // Define columns for Paid Keywords
+  const paidColumns = useMemo(
     () => [
       {
         Header: 'Keyword',
@@ -802,7 +834,7 @@ const paidColumns = useMemo(
     ],
     []
   );
-  
+
   // Prepare data for Paid Keywords
   const paidData = useMemo(() => {
     if (!overviewData?.paidKeywords) return [];
@@ -820,25 +852,23 @@ const paidColumns = useMemo(
       snippet_title: keyword.snippet_title,
       block: keyword.block,
       cpc: keyword.cpc,
-
     }));
   }, [overviewData]);
-  
 
   // Function to render overview charts
-const renderOverviewCharts = () => {
+  const renderOverviewCharts = () => {
     // Traffic Trend Chart
     if (trafficTrendChartRef.current && overviewData.history && overviewData.history.length > 0) {
       const ctx = trafficTrendChartRef.current.getContext('2d');
       if (chartInstances.current['trafficTrendChart']) {
         chartInstances.current['trafficTrendChart'].destroy();
       }
-  
+
       const labels = overviewData.history.map(
         (item) => `${item.month}/${item.year}`
       );
       const data = overviewData.history.map((item) => item.traffic_sum || 0);
-  
+
       chartInstances.current['trafficTrendChart'] = new Chart(ctx, {
         type: 'line',
         data: {
@@ -854,25 +884,25 @@ const renderOverviewCharts = () => {
           ],
         },
         options: {
-          responsive: true,
-          plugins: {
-            legend: { display: true },
+            responsive: true,
+            maintainAspectRatio: false, // Allows the chart to resize
+            plugins: { /* existing plugins */ },
+            scales: { /* existing scales */ },
           },
-        },
       });
     }
-  
+
     // Organic vs Paid Keywords Chart
     if (organicVsPaidChartRef.current && overviewData.overview) {
       const ctx = organicVsPaidChartRef.current.getContext('2d');
       if (chartInstances.current['organicVsPaidChart']) {
         chartInstances.current['organicVsPaidChart'].destroy();
       }
-  
+
       // Handle 'adv' as an array
       const organicKeywords = overviewData.overview.organic?.keywords_count || 0;
       const paidKeywords = Array.isArray(overviewData.overview.adv) ? overviewData.overview.adv.length : (overviewData.overview.adv?.keywords_count || 0);
-  
+
       if (organicKeywords + paidKeywords > 0) {
         chartInstances.current['organicVsPaidChart'] = new Chart(ctx, {
           type: 'pie',
@@ -894,18 +924,18 @@ const renderOverviewCharts = () => {
         });
       }
     }
-  
+
     // Top Keywords Chart
     if (topKeywordsChartRef.current && overviewData.organicKeywords && overviewData.organicKeywords.length > 0) {
       const ctx = topKeywordsChartRef.current.getContext('2d');
       if (chartInstances.current['topKeywordsChart']) {
         chartInstances.current['topKeywordsChart'].destroy();
       }
-  
+
       const topKeywords = overviewData.organicKeywords.slice(0, 10);
       const labels = topKeywords.map((item) => item.keyword || 'N/A');
       const data = topKeywords.map((item) => item.position || 0);
-  
+
       chartInstances.current['topKeywordsChart'] = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -931,8 +961,6 @@ const renderOverviewCharts = () => {
       });
     }
   };
-  
-  
 
   const generateColors = (num) => {
     const colors = [
@@ -1019,212 +1047,202 @@ const renderOverviewCharts = () => {
 
         {/* Domain Overview Tab */}
         {currentTab === 'Domain Overview' && overviewData && (
-            <div className={styles.overview}>
-                <h2>
-                Domain Overview for {overviewData.overview?.organic?.base_domain || 'N/A'}
-                </h2>
-                
-                {/* Unified Grid Container */}
-                <div className={styles.domainOverviewGrid}>
-                
-                {/* Row 1: Overview Metrics */}
-                <div className={styles.metricItem}>
-                    <h3>Keywords Count</h3>
-                    <p>Organic: {overviewData.overview?.organic?.keywords_count || 'N/A'}</p>
-                    <p>Paid: {overviewData.overview?.adv?.keywords_count || 'N/A'}</p>
+          <div className={styles.overview}>
+            <h2>
+              Domain Overview for {overviewData.overview?.organic?.base_domain || 'N/A'}
+            </h2>
 
-                </div>
-                <div className={styles.metricItem}>
-                    <h3>Organic Traffic</h3>
-                    <p>{overviewData.overview?.organic?.traffic_sum ?? 'N/A'}</p>
-                    <small>Organic Traffic Value:${overviewData.overview?.organic?.price_sum?.toFixed(2) || 'N/A'}</small>
+            {/* Unified Grid Container */}
+            <div className={styles.domainOverviewGrid}>
 
+              {/* Row 1: Overview Metrics */}
+              <div className={styles.metricItem}>
+                <h3>Keywords Count</h3>
+                <p>Organic: {overviewData.overview?.organic?.keywords_count || 'N/A'}</p>
+                <p>Paid: {overviewData.overview?.adv?.keywords_count || 'N/A'}</p>
+              </div>
+              <div className={styles.metricItem}>
+                <h3>Organic Traffic</h3>
+                <p>{overviewData.overview?.organic?.traffic_sum ?? 'N/A'}</p>
+                <small>Organic Traffic Value: ${overviewData.overview?.organic?.price_sum?.toFixed(2) || 'N/A'}</small>
+              </div>
+              <div className={styles.metricItem}>
+                <h3>Adv Traffic Sum</h3>
+                <p>
+                  {Array.isArray(overviewData.overview?.adv)
+                    ? overviewData.overview.adv.reduce((acc, curr) => acc + (curr.traffic_sum || 0), 0)
+                    : overviewData.overview?.adv?.traffic_sum ?? 'N/A'}
+                </p>
+              </div>
+              <div className={styles.metricItem}>
+                <h3>Organic Keywords Total</h3>
+                <p>{overviewData.organicKeywords?.length || 0}</p>
+                <h5>Paid Keywords Total</h5>
+                <p>{overviewData.paidKeywords?.length || 0}</p>
+              </div>
+
+              {/* Row 2: Charts */}
+              <div className={styles.chartItem} style={{ gridColumn: 'span 2' }}>
+                {loadingOverview ? (
+                  <p>Loading...</p>
+                ) : overviewData.history && overviewData.history.length > 0 ? (
+                  <canvas ref={trafficTrendChartRef}></canvas>
+                ) : (
+                  <p>No traffic trend data available.</p>
+                )}
+              </div>
+              <div className={styles.chartItem}>
+                <h3>Organic vs Paid Keywords</h3>
+                {(overviewData.overview?.organic?.keywords_count > 0 ||
+                  (Array.isArray(overviewData.overview?.adv) && overviewData.overview.adv.length > 0)) ? (
+                  <canvas ref={organicVsPaidChartRef}></canvas>
+                ) : (
+                  <p>No data available for Organic vs Paid Keywords.</p>
+                )}
+              </div>
+              <div className={styles.chartItem}>
+                <h3>Top Organic Keywords</h3>
+                {overviewData.organicKeywords && overviewData.organicKeywords.length > 0 ? (
+                  <canvas ref={topKeywordsChartRef}></canvas>
+                ) : (
+                  <p>No organic keywords data available.</p>
+                )}
+              </div>
+
+              {/* Row 3: Tables */}
+              <div className={styles.tableContainer}>
+                <h3>Organic Keywords</h3>
+                <div className={styles.tableWrapper}>
+                  <SortableTable columns={organicColumns} data={sortedOrganicKeywords} />
                 </div>
-                <div className={styles.metricItem}>
-                    <h3>Adv Traffic Sum</h3>
-                    <p>
-                    {Array.isArray(overviewData.overview?.adv)
-                        ? overviewData.overview.adv.reduce((acc, curr) => acc + (curr.traffic_sum || 0), 0)
-                        : overviewData.overview?.adv?.traffic_sum ?? 'N/A'}
-                    </p>
+              </div>
+              <div className={styles.tableContainer}>
+                <h3>Paid Keywords</h3>
+                <div className={styles.tableWrapper}>
+                  <SortableTable columns={paidColumns} data={sortedPaidKeywords} />
                 </div>
-                <div className={styles.metricItem}>
-                    <h3>Organic Keywords Total</h3>
-                    <p>{overviewData.organicKeywords?.length || 0}</p>
-                    <h5>Paid Keywords Total</h5>
-                    <p>{overviewData.paidKeywords?.length || 0}</p>
-                </div>
-               
-                
-                {/* Row 2: Charts */}
-                <div className={styles.chartItem} style={{gridColumn: 'span 2'}}>
-                    <h3>Traffic Trend (Organic)</h3>
-                    {loadingOverview ? (
-                        <p>Loading...</p>
-                    ) : overviewData.history && overviewData.history.length > 0 ? (
-                        <canvas ref={trafficTrendChartRef}></canvas>
-                    ) : (
-                        <p>No traffic trend data available.</p>
-                    )}
-                    </div>
-                <div className={styles.chartItem}>
-                    <h3>Organic vs Paid Keywords</h3>
-                    {(overviewData.overview?.organic?.keywords_count > 0 ||
-                    (Array.isArray(overviewData.overview?.adv) && overviewData.overview.adv.length > 0)) ? (
-                    <canvas ref={organicVsPaidChartRef}></canvas>
-                    ) : (
-                    <p>No data available for Organic vs Paid Keywords.</p>
-                    )}
-                </div>
-                <div className={styles.chartItem}>
-                    <h3>Top Organic Keywords</h3>
-                    {overviewData.organicKeywords && overviewData.organicKeywords.length > 0 ? (
-                    <canvas ref={topKeywordsChartRef}></canvas>
-                    ) : (
-                    <p>No organic keywords data available.</p>
-                    )}
-                </div>
-               
-                
-                {/* Row 3: Tables */}
-                <div className={styles.tableContainer}>
-                    <h3>Organic Keywords</h3>
-                    <div className={styles.tableWrapper}>
-                    <SortableTable columns={organicColumns} data={sortedOrganicKeywords} />
-                    </div>
-                </div>
-                <div className={styles.tableContainer}>
-                    <h3>Paid Keywords</h3>
-                    <div className={styles.tableWrapper}>
-                    <SortableTable columns={paidColumns} data={sortedPaidKeywords} />
-                    </div>
-                </div>
-                
-                {/* Row 4: Competitors */}
-                {/* Row 4: Competitors */}
-                <div className={styles.competitorsSection}>
+              </div>
+
+              {/* Row 4: Competitors */}
+              <div className={styles.competitorsSection}>
                 <h3>Competitors</h3>
-                
+
                 {/* Competitors Selection */}
                 <div className={styles.competitorsSelect}>
-                    <label htmlFor="competitors">Select Competitors:</label>
-                    <select
+                  <label htmlFor="competitors">Select Competitors:</label>
+                  <select
                     id="competitors"
                     multiple
-                    value={selectedCompetitors.map(c => c.domain)}
+                    value={selectedCompetitors.map((c) => c.domain)}
                     onChange={(e) => {
-                        const selected = Array.from(e.target.selectedOptions).map(option => 
-                        overviewData.competitors.find(c => c.domain === option.value)
-                        ).filter(Boolean);
-                        setSelectedCompetitors(selected);
+                      const selected = Array.from(e.target.selectedOptions).map((option) =>
+                        overviewData.competitors.find((c) => c.domain === option.value)
+                      ).filter(Boolean);
+                      setSelectedCompetitors(selected);
                     }}
-                    >
+                  >
                     {overviewData.competitors.map((competitor, idx) => (
-                        <option key={idx} value={competitor.domain}>
+                      <option key={idx} value={competitor.domain}>
                         {competitor.domain}
-                        </option>
+                      </option>
                     ))}
-                    </select>
+                  </select>
                 </div>
-                
+
                 {/* Competitor Charts */}
                 <div className={styles.competitorCharts}>
-                    <div className={styles.chartItem}>
+                  <div className={styles.chartItem}>
                     <h4>Keyword Share Among Competitors</h4>
                     <canvas id="keywordShareChart"></canvas>
-                    </div>
-                    
-                    <div className={styles.chartItem}>
+                  </div>
+
+                  <div className={styles.chartItem}>
                     <h4>Competitive Positioning</h4>
                     <canvas id="competitivePositioningChart"></canvas>
-                    </div>
+                  </div>
                 </div>
-                </div>
+              </div>
 
-                
-                {/* Row 5: Paid Keywords Carousel */}
-                <div className={styles.paidKeywordsCarousel}>
-                    {sortedPaidKeywords && sortedPaidKeywords.length > 0 && (
-                    <>
-                        <h3>Paid Keywords</h3>
+              {/* Row 5: Paid Keywords Carousel */}
+              <div className={styles.paidKeywordsCarousel}>
+                {sortedPaidKeywords && sortedPaidKeywords.length > 0 && (
+                  <>
+                    <h3>Paid Keywords</h3>
 
-                        <Slider {...carouselSettings}>
-                        {sortedPaidKeywords.map((keyword, index) => (
-                            <div key={index} className={styles.carouselItem}>
-                            <div className={styles.carouselPosition}>
-                                <p>Keyword: {keyword.keyword}</p>
+                    <Slider {...carouselSettings}>
+                      {sortedPaidKeywords.map((keyword, index) => (
+                        <div key={index} className={styles.carouselItem}>
+                          <div className={styles.carouselPosition}>
+                            <p>Keyword: {keyword.keyword}</p>
+                          </div>
+                          <div className={styles.carouselContent}>
+                            <p>#{keyword.position}</p>
+
+                            <a href={keyword.url} target="_blank" rel="noopener noreferrer" className={styles.carouselUrl}>
+                              {keyword.snippet_title}
+                            </a>
+                            <p className={styles.carouselDescription}>{keyword.snippet_description}</p>
+                            <a href={keyword.snippet_display_url} target="_blank" rel="noopener noreferrer" className={styles.carouselDisplayUrl}>
+                              {keyword.snippet_display_url}
+                            </a>
+                            <div className={styles.carouselMetrics}>
+                              <span>Block: {keyword.block}</span>
+                              <span>Traffic: {keyword.traffic} ({keyword.traffic_percent}%)</span>
                             </div>
-                            <div className={styles.carouselContent}>
-                            #{keyword.position} 
-
-                                <a href={keyword.url} target="_blank" rel="noopener noreferrer" className={styles.carouselUrl}>
-                                {keyword.snippet_title}
-                                </a>
-                                <p className={styles.carouselDescription}>{keyword.snippet_description}</p>
-                                <a href={keyword.snippet_display_url} target="_blank" rel="noopener noreferrer" className={styles.carouselDisplayUrl}>
-                                {keyword.snippet_display_url}
-                                </a>
-                                <div className={styles.carouselMetrics}>
-                                <span>Block: {keyword.block}</span>
-                                <span>Traffic: {keyword.traffic} ({keyword.traffic_percent}%)</span>
-                                </div>
-                            </div>
-                            </div>
-                        ))}
-                        </Slider>
-                    </>
-                    )}
-                </div>
-                
-                {/* Row 6: Advertising Snippets */}
-                {overviewData.advertising && overviewData.advertising.length > 0 && (
-                    <div className={styles.advertisingSnippets}>
-                    <h3>Advertising Snippets</h3>
-                    <div className={styles.advertisingTableWrapper}>
-                        <table className={styles.pivotTable}>
-                        <thead>
-                            <tr>
-                            <th>Keyword</th>
-                            {Object.keys(overviewData.advertising[0].snippets).map((date) => (
-                                <th key={date}>{date}</th>
-                            ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {overviewData.advertising.map((item, idx) => (
-                            <tr key={idx}>
-                                <td>{item.keyword}</td>
-                                {Object.entries(item.snippets).map(([date, snippet]) => (
-                                <td key={date}>
-                                    <strong>{snippet.position}</strong><br />
-                                    <a href={snippet.url} target="_blank" rel="noopener noreferrer" className={styles.snippetUrl}>
-                                    {snippet.snippet_title}
-                                    </a><br />
-                                    <p className={styles.snippetDescription}>{snippet.snippet_description}</p>
-                                    <a href={snippet.snippet_display_url} target="_blank" rel="noopener noreferrer" className={styles.snippetDisplayUrl}>
-                                    {snippet.snippet_display_url}
-                                    </a>
-                                </td>
-                                ))}
-                            </tr>
-                            ))}
-                        </tbody>
-                        </table>
-                        {/* Scroll Arrow */}
-                        <button className={`${styles.scrollArrow} ${styles.left}`} onClick={() => scrollAdvertisingTable('left')}>◀</button>
-                        <button className={`${styles.scrollArrow} ${styles.right}`} onClick={() => scrollAdvertisingTable('right')}>▶</button>
-
-                    </div>
-                    </div>
+                          </div>
+                        </div>
+                      ))}
+                    </Slider>
+                  </>
                 )}
-                
+              </div>
+
+              {/* Row 6: Advertising Snippets */}
+              {overviewData.advertising && overviewData.advertising.length > 0 && (
+                <div className={styles.advertisingSnippets}>
+                  <h3>Advertising Snippets</h3>
+                  <div className={styles.advertisingTableWrapper}>
+                    <table className={styles.pivotTable}>
+                      <thead>
+                        <tr>
+                          <th>Keyword</th>
+                          {Object.keys(overviewData.advertising[0].snippets).map((date) => (
+                            <th key={date}>{date}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {overviewData.advertising.map((item, idx) => (
+                          <tr key={idx}>
+                            <td>{item.keyword}</td>
+                            {Object.entries(item.snippets).map(([date, snippet]) => (
+                              <td key={date}>
+                                <strong>{snippet.position}</strong>
+                                <br />
+                                <a href={snippet.url} target="_blank" rel="noopener noreferrer" className={styles.snippetUrl}>
+                                  {snippet.snippet_title}
+                                </a>
+                                <br />
+                                <p className={styles.snippetDescription}>{snippet.snippet_description}</p>
+                                <a href={snippet.snippet_display_url} target="_blank" rel="noopener noreferrer" className={styles.snippetDisplayUrl}>
+                                  {snippet.snippet_display_url}
+                                </a>
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {/* Scroll Arrows */}
+                    <button className={`${styles.scrollArrow} ${styles.left}`} onClick={() => scrollAdvertisingTable('left')}>◀</button>
+                    <button className={`${styles.scrollArrow} ${styles.right}`} onClick={() => scrollAdvertisingTable('right')}>▶</button>
+                  </div>
                 </div>
-                
+              )}
+
             </div>
-            )}
-
-
-
+          </div>
+        )}
 
         {/* Site Audit Tab */}
         {currentTab === 'Site Audit' && auditResults && (
