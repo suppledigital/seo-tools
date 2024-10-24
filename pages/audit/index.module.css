@@ -214,3 +214,511 @@
     margin-bottom: 10px;
   }
   
+  .tabs {
+    margin-top: 20px;
+  }
+  
+  .tabs button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    background-color: #e9ecef;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .tabs button:hover {
+    background-color: #ccc;
+  }
+  
+  .activeTab {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .loading {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #007bff;
+  }
+  
+  .overview {
+    margin-top: 20px;
+  }
+  
+  .keywordResearch {
+    margin-top: 20px;
+  }
+  
+  /* Update inputGroup to align items properly */
+  .inputGroup {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .inputGroup input {
+    padding: 10px;
+    margin-right: 10px;
+    flex: 1;
+  }
+  
+  .inputGroup button {
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+  
+  .inputGroup select {
+    padding: 10px;
+    margin-left: 10px;
+  }
+  /* Overview Metrics Grid */
+.overviewMetricsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+  
+  .overviewMetricItem {
+    background-color: #fff;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+  
+  .overviewMetricItem h3 {
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+  }
+  
+  /* Overview Charts Grid */
+  .overviewChartsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .chartItem {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+  
+  .chartItem h3 {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.2rem;
+  }
+  
+  .chartItem canvas {
+    max-width: 100%;
+    height: auto;
+  }
+/* Carousel Container */
+.carouselContainer {
+    margin-top: 40px;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+  
+
+  /* Carousel Position */
+  .carouselPosition {
+    text-align: left;
+    margin-right: 20px;
+  }
+  
+  /* Carousel Content */
+  .carouselContent {
+    flex: 1;
+  }
+  
+  /* Carousel URL */
+  .carouselUrl {
+    font-size: 1.1rem;
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .carouselUrl:hover {
+    text-decoration: underline;
+  }
+  
+  /* Carousel Description */
+  .carouselDescription {
+    color: #6c757d;
+    margin: 10px 0;
+  }
+  
+  /* Carousel Display URL */
+  .carouselDisplayUrl {
+    color: #28a745;
+    text-decoration: none;
+  }
+  
+  .carouselDisplayUrl:hover {
+    text-decoration: underline;
+  }
+  
+  /* Carousel Metrics */
+  .carouselMetrics {
+    margin-top: 10px;
+    display: flex;
+    gap: 20px;
+    font-size: 0.9rem;
+    color: #343a40;
+  }
+/* Pivot Table Container */
+.pivotTableContainer {
+    margin-top: 40px;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+  
+  /* Pivot Table */
+  .pivotTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .pivotTable th,
+  .pivotTable td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    vertical-align: top;
+  }
+  
+  .pivotTable th {
+    background-color: #f8f9fa;
+    text-align: left;
+  }
+  
+  .snippetUrl {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .snippetUrl:hover {
+    text-decoration: underline;
+  }
+  
+  .snippetDescription {
+    color: #6c757d;
+    margin: 5px 0;
+  }
+  
+  .snippetDisplayUrl {
+    color: #28a745;
+    text-decoration: none;
+  }
+  
+  .snippetDisplayUrl:hover {
+    text-decoration: underline;
+  }
+  
+  
+  .snippetDescription {
+    color: #6c757d;
+    margin: 5px 0;
+  }
+  
+  .snippetDisplayUrl {
+    color: #28a745;
+    text-decoration: none;
+  }
+  
+  .snippetDisplayUrl:hover {
+    text-decoration: underline;
+  }
+/* Competitors Section */
+.competitorsSection {
+    margin-top: 40px;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+  
+  /* Competitors Selection */
+  .competitorsSelect {
+    margin-bottom: 20px;
+  }
+  
+  .competitorsSelect label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .competitorsSelect select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  
+  /* Keyword Share Chart */
+  #keywordShareChart {
+    max-width: 100%;
+    height: 300px;
+  }
+  
+  /* Competitive Positioning Chart */
+  #competitivePositioningChart {
+    max-width: 100%;
+    height: 400px;
+  }
+        /* index.module.css */
+
+ /*.domainOverviewGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    grid-template-rows: auto; 
+    gap: 20px; Space between grid items 
+  }*/
+  .domainOverviewGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 20px;
+  }
+  
+  /* Adjust based on screen size for responsiveness */
+  @media (max-width: 1200px) {
+    .domainOverviewGrid {
+      grid-template-columns: repeat(2, 1fr); /* 2 columns on smaller screens */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .domainOverviewGrid {
+      grid-template-columns: 1fr; /* Single column on mobile */
+    }
+  }
+ /* .metricItem, .chartItem {
+    background-color: #f8f9fa;  Light background 
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }*/
+  /* Row 1: Overview Metrics */
+.metricItem {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  /* Row 2: Charts */
+.chartItem {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 300px; /* Adjust as needed */
+    overflow: hidden;
+  }
+
+  .metricItem h3, .chartItem h3, .competitorsSection h3 {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+  }
+  
+  .metricItem p, .chartItem p {
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+ /* Row 3: Tables */
+.tableContainer {
+    grid-column: span 2;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    max-height: 400px; /* Adjust as needed */
+  }
+  
+  .tableWrapper {
+    max-height: 250px; /* Slightly less than container */
+    overflow-y: auto;
+  }
+  
+  /* Additional Styles */
+.sortableTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .sortableTable th, .sortableTable td {
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    text-align: left;
+  }
+  
+  
+  .sortableTable th {
+    background-color: #e9ecef;
+    cursor: pointer;
+  }
+  
+  .noData {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+  }
+  /* Row 4: Competitors */
+/* Competitors Section */
+.competitorsSection {
+    grid-column: span 4;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .competitorCharts {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+  .competitorsSelect {
+    margin-bottom: 20px;
+  }
+  .competitorsSelect label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  
+  
+  .competitorCharts .chartItem {
+    flex: 1;
+  }
+  
+/* Row 5: Paid Keywords Carousel */
+.paidKeywordsCarousel {
+    grid-column: span 4;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+  }
+  
+  .paidKeywordsCarousel h3 {
+    margin-bottom: 15px;
+    font-size: 1.2em;
+  }
+  
+  .carouselItem {
+    display: flex;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #f1f3f5;
+    height: 150px; /* Adjust height as needed */
+    overflow: hidden;
+  }
+  
+
+  .carouselContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .carouselUrl {
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+    margin-bottom: 5px;
+  }
+  
+  .carouselUrl:hover {
+    text-decoration: underline;
+  }
+  
+  .carouselDescription {
+    flex-grow: 1;
+    margin-bottom: 5px;
+    color: #6c757d;
+  }
+  
+  .carouselDisplayUrl {
+    color: #17a2b8;
+    text-decoration: none;
+    margin-bottom: 5px;
+  }
+  
+  .carouselDisplayUrl:hover {
+    text-decoration: underline;
+  }
+  
+  .carouselMetrics span {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 0.9em;
+    color: #495057;
+  }
+  
+  /* Row 6: Advertising Snippets */
+.advertisingSnippets {
+    grid-column: span 4;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+  }
+  
+  .advertisingTableWrapper {
+    position: relative;
+    overflow-x: auto;
+  }
+  
+  .scrollArrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+  
+  .scrollArrow.left {
+    left: 0;
+  }
+  
+  .scrollArrow.right {
+    right: 0;
+  }
+  
+  .pivotTable {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px; /* Ensure table is wide enough for horizontal scroll */
+  }
+  
+  .pivotTable th, .pivotTable td {
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    text-align: left;
+  }
+  
+  .pivotTable th {
+    background-color: #e9ecef;
+  }
+  
+ 
