@@ -1,4 +1,4 @@
-.chatInput {
+.chatInputContainer {
     display: flex;
     padding: 10px;
     background-color: #fff;
@@ -7,9 +7,11 @@
     max-width: 800px;
     margin: 0 auto;
     width: 800px;
+    box-sizing: border-box; /* Ensures consistent padding behavior */
+
   }
   
-  .input {
+  .chatInput {
     flex-grow: 1;
     padding: 12px;
     border: 1px solid #ddd;

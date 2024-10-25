@@ -56,11 +56,19 @@ export default function ChatHome() {
   }, [currentChatId]);
 
   const handleSendMessage = async (message) => {
+    // Create a new chat window if none exists
+    if (!currentChatId) {
+      const newChatId = `chat_${Date.now()}`;
+      setChatWindows((prevWindows) => [newChatId, ...prevWindows]); // Add new chat to the top
+      setCurrentChatId(newChatId);
+      localStorage.setItem(`chat_${newChatId}`, JSON.stringify({ messages: [] }));
+    }
+  
     const newMessage = { role: "user", content: message };
     const updatedMessages = [...messages, newMessage];
     setMessages(updatedMessages);
     setIsLoading(true);
-
+  
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
@@ -68,35 +76,32 @@ export default function ChatHome() {
       },
       body: JSON.stringify({ messages: updatedMessages, model: selectedModel }), // Send selected model to API
     });
-
+  
     const { sessionId } = await response.json();
     const eventSource = new EventSource(`/api/chat/stream?sessionId=${sessionId}&model=${selectedModel}`);
-
+  
     let assistantMessageContent = "";
-    let model ="";
-
+    let model = selectedModel; // Capture model at message time
+  
     eventSource.onmessage = function (event) {
       if (event.data === "[DONE]") {
         eventSource.close();
         setMessages((prevMessages) => [
           ...prevMessages.slice(0, -1),
-          { role: "assistant", content: assistantMessageContent, model: selectedModel },
+          { role: "assistant", content: assistantMessageContent, model },
         ]);
         saveChatToLocalStorage(currentChatId, [
           ...updatedMessages,
-          { role: "assistant", content: assistantMessageContent, model: selectedModel },
+          { role: "assistant", content: assistantMessageContent, model },
         ]);
-        console.log(assistantMessageContent);
-        console.log(model);
-
         setIsLoading(false);
         return;
       }
-
+  
       const { content } = JSON.parse(event.data);
       if (content) {
         assistantMessageContent += content;
-
+  
         setMessages((prevMessages) => {
           const newMessages = [...prevMessages];
           if (newMessages[newMessages.length - 1]?.role === "assistant") {
@@ -108,13 +113,13 @@ export default function ChatHome() {
         });
       }
     };
-
+  
     eventSource.onerror = function () {
       eventSource.close();
       setIsLoading(false);
     };
   };
-
+  
 
 
   // Function to delete a chat window

@@ -21,10 +21,11 @@ export default function ChatHistory({ history, setHistory, deleteChat, setCurren
 
   const handleCreateNewChat = () => {
     const newChatId = `chat_${Date.now()}`;
-    setHistory((prevHistory) => [...prevHistory, newChatId]);
+    setHistory((prevHistory) => [newChatId, ...prevHistory]); // Add new chat at top
     setCurrentChatId(newChatId);
     localStorage.setItem(`chat_${newChatId}`, JSON.stringify({ messages: [] }));
   };
+  
 
   return (
     <div className={styles.chatHistory}>
