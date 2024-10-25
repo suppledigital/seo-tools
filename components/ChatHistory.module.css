@@ -1,0 +1,123 @@
+.chatHistory {
+    width: 250px;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    position: relative; /* Ensure the chat history container is the positioning reference */
+  }
+  
+  .chatItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    position: relative; /* Ensure the delete icon is positioned relative to the chat item */
+  }
+  
+  .chatButton {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    text-align: left;
+    width: 80%;
+  }
+  
+  .deleteIcon {
+    cursor: pointer;
+    color: #ff4c4c;
+    margin-left: 10px;
+    padding: 10px;
+    position: relative; /* Make the delete icon the positioning context for the popup */
+  }
+  
+  .confirmPopup {
+    position: absolute; /* Position the popup relative to the delete icon */
+    top: -50px; /* Move the popup above the delete icon */
+    right: 0; /* Align it to the right of the delete icon */
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    color: black;
+    font-size: 0.8rem;
+    z-index: 9999; /* Ensure the popup is above everything else */
+  }
+  
+  .confirmButton, .cancelButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: blue;
+    margin: 2px;
+  }
+  
+  .confirmButton:hover, .cancelButton:hover {
+    text-decoration: underline;
+  }
+  
+  .newChatButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #008cba;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .newChatButton:hover {
+    background-color: #007bb5;
+  }
+  
+  /* Sidebar for switching between chat windows */
+  .sidebar {
+    width: 250px;
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid #444;
+  }
+  
+  .chatHistory h3 {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #ddd;
+  }
+  
+  .chatHistory ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+  
+  .chatHistory ul li {
+    margin-bottom: 15px;
+  }
+  
+  .chatHistory ul li button {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 10px;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .chatHistory ul li button:hover {
+    background-color: #555;
+  }
+  

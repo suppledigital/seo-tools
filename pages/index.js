@@ -39,6 +39,9 @@ export default function Home() {
         <li className={styles.listItem}>
           <Link href="/keywords" className={styles.link}>Keywords Tool</Link>
         </li>
+        <li className={styles.listItem}>
+          <Link href="/chat" className={styles.link}>Chat</Link>
+        </li>
       </ul>
     </div>
   );

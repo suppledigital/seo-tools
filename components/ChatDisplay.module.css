@@ -1,0 +1,128 @@
+
+  
+  /* Ensure chat messages always stick to the bottom */
+  .chatDisplay::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .chatDisplay::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+  }
+  
+  .chatDisplay::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+  }
+  
+  
+  
+  .jsonMessage {
+    font-family: monospace;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  
+  .codeMessage {
+    font-family: monospace;
+    background-color: #000;
+    color: #00ff00;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+.chatDisplay {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    overflow-y: auto;
+    max-height: 500px; /* Adjust as needed */
+    max-width: 800px;
+    margin:0px auto;
+  }
+  
+  .userMessage {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    align-self: flex-end;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+  
+  .assistantMessage {
+    background-color: #eaeaea;
+    color: black;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    align-self: flex-start;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+  
+  /* Inline code styling */
+  .inlineCode {
+    background-color: #f1f1f1;
+    padding: 3px 5px;
+    border-radius: 3px;
+    font-family: monospace;
+  }
+  
+  /* Code block styling */
+  .codeBlock {
+    background-color: #2d2d2d;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    position: relative;
+  }
+  
+  .codeBlock pre {
+    margin: 0;
+  }
+  
+  .copyButton {
+    background-color: transparent;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .copyButton:hover {
+    text-decoration: underline;
+  }
+  
+  /* Blockquote styling */
+  .blockquote {
+    border-left: 5px solid #ccc;
+    padding-left: 10px;
+    margin: 10px 0;
+    color: #555;
+    font-style: italic;
+  }
+  
+  /* Image styling */
+  .image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin: 10px 0;
+  }
+  /* Model info styling */
+.modelInfo {
+    font-size: 0.8rem;
+    color: gray;
+    margin-top: 5px;
+    text-align: right;
+  }

@@ -1,0 +1,92 @@
+/* Layout for the entire chat container */
+.chatContainer {
+  display: flex;
+  height: 100vh; /* Full screen height */
+  background-color: #f9f9f9;
+}
+
+/* Main Chat Window */
+.mainChat {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header styling */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  width: auto;
+}
+
+.header h2 {
+  font-size: 1.4rem;
+}
+
+.modelDropdown, .userDropdown {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modelDropdown {
+  margin-right: auto;
+}
+
+.userIcon {
+  cursor: pointer;
+  position: relative;
+}
+
+.dropdownMenu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  z-index: 10;
+  border-radius: 5px;
+  min-width: 150px;
+}
+
+.dropdownMenu.show {
+  display: block;
+}
+
+.dropdownMenu button {
+  background: none;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdownMenu button:hover {
+  background-color: #f0f0f0;
+}
+
+.signOutButton {
+  background-color: #ff4c4c;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.signOutButton:hover {
+  background-color: #ff3333;
+}
