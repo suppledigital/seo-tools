@@ -144,6 +144,9 @@ export default function ChatHome() {
       </div>
     );
   }
+  const userImage = session?.user?.image || 'default-image-url'; // Fallback in case image is unavailable
+  console.log(userImage);
+
 
   return (
     <div className={styles.chatContainer}>
@@ -172,7 +175,7 @@ export default function ChatHome() {
         </div>
 
         {/* Pass the model as a prop to ChatDisplay */}
-        <ChatDisplay messages={messages} model={selectedModel} />
+        <ChatDisplay messages={messages} model={selectedModel} userImage={userImage} />
         <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
       </div>
     </div>

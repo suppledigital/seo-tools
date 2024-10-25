@@ -20,6 +20,8 @@
     margin-right: 10px;
     outline: none;
     max-height: 150px;
+    min-height: 20px;
+
     overflow-y: auto; /* Enable scrolling when input reaches max height */
   }
   
