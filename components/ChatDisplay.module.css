@@ -51,6 +51,14 @@
     align-self: flex-end;
     max-width: 80%;
     word-wrap: break-word;
+    display:flex;
+    align-items: flex-start;
+  }
+  .userMessage img{
+    width:25px;
+    border-radius:100px;
+    display:inline-block;
+    padding-right:5px;
   }
   
   .assistantMessage {

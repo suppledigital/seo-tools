@@ -167,8 +167,9 @@ export default function ChatHome() {
           </select>
 
           <div className={styles.userIcon} onClick={() => setShowUserMenu(!showUserMenu)}>
-            👤 {session?.user?.email}
+            <img src={userImage} alt="User" className={styles.userIconImg} /> {/* User image */} 
             <div className={`${styles.dropdownMenu} ${showUserMenu ? styles.show : ''}`}>
+              <span className={styles.userName}>{session?.user?.email}</span>
               <button onClick={() => signOut()}>Sign Out</button>
             </div>
           </div>

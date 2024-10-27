@@ -47,7 +47,22 @@
   cursor: pointer;
   position: relative;
 }
-
+.userIconImg{
+  width:30px;
+  border-radius:100px;
+}
+.userName{
+  font-weight:700;
+  background: none;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    display:block;
+        align-items: flex-start;
+  
+}
 .dropdownMenu {
   display: none;
   position: absolute;
