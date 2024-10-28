@@ -1,136 +1,144 @@
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import ChatDisplay from "../../components/ChatDisplay";
 import ChatInput from "../../components/ChatInput";
 import ChatHistory from "../../components/ChatHistory";
 import styles from './chat.module.css';
 
-// Helper function to save chat data to localStorage
-const saveChatToLocalStorage = (chatId, messages) => {
-  const chatData = { messages, lastUpdated: new Date().getTime() };
+// Save chat data to localStorage
+const saveChatToLocalStorage = (chatId, sessionId, messages) => {
+  const chatData = { sessionId, messages, lastUpdated: new Date().getTime() };
   localStorage.setItem(`chat_${chatId}`, JSON.stringify(chatData));
 };
 
-// Helper function to retrieve chat data from localStorage
+// Retrieve chat data from localStorage
 const getChatFromLocalStorage = (chatId) => {
   const chatData = JSON.parse(localStorage.getItem(`chat_${chatId}`));
   if (chatData) {
-    const { messages, lastUpdated } = chatData;
+    const { sessionId, messages, lastUpdated } = chatData;
     const now = new Date().getTime();
     const daysElapsed = (now - lastUpdated) / (1000 * 60 * 60 * 24);
     if (daysElapsed <= 100) {
-      return messages;
+      return { sessionId, messages };
     }
-    localStorage.removeItem(`chat_${chatId}`); // Remove if older than 100 days
+    localStorage.removeItem(`chat_${chatId}`);
   }
-  return [];
+  return { sessionId: null, messages: [] };
 };
 
 export default function ChatHome() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [messages, setMessages] = useState([]);
   const [chatWindows, setChatWindows] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('gpt-4o'); // Default to GPT
+  const [selectedModel, setSelectedModel] = useState('gpt-4o');
+  const [socket, setSocket] = useState(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
-   // Dropdown toggling logic
-   const [showUserMenu, setShowUserMenu] = useState(false);
-   const [showModelMenu, setShowModelMenu] = useState(false);
-
-
-  // Load all saved chat windows from localStorage
   useEffect(() => {
     const savedWindows = Object.keys(localStorage)
       .filter(key => key.startsWith('chat_'))
       .map(key => key.replace('chat_', ''));
     setChatWindows(savedWindows);
+
+    const chatIdFromUrl = router.query.chatId;
+    if (chatIdFromUrl && savedWindows.includes(chatIdFromUrl)) {
+      setCurrentChatId(chatIdFromUrl);
+    }
   }, []);
 
-  // Load chat history when switching chat windows
   useEffect(() => {
     if (currentChatId) {
-      const chatHistory = getChatFromLocalStorage(currentChatId);
+      const { sessionId: savedSessionId, messages: chatHistory } = getChatFromLocalStorage(currentChatId);
       setMessages(chatHistory);
+      setSessionId(savedSessionId || Date.now()); // Set a sessionId if it doesn't exist
+
+      // Update URL with current chat ID
+      router.push(`/chat?chatId=${currentChatId}`, undefined, { shallow: true });
     }
   }, [currentChatId]);
 
-  const handleSendMessage = async (message) => {
-    // Create a new chat window if none exists
+  useEffect(() => {
+ //  const ws = new WebSocket('ws://localhost:8080');
+    
+ const wsUrl = process.env.NEXT_PUBLIC_NODE_ENV === 'production'
+ ? process.env.NEXT_PUBLIC_WS_URL
+ : 'ws://localhost:8080';
+
+console.log('WebSocket URL:', wsUrl);
+const ws = new WebSocket(wsUrl);
+
+ws.onopen = () => {
+  setSocket(ws);
+};
+
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.message === "[DONE]") {
+        setIsLoading(false);
+        return;
+      }
+      if (data.content) {
+        setMessages((prevMessages) => {
+          const newMessages = [...prevMessages];
+          if (newMessages[newMessages.length - 1]?.role === "assistant") {
+            newMessages[newMessages.length - 1].content += data.content;
+          } else {
+            newMessages.push({ role: "assistant", content: data.content, model: data.model });
+          }
+          saveChatToLocalStorage(currentChatId, sessionId, newMessages);
+          return newMessages;
+        });
+      }
+    };
+
+    ws.onclose = () => {
+      setSocket(null);
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, [currentChatId]);
+
+  const handleSendMessage = (message) => {
     if (!currentChatId) {
       const newChatId = `chat_${Date.now()}`;
-      setChatWindows((prevWindows) => [newChatId, ...prevWindows]); // Add new chat to the top
+      const newSessionId = Date.now();
+      setChatWindows((prevWindows) => [newChatId, ...prevWindows]);
       setCurrentChatId(newChatId);
-      localStorage.setItem(`chat_${newChatId}`, JSON.stringify({ messages: [] }));
+      setSessionId(newSessionId);
+      localStorage.setItem(`chat_${newChatId}`, JSON.stringify({ sessionId: newSessionId, messages: [] }));
     }
   
     const newMessage = { role: "user", content: message };
     const updatedMessages = [...messages, newMessage];
     setMessages(updatedMessages);
     setIsLoading(true);
+    saveChatToLocalStorage(currentChatId, sessionId, updatedMessages);
   
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ messages: updatedMessages, model: selectedModel }), // Send selected model to API
-    });
-  
-    const { sessionId } = await response.json();
-    const eventSource = new EventSource(`/api/chat/stream?sessionId=${sessionId}&model=${selectedModel}`);
-  
-    let assistantMessageContent = "";
-    let model = selectedModel; // Capture model at message time
-  
-    eventSource.onmessage = function (event) {
-      if (event.data === "[DONE]") {
-        eventSource.close();
-        setMessages((prevMessages) => [
-          ...prevMessages.slice(0, -1),
-          { role: "assistant", content: assistantMessageContent, model },
-        ]);
-        saveChatToLocalStorage(currentChatId, [
-          ...updatedMessages,
-          { role: "assistant", content: assistantMessageContent, model },
-        ]);
-        setIsLoading(false);
-        return;
-      }
-  
-      const { content } = JSON.parse(event.data);
-      if (content) {
-        assistantMessageContent += content;
-  
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages];
-          if (newMessages[newMessages.length - 1]?.role === "assistant") {
-            newMessages[newMessages.length - 1].content = assistantMessageContent;
-          } else {
-            newMessages.push({ role: "assistant", content: assistantMessageContent });
-          }
-          return newMessages;
-        });
-      }
-    };
-  
-    eventSource.onerror = function () {
-      eventSource.close();
-      setIsLoading(false);
-    };
+    // Check if sessionId is set before sending
+    if (sessionId && socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ message, model: selectedModel, chatHistory: updatedMessages, sessionId }));
+      console.log("Sent message with sessionId:", sessionId); // Debugging log
+    } else {
+      console.error("WebSocket is not connected or sessionId is missing");
+    }
   };
   
-
-
-  // Function to delete a chat window
   const deleteChat = (chatId) => {
     localStorage.removeItem(`chat_${chatId}`);
     setChatWindows((prevWindows) => prevWindows.filter((id) => id !== chatId));
 
-    // Clear the current chat if the deleted one was active
     if (currentChatId === chatId) {
       setCurrentChatId(null);
       setMessages([]);
+      setSessionId(null);
     }
   };
 
@@ -144,13 +152,21 @@ export default function ChatHome() {
       </div>
     );
   }
-  const userImage = session?.user?.image || 'default-image-url'; // Fallback in case image is unavailable
-  console.log(userImage);
 
+  const userImage = session?.user?.image || 'default-image-url';
 
   return (
     <div className={styles.chatContainer}>
-      <ChatHistory history={chatWindows} setHistory={setChatWindows} deleteChat={deleteChat} setCurrentChatId={setCurrentChatId} />
+      <ChatHistory 
+        history={chatWindows} 
+        setHistory={setChatWindows} 
+        deleteChat={deleteChat} 
+        setCurrentChatId={(chatId) => {
+          setCurrentChatId(chatId);
+          router.push(`/chat?chatId=${chatId}`, undefined, { shallow: true });
+        }}
+        currentChatId={currentChatId}
+      />
       
       <div className={styles.mainChat}>
         <div className={styles.header}>
@@ -167,7 +183,7 @@ export default function ChatHome() {
           </select>
 
           <div className={styles.userIcon} onClick={() => setShowUserMenu(!showUserMenu)}>
-            <img src={userImage} alt="User" className={styles.userIconImg} /> {/* User image */} 
+            <img src={userImage} alt="User" className={styles.userIconImg} />
             <div className={`${styles.dropdownMenu} ${showUserMenu ? styles.show : ''}`}>
               <span className={styles.userName}>{session?.user?.email}</span>
               <button onClick={() => signOut()}>Sign Out</button>
@@ -175,7 +191,6 @@ export default function ChatHome() {
           </div>
         </div>
 
-        {/* Pass the model as a prop to ChatDisplay */}
         <ChatDisplay messages={messages} model={selectedModel} userImage={userImage} />
         <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
       </div>

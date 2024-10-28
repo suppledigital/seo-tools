@@ -3,36 +3,38 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import styles from './ChatHistory.module.css';
 
-export default function ChatHistory({ history, setHistory, deleteChat, setCurrentChatId }) {
-  const [confirmDelete, setConfirmDelete] = useState(null); // To track which chat is being confirmed for deletion
+export default function ChatHistory({ history, setHistory, deleteChat, setCurrentChatId, currentChatId }) {
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const handleDeleteClick = (chatId) => {
     setConfirmDelete(chatId);
   };
 
   const confirmDeletion = (chatId) => {
-    deleteChat(chatId); // Execute deletion
-    setConfirmDelete(null); // Reset confirmation
+    deleteChat(chatId);
+    setConfirmDelete(null);
   };
 
   const cancelDeletion = () => {
-    setConfirmDelete(null); // Reset confirmation
+    setConfirmDelete(null);
   };
 
   const handleCreateNewChat = () => {
     const newChatId = `chat_${Date.now()}`;
-    setHistory((prevHistory) => [newChatId, ...prevHistory]); // Add new chat at top
+    setHistory((prevHistory) => [newChatId, ...prevHistory]);
     setCurrentChatId(newChatId);
     localStorage.setItem(`chat_${newChatId}`, JSON.stringify({ messages: [] }));
   };
-  
 
   return (
     <div className={styles.chatHistory}>
       <h3>Chat Windows</h3>
       <ul>
         {history.map((chatId) => (
-          <li key={chatId} className={styles.chatItem}>
+          <li
+            key={chatId}
+            className={`${styles.chatItem} ${chatId === currentChatId ? styles.activeChat : ''}`}
+          >
             <button onClick={() => setCurrentChatId(chatId)} className={styles.chatButton}>
               {`Chat ${chatId}`}
             </button>

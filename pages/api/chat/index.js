@@ -1,7 +1,6 @@
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 
-// Temporary in-memory store (only works while the server is running)
 global.chatMessages = global.chatMessages || {};
 
 const openai = new OpenAI({
@@ -14,17 +13,36 @@ const anthropic = new Anthropic({
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { messages, model } = req.body;
+    let { messages, model, sessionId } = req.body;
+
+    // If sessionId is not provided, generate a new one
+    if (!sessionId) {
+      sessionId = Date.now().toString(); // Simple sessionId using current timestamp
+      console.log("Generated new sessionId:", sessionId);
+    }
 
     if (!messages) {
+      console.error("Error: 'messages' parameter is missing in request body.");
       return res.status(400).json({ error: "Missing required parameter: 'messages'" });
     }
 
-    const sessionId = Date.now();
-    global.chatMessages[sessionId] = { messages, model }; // Save model with messages
+    // Initialize session in global chatMessages if it does not exist
+    if (!global.chatMessages[sessionId]) {
+      global.chatMessages[sessionId] = { messages: [], model };
+    }
 
+    // Append new message(s) to existing history
+    global.chatMessages[sessionId].messages.push(...messages);
+
+    console.log("Session initialized or updated in /api/chat:", {
+      sessionId,
+      chatHistory: global.chatMessages[sessionId],
+    });
+
+    // Return the sessionId in the response for future use
     return res.status(200).json({ message: 'Messages received, starting stream.', sessionId });
   }
 
+  console.error("Error: Unsupported HTTP method used.");
   return res.status(405).json({ error: 'Method not allowed' });
 }

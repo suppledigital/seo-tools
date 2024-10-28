@@ -14,11 +14,13 @@ const ChatDisplay = ({ messages, userImage }) => {
     }
   }, [messages]);
 
-  const renderMessage = (message, index, model) => {
+  const renderMessage = (message, index) => {
+    if (!message.content) return null; // Skip if content is empty or undefined
+    
     if (message.role === 'assistant') {
       return (
         <div key={index} className={styles.assistantMessage}>
-          <FaRobot className={styles.icon} /> {/* AI Icon from FontAwesome */}
+          <FaRobot className={styles.icon} /> 
           <div className={styles.messageContent}>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
@@ -57,12 +59,13 @@ const ChatDisplay = ({ messages, userImage }) => {
     } else {
       return (
         <div key={index} className={styles.userMessage}>
-          <img src={userImage} alt="User" className={styles.userIcon} /> {/* User image */}
+          <img src={userImage} alt="User" className={styles.userIcon} />
           <div className={styles.messageContent}>{message.content}</div>
         </div>
       );
     }
   };
+  
 
   return (
     <div className={styles.chatDisplay}>
