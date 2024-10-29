@@ -9,7 +9,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 //import VennDiagram from './VennDiagram';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { VennDiagram, extractSets, generateCombinations } from '@upsetjs/react';
+//import { VennDiagram, extractSets, generateCombinations } from '@upsetjs/react';
 
 
 import {
@@ -43,7 +43,12 @@ import {
   ScatterChart,
   Scatter,
 } from 'recharts';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+import VennModule from 'highcharts/modules/venn';
 
+// Initialize the Venn module
+VennModule(Highcharts);
 
 Chart.register(...registerables);
 
@@ -80,7 +85,7 @@ export default function AuditHome() {
   //const [selectedCompetitorDomain, setSelectedCompetitorDomain] = useState('');
   const [selectedCompetitorDomains, setSelectedCompetitorDomains] = useState([]);
 
-  const [selection, setSelection] = useState(null);
+  //const [selection, setSelection] = useState(null);
 
 
 
@@ -376,95 +381,70 @@ export default function AuditHome() {
     const userDomain = overviewData.overview.organic.base_domain || 'Your Domain';
     const userTotalKeywords = overviewData.overview.organic.keywords_count || 0;
   
-    const elements = [];
+    // Prepare an array to hold the data points
+    const vennData = [];
   
-    // Map to hold total keywords for each domain
-    const domainKeywordCounts = {};
-    domainKeywordCounts[userDomain] = userTotalKeywords;
+    // Add user domain
+    vennData.push({ sets: [userDomain], value: userTotalKeywords });
   
-    // Add user domain's unique keywords placeholder
+    // Keep track of overlaps
     let totalCommonKeywords = 0;
   
-    // Add common keywords and collect total common keywords
+    // Process competitors
     selectedCompetitors.forEach((competitor) => {
       const competitorDomain = competitor.domain;
       const competitorTotalKeywords = competitor.total_keywords || 0;
       const commonKeywords = competitor.common_keywords || 0;
   
-      domainKeywordCounts[competitorDomain] = competitorTotalKeywords;
+      // Add competitor domain
+      vennData.push({ sets: [competitorDomain], value: competitorTotalKeywords });
   
-      elements.push({
-        name: `Common between ${userDomain} & ${competitorDomain}`,
+      // Add overlap between user domain and competitor
+      vennData.push({
         sets: [userDomain, competitorDomain],
-        size: commonKeywords,
+        value: commonKeywords,
       });
   
       totalCommonKeywords += commonKeywords;
     });
   
-    // Calculate user domain's unique keywords
-    const userUniqueKeywords = userTotalKeywords - totalCommonKeywords;
+    // Handle overlaps among competitors if data is available
+    // Since we may not have overlaps among competitors, we'll focus on overlaps between user domain and each competitor
   
-    elements.push({
-      name: `Unique to ${userDomain}`,
-      sets: [userDomain],
-      size: userUniqueKeywords,
-    });
-  
-    // Calculate and add unique keywords for each competitor
-    selectedCompetitors.forEach((competitor) => {
-      const competitorDomain = competitor.domain;
-      const competitorTotalKeywords = competitor.total_keywords || 0;
-  
-      // Find total common keywords for this competitor
-      const competitorCommonKeywords = elements.reduce((acc, item) => {
-        if (item.sets.includes(competitorDomain) && item.sets.length === 2) {
-          return acc + item.size;
-        }
-        return acc;
-      }, 0);
-  
-      const competitorUniqueKeywords = competitorTotalKeywords - competitorCommonKeywords;
-  
-      elements.push({
-        name: `Unique to ${competitorDomain}`,
-        sets: [competitorDomain],
-        size: competitorUniqueKeywords,
-      });
-    });
-  
-    // Generate sets and combinations
-    const sets = extractSets(elements);
-    const combinations = generateCombinations(sets);
-  
-    // Customize labels
-    const labelFormatter = (combination) => {
-      const setNames = combination.sets.map((s) => s).join(' & ');
-      const label = combination.sets.length > 1
-        ? `Common Keywords (${setNames}): ${combination.size}`
-        : `Unique Keywords (${setNames}): ${combination.size}`;
-      return label;
+    // Return the Highcharts options
+    const options = {
+      chart: {
+        type: 'venn',
+      },
+      title: {
+        text: '',
+      },
+      series: [
+        {
+          data: vennData,
+          dataLabels: {
+            enabled: true,
+            formatter: function () {
+              const sets = this.point.sets;
+              const name = sets.join(' & ');
+              return `${name}<br>${this.point.value} keywords`;
+            },
+          },
+        },
+      ],
+      tooltip: {
+        formatter: function () {
+          const sets = this.point.sets;
+          const name = sets.join(' & ');
+          return `<b>${name}</b><br>${this.point.value} keywords`;
+        },
+      },
     };
-    console.log(sets);
   
-    return (
-      <VennDiagram
-        sets={sets}
-        combinations={combinations}
-        width={680}
-        height={500}
-        selection={selection}
-        onHover={setSelection}
-        labels={labelFormatter}
-        theme='light'
-
-        styles={{
-          labelFontSize: '12px',
-          labelColor: '#000',
-        }}
-      />
-    );
+    return <HighchartsReact highcharts={Highcharts} options={options} />;
   };
+  
+  
   
    // Ensure the chart is rendered when data is available
    
@@ -1291,12 +1271,20 @@ export default function AuditHome() {
                     <h4>Keyword Share Between Domains</h4>
                     {renderKeywordShareChart()}
                   </div>
-
                   <div className={`${styles.chartItem} ${styles.larger}`}>
-                    <canvas ref={competitivePositioningChartRef}></canvas>
+                    <h4>Keyword Share Between Domains</h4>
+                    {renderKeywordShareChart()}
                   </div>
 
+
+                  
+
                 </div>
+                <div className={styles.competitorCharts}>
+                  <div className={`${styles.chartItem} ${styles.larger}`}>
+                      <canvas ref={competitivePositioningChartRef}></canvas>
+                    </div>
+                    </div>
               </div>
 
               {/* Row 5: Paid Keywords Carousel */}

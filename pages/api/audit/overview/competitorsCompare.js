@@ -5,7 +5,7 @@ import NodeCache from 'node-cache';
 const cache = new NodeCache({ stdTTL: 3600 }); // Cache for 1 hour
 
 export default async function handler(req, res) {
-  const { domain, compare, type = 'adv', page = 1, limit = 100 } = req.query;
+  const { domain, compare, type = 'organic', page = 1, limit = 100 } = req.query;
   const cacheKey = `competitorsCompare-${domain}-${compare}-${type}-page${page}-limit${limit}`;
 
   if (!domain || !compare) {
