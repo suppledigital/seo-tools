@@ -721,4 +721,18 @@
     background-color: #e9ecef;
   }
   
- 
+ /* Adjust the Venn diagram container */
+.vennDiagramContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Optional: Style for the Venn diagram */
+.vennDiagramContainer svg {
+  max-width: 100%;
+  height: auto;
+}
+.larger{
+  height:600px;
+}

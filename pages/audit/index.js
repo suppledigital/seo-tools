@@ -1,19 +1,49 @@
-import { useState, useEffect, useRef } from 'react';
+//import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import styles from './index.module.css';
-import { Chart, registerables } from 'chart.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useMemo } from 'react';
+//import { useMemo } from 'react';
 import { useTable, useSortBy } from 'react-table';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+//import VennDiagram from './VennDiagram';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { VennDiagram, extractSets, generateCombinations } from '@upsetjs/react';
+
 
 import {
   faExclamationTriangle,
   faTimesCircle,
   faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons';
+
+import { Chart, registerables } from 'chart.js';
+//import { VennController, VennElement } from 'chartjs-chart-venn';
+
+// Register Chart.js components and the Venn plugin
+//Chart.register(...registerables, VennController, VennElement);
+
+import {
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  RadialBarChart,
+  RadialBar,
+  ScatterChart,
+  Scatter,
+} from 'recharts';
+
 
 Chart.register(...registerables);
 
@@ -43,7 +73,17 @@ export default function AuditHome() {
   const topKeywordsChartRef = useRef(null);
   const [sortedOrganicKeywords, setSortedOrganicKeywords] = useState([]);
   const [sortedPaidKeywords, setSortedPaidKeywords] = useState([]);
+  const keywordShareChartRef = useRef(null);
+  const competitivePositioningChartRef = useRef(null);
+  const [allCompetitors, setAllCompetitors] = useState([]);
   const [selectedCompetitors, setSelectedCompetitors] = useState([]);
+  //const [selectedCompetitorDomain, setSelectedCompetitorDomain] = useState('');
+  const [selectedCompetitorDomains, setSelectedCompetitorDomains] = useState([]);
+
+  const [selection, setSelection] = useState(null);
+
+
+
   const carouselSettings = {
     dots: true,
     infinite: true,
@@ -61,6 +101,8 @@ export default function AuditHome() {
       },
     ],
   };
+  
+  
 
   useEffect(() => {
     // Fetch existing audits on component load
@@ -218,7 +260,7 @@ export default function AuditHome() {
         { name: 'organicKeywords', url: `/api/audit/overview/organicKeywords?domain=${encodeURIComponent(domain)}` },
         { name: 'paidKeywords', url: `/api/audit/overview/paidKeywords?domain=${encodeURIComponent(domain)}` },
         { name: 'advertising', url: `/api/audit/overview/advertising?domain=${encodeURIComponent(domain)}` },
-        { name: 'competitors', url: `/api/audit/overview/competitors?domain=${encodeURIComponent(domain)}&type=adv` },
+        { name: 'competitors', url: `/api/audit/overview/competitors?domain=${encodeURIComponent(domain)}&type=organic` },
       ];
 
       const data = {};
@@ -289,24 +331,35 @@ export default function AuditHome() {
 
   useEffect(() => {
     if (overviewData) {
-      // Sort Organic Keywords by traffic_percent descending
+      // Sort Organic Keywords
       const sortedOrganic = [...organicData].sort((a, b) => b.traffic_percent - a.traffic_percent);
       setSortedOrganicKeywords(sortedOrganic);
-
-      // Sort Paid Keywords by traffic_percent descending
+  
+      // Sort Paid Keywords
       const sortedPaid = [...paidData].sort((a, b) => b.traffic_percent - a.traffic_percent);
       setSortedPaidKeywords(sortedPaid);
-
-      // Render charts for Domain Overview
+  
+      // Render Overview Charts
       renderOverviewCharts();
-
-      // Automatically select default competitors if desired
+  
+      // Fetch and Preselect Competitors
       if (overviewData.competitors && overviewData.competitors.length > 0) {
+        setAllCompetitors(overviewData.competitors);
+  
+        // Preselect first 4 competitors
         const defaultCompetitors = overviewData.competitors.slice(0, 4);
         setSelectedCompetitors(defaultCompetitors);
+        setSelectedCompetitorDomains(defaultCompetitors.map((c) => c.domain));
       }
     }
   }, [overviewData]);
+  
+
+  /*useEffect(() => {
+    if (selectedCompetitors && selectedCompetitors.length > 0 && !selectedCompetitorDomain) {
+      setSelectedCompetitorDomain(selectedCompetitors[0].domain);
+    }
+  }, [selectedCompetitors]);*/
 
   useEffect(() => {
     if (selectedCompetitors.length > 0) {
@@ -316,70 +369,139 @@ export default function AuditHome() {
   }, [selectedCompetitors]);
 
   const renderKeywordShareChart = () => {
-    const ctx = document.getElementById('keywordShareChart').getContext('2d');
-
-    // Destroy existing chart if any
-    if (chartInstances.current['keywordShareChart']) {
-      chartInstances.current['keywordShareChart'].destroy();
+    if (!overviewData || !overviewData.overview || selectedCompetitors.length === 0) {
+      return <p>No competitor data available to display the Venn diagram.</p>;
     }
-
-    const labels = selectedCompetitors.map((c) => c.domain);
-    const data = selectedCompetitors.map((c) => c.common_keywords);
-
-    chartInstances.current['keywordShareChart'] = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'Common Keywords',
-            data,
-            backgroundColor: '#17a2b8',
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: true },
-        },
-        scales: {
-          y: { beginAtZero: true },
-        },
-      },
+  
+    const userDomain = overviewData.overview.organic.base_domain || 'Your Domain';
+    const userTotalKeywords = overviewData.overview.organic.keywords_count || 0;
+  
+    const elements = [];
+  
+    // Map to hold total keywords for each domain
+    const domainKeywordCounts = {};
+    domainKeywordCounts[userDomain] = userTotalKeywords;
+  
+    // Add user domain's unique keywords placeholder
+    let totalCommonKeywords = 0;
+  
+    // Add common keywords and collect total common keywords
+    selectedCompetitors.forEach((competitor) => {
+      const competitorDomain = competitor.domain;
+      const competitorTotalKeywords = competitor.total_keywords || 0;
+      const commonKeywords = competitor.common_keywords || 0;
+  
+      domainKeywordCounts[competitorDomain] = competitorTotalKeywords;
+  
+      elements.push({
+        name: `Common between ${userDomain} & ${competitorDomain}`,
+        sets: [userDomain, competitorDomain],
+        size: commonKeywords,
+      });
+  
+      totalCommonKeywords += commonKeywords;
     });
-  };
+  
+    // Calculate user domain's unique keywords
+    const userUniqueKeywords = userTotalKeywords - totalCommonKeywords;
+  
+    elements.push({
+      name: `Unique to ${userDomain}`,
+      sets: [userDomain],
+      size: userUniqueKeywords,
+    });
+  
+    // Calculate and add unique keywords for each competitor
+    selectedCompetitors.forEach((competitor) => {
+      const competitorDomain = competitor.domain;
+      const competitorTotalKeywords = competitor.total_keywords || 0;
+  
+      // Find total common keywords for this competitor
+      const competitorCommonKeywords = elements.reduce((acc, item) => {
+        if (item.sets.includes(competitorDomain) && item.sets.length === 2) {
+          return acc + item.size;
+        }
+        return acc;
+      }, 0);
+  
+      const competitorUniqueKeywords = competitorTotalKeywords - competitorCommonKeywords;
+  
+      elements.push({
+        name: `Unique to ${competitorDomain}`,
+        sets: [competitorDomain],
+        size: competitorUniqueKeywords,
+      });
+    });
+  
+    // Generate sets and combinations
+    const sets = extractSets(elements);
+    const combinations = generateCombinations(sets);
+  
+    // Customize labels
+    const labelFormatter = (combination) => {
+      const setNames = combination.sets.map((s) => s).join(' & ');
+      const label = combination.sets.length > 1
+        ? `Common Keywords (${setNames}): ${combination.size}`
+        : `Unique Keywords (${setNames}): ${combination.size}`;
+      return label;
+    };
+    console.log(sets);
+  
+    return (
+      <VennDiagram
+        sets={sets}
+        combinations={combinations}
+        width={680}
+        height={500}
+        selection={selection}
+        onHover={setSelection}
+        labels={labelFormatter}
+        theme='light'
 
-  const renderCompetitivePositioningChart = () => {
-    // Ensure overviewData is available
-    if (!overviewData || !overviewData.overview || !overviewData.competitors) {
-      console.error('Overview data or competitors data is missing.');
+        styles={{
+          labelFontSize: '12px',
+          labelColor: '#000',
+        }}
+      />
+    );
+  };
+  
+   // Ensure the chart is rendered when data is available
+   
+
+   const renderCompetitivePositioningChart = () => {
+    if (
+      !competitivePositioningChartRef.current ||
+      !overviewData ||
+      !overviewData.overview ||
+      !selectedCompetitors ||
+      selectedCompetitors.length === 0
+    ) {
       return;
     }
-
-    const ctx = document.getElementById('competitivePositioningChart').getContext('2d');
-
+  
+    const ctx = competitivePositioningChartRef.current.getContext('2d');
+  
     // Destroy existing chart if any
     if (chartInstances.current['competitivePositioningChart']) {
       chartInstances.current['competitivePositioningChart'].destroy();
     }
-
+  
     const ownOrganicTrafficSum = overviewData.overview.organic.traffic_sum || 1; // Prevent division by zero
-
+  
     // Calculate total organic traffic including competitors
     const totalOrganicTraffic =
       ownOrganicTrafficSum +
       selectedCompetitors.reduce((acc, c) => acc + (c.traffic_sum || 0), 0);
-
+  
     // Determine the maximum competition value among competitors and your domain
     const maxCompetition = Math.max(
       ...selectedCompetitors.map((c) => c.common_keywords || 0),
       overviewData.overview.organic.keywords_count || 0
     );
-
+  
     const fixedMaxRadius = 15; // Fixed radius for the highest competition
-
+  
     // Generate unique colors for each competitor and your domain
     const colorPalette = [
       'rgba(255, 99, 132, 0.7)', // Red
@@ -393,30 +515,30 @@ export default function AuditHome() {
       'rgba(102, 102, 255, 0.7)', // Indigo
       'rgba(255, 102, 255, 0.7)', // Pink
     ];
-
+  
     // Assign colors to competitors
-    const competitorColors = selectedCompetitors.map((_, idx) => colorPalette[idx % colorPalette.length]);
-
+    const competitorColors = selectedCompetitors.map(
+      (_, idx) => colorPalette[idx % colorPalette.length]
+    );
+  
     // Create datasets for each competitor
     const competitorDatasets = selectedCompetitors.map((c, idx) => {
-        const x = c.common_keywords || 0;
-        const y = Number(((c.traffic_sum / totalOrganicTraffic) * 100).toFixed(2)) || 0;
-        const r = 10; // Fixed radius for debugging
-      
-        console.log(`Competitor: ${c.domain}, x: ${x}, y: ${y}, r: ${r}`);
-      
-        return {
-          label: c.domain,
-          data: [{ x, y, r }],
-          backgroundColor: competitorColors[idx],
-          borderColor: competitorColors[idx].replace('0.7', '1'),
-          borderWidth: 1,
-          hoverBackgroundColor: competitorColors[idx].replace('0.7', '0.9'),
-          hoverBorderColor: competitorColors[idx].replace('0.7', '1'),
-        };
-      });
-      
-
+      const x = c.common_keywords || 0;
+      const y = Number(((c.traffic_sum / totalOrganicTraffic) * 100).toFixed(2)) || 0;
+      const r =
+        maxCompetition > 0 ? (c.common_keywords / maxCompetition) * fixedMaxRadius : fixedMaxRadius;
+  
+      return {
+        label: c.domain,
+        data: [{ x, y, r }],
+        backgroundColor: competitorColors[idx],
+        borderColor: competitorColors[idx].replace('0.7', '1'),
+        borderWidth: 1,
+        hoverBackgroundColor: competitorColors[idx].replace('0.7', '0.9'),
+        hoverBorderColor: competitorColors[idx].replace('0.7', '1'),
+      };
+    });
+  
     // Create dataset for your own domain
     const ownDataPoint = {
       x: overviewData.overview.organic.keywords_count || 0, // Number of organic keywords
@@ -425,7 +547,7 @@ export default function AuditHome() {
         ? (overviewData.overview.organic.keywords_count / maxCompetition) * fixedMaxRadius
         : fixedMaxRadius,
     };
-
+  
     const ownDataset = {
       label: overviewData.overview.organic.base_domain || 'Your Domain',
       data: [ownDataPoint],
@@ -435,13 +557,10 @@ export default function AuditHome() {
       hoverBackgroundColor: 'rgba(255, 99, 132, 1)',
       hoverBorderColor: 'rgba(255, 99, 132, 1)',
     };
-    //console.log("OwnDataSet:", ownDataset);
-
+  
     // Combine all datasets
-    const allDatasets = [...competitorDatasets, ownDataset];
-    console.log("allDatasets:", allDatasets);
-
-
+    const allDatasets = [ownDataset, ...competitorDatasets];
+  
     chartInstances.current['competitivePositioningChart'] = new Chart(ctx, {
       type: 'bubble',
       data: {
@@ -456,13 +575,13 @@ export default function AuditHome() {
                 const label = context.dataset.label || '';
                 const x = context.raw.x;
                 const y = context.raw.y;
-                return `${label}: (${x} Common Keywords, ${y}%)`;
+                return `${label}: (${x} Keywords, ${y}% Traffic Share)`;
               },
             },
           },
           legend: {
             display: true,
-            position: 'right', // Position legend on the right
+            position: 'right',
             labels: {
               boxWidth: 20,
               padding: 15,
@@ -474,7 +593,7 @@ export default function AuditHome() {
                   strokeStyle: dataset.borderColor,
                   lineWidth: dataset.borderWidth,
                   hidden: false,
-                  index: dataset.label, // Use label as index
+                  index: dataset.label,
                 }));
               },
             },
@@ -484,7 +603,7 @@ export default function AuditHome() {
           x: {
             title: {
               display: true,
-              text: 'Common Keywords',
+              text: 'Keywords',
             },
             beginAtZero: true,
           },
@@ -500,6 +619,7 @@ export default function AuditHome() {
       },
     });
   };
+  
 
   const renderHealthScoreChart = () => {
     if (healthScoreRef.current && auditResults) {
@@ -880,6 +1000,7 @@ export default function AuditHome() {
               fill: false,
               borderColor: '#007bff',
               tension: 0.1,
+              
             },
           ],
         },
@@ -1128,20 +1249,33 @@ export default function AuditHome() {
                 <h3>Competitors</h3>
 
                 {/* Competitors Selection */}
+                {/* Competitors Selection */}
                 <div className={styles.competitorsSelect}>
-                  <label htmlFor="competitors">Select Competitors:</label>
+                  <label htmlFor="competitors">Select Competitors (up to 4):</label>
                   <select
                     id="competitors"
                     multiple
-                    value={selectedCompetitors.map((c) => c.domain)}
+                    value={selectedCompetitorDomains}
                     onChange={(e) => {
-                      const selected = Array.from(e.target.selectedOptions).map((option) =>
-                        overviewData.competitors.find((c) => c.domain === option.value)
-                      ).filter(Boolean);
-                      setSelectedCompetitors(selected);
+                      const options = e.target.options;
+                      const selected = [];
+                      for (let i = 0; i < options.length; i++) {
+                        if (options[i].selected) {
+                          selected.push(options[i].value);
+                        }
+                      }
+                      const selectedComps = allCompetitors.filter((comp) => selected.includes(comp.domain));
+
+                      // Limit to 4 competitors
+                      if (selectedComps.length <= 4) {
+                        setSelectedCompetitorDomains(selected);
+                        setSelectedCompetitors(selectedComps);
+                      } else {
+                        alert('You can select up to 4 competitors.');
+                      }
                     }}
                   >
-                    {overviewData.competitors.map((competitor, idx) => (
+                    {allCompetitors.map((competitor, idx) => (
                       <option key={idx} value={competitor.domain}>
                         {competitor.domain}
                       </option>
@@ -1149,17 +1283,19 @@ export default function AuditHome() {
                   </select>
                 </div>
 
+
+
                 {/* Competitor Charts */}
                 <div className={styles.competitorCharts}>
-                  <div className={styles.chartItem}>
-                    <h4>Keyword Share Among Competitors</h4>
-                    <canvas id="keywordShareChart"></canvas>
+                  <div className={`${styles.chartItem} ${styles.larger}`}>
+                    <h4>Keyword Share Between Domains</h4>
+                    {renderKeywordShareChart()}
                   </div>
 
-                  <div className={styles.chartItem}>
-                    <h4>Competitive Positioning</h4>
-                    <canvas id="competitivePositioningChart"></canvas>
+                  <div className={`${styles.chartItem} ${styles.larger}`}>
+                    <canvas ref={competitivePositioningChartRef}></canvas>
                   </div>
+
                 </div>
               </div>
 

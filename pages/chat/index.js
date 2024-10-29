@@ -63,37 +63,41 @@ export default function ChatHome() {
   }, [currentChatId]);
 
   useEffect(() => {
- //  const ws = new WebSocket('ws://localhost:8080');
-    
- const wsUrl = process.env.NEXT_PUBLIC_NODE_ENV === 'production'
- ? process.env.NEXT_PUBLIC_WS_URL
- : 'ws://localhost:8080';
+    const wsUrl = process.env.NEXT_PUBLIC_NODE_ENV === 'production'
+      ? process.env.NEXT_PUBLIC_WS_URL
+      : 'ws://localhost:8080';
 
-console.log('WebSocket URL:', wsUrl);
-const ws = new WebSocket(wsUrl);
+    console.log('WebSocket URL:', wsUrl);
+    const ws = new WebSocket(wsUrl);
 
-ws.onopen = () => {
-  setSocket(ws);
-};
-
+    ws.onopen = () => {
+      setSocket(ws);
+    };
 
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.message === "[DONE]") {
-        setIsLoading(false);
-        return;
-      }
-      if (data.content) {
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages];
-          if (newMessages[newMessages.length - 1]?.role === "assistant") {
-            newMessages[newMessages.length - 1].content += data.content;
-          } else {
-            newMessages.push({ role: "assistant", content: data.content, model: data.model });
-          }
-          saveChatToLocalStorage(currentChatId, sessionId, newMessages);
-          return newMessages;
-        });
+      try {
+        const data = JSON.parse(event.data);
+        if (data.sessionId && !sessionId) {
+          setSessionId(data.sessionId);
+        }
+        if (data.message === "[DONE]") {
+          setIsLoading(false);
+          return;
+        }
+        if (data.content) {
+          setMessages((prevMessages) => {
+            const newMessages = [...prevMessages];
+            if (newMessages[newMessages.length - 1]?.role === "assistant") {
+              newMessages[newMessages.length - 1].content += data.content;
+            } else {
+              newMessages.push({ role: "assistant", content: data.content, model: data.model });
+            }
+            saveChatToLocalStorage(currentChatId, sessionId, newMessages);
+            return newMessages;
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing message:", error);
       }
     };
 
@@ -104,7 +108,7 @@ ws.onopen = () => {
     return () => {
       ws.close();
     };
-  }, [currentChatId]);
+  }, []); // Empty dependency array
 
   const handleSendMessage = (message) => {
     if (!currentChatId) {
@@ -115,22 +119,23 @@ ws.onopen = () => {
       setSessionId(newSessionId);
       localStorage.setItem(`chat_${newChatId}`, JSON.stringify({ sessionId: newSessionId, messages: [] }));
     }
-  
+
     const newMessage = { role: "user", content: message };
     const updatedMessages = [...messages, newMessage];
     setMessages(updatedMessages);
     setIsLoading(true);
     saveChatToLocalStorage(currentChatId, sessionId, updatedMessages);
-  
+
     // Check if sessionId is set before sending
     if (sessionId && socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify({ message, model: selectedModel, chatHistory: updatedMessages, sessionId }));
+      console.log("Sending message:", { message, model: selectedModel, sessionId });
+      socket.send(JSON.stringify({ message, model: selectedModel, sessionId }));
       console.log("Sent message with sessionId:", sessionId); // Debugging log
     } else {
       console.error("WebSocket is not connected or sessionId is missing");
     }
   };
-  
+
   const deleteChat = (chatId) => {
     localStorage.removeItem(`chat_${chatId}`);
     setChatWindows((prevWindows) => prevWindows.filter((id) => id !== chatId));

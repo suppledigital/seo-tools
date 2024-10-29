@@ -13,10 +13,14 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@handsontable/react": "^14.6.0",
+    "@upsetjs/react": "^1.11.0",
     "axios": "^1.7.7",
-    "chart.js": "^4.4.5",
+    "chart.js": "^4.4.6",
+    "d3": "^7.9.0",
     "dotenv": "^16.4.5",
     "handsontable": "^14.6.0",
+    "highcharts": "^11.4.8",
+    "highcharts-react-official": "^3.2.1",
     "mysql2": "^3.11.3",
     "next": "^14.2.15",
     "next-auth": "^4.24.8",
@@ -32,8 +36,10 @@
     "react-markdown": "^9.0.1",
     "react-slick": "^0.30.2",
     "react-table": "^7.8.0",
+    "recharts": "^2.13.0",
     "remark-gfm": "^4.0.0",
     "slick-carousel": "^1.8.1",
+    "venn.js": "^0.2.20",
     "ws": "^8.18.0"
   }
 }
