@@ -48,7 +48,10 @@ import HighchartsReact from 'highcharts-react-official';
 import VennModule from 'highcharts/modules/venn';
 
 // Initialize the Venn module
-VennModule(Highcharts);
+//VennModule(Highcharts);
+
+
+
 
 Chart.register(...registerables);
 
@@ -368,7 +371,7 @@ export default function AuditHome() {
 
   useEffect(() => {
     if (selectedCompetitors.length > 0) {
-      renderKeywordShareChart();
+     {/* renderKeywordShareChart();*/}
       renderCompetitivePositioningChart();
     }
   }, [selectedCompetitors]);
@@ -381,46 +384,33 @@ export default function AuditHome() {
     const userDomain = overviewData.overview.organic.base_domain || 'Your Domain';
     const userTotalKeywords = overviewData.overview.organic.keywords_count || 0;
   
-    // Prepare an array to hold the data points
-    const vennData = [];
+    const vennData = [
+      { sets: [userDomain], value: userTotalKeywords },
+      // Add competitors and overlaps
+    ];
   
-    // Add user domain
-    vennData.push({ sets: [userDomain], value: userTotalKeywords });
-  
-    // Keep track of overlaps
-    let totalCommonKeywords = 0;
-  
-    // Process competitors
     selectedCompetitors.forEach((competitor) => {
       const competitorDomain = competitor.domain;
       const competitorTotalKeywords = competitor.total_keywords || 0;
       const commonKeywords = competitor.common_keywords || 0;
   
-      // Add competitor domain
       vennData.push({ sets: [competitorDomain], value: competitorTotalKeywords });
-  
-      // Add overlap between user domain and competitor
       vennData.push({
         sets: [userDomain, competitorDomain],
         value: commonKeywords,
       });
-  
-      totalCommonKeywords += commonKeywords;
     });
   
-    // Handle overlaps among competitors if data is available
-    // Since we may not have overlaps among competitors, we'll focus on overlaps between user domain and each competitor
-  
-    // Return the Highcharts options
     const options = {
       chart: {
         type: 'venn',
       },
       title: {
-        text: '',
+        text: 'Keyword Share Venn Diagram',
       },
       series: [
         {
+          type: 'venn',
           data: vennData,
           dataLabels: {
             enabled: true,
@@ -443,7 +433,6 @@ export default function AuditHome() {
   
     return <HighchartsReact highcharts={Highcharts} options={options} />;
   };
-  
   
   
    // Ensure the chart is rendered when data is available
@@ -1269,12 +1258,13 @@ export default function AuditHome() {
                 <div className={styles.competitorCharts}>
                   <div className={`${styles.chartItem} ${styles.larger}`}>
                     <h4>Keyword Share Between Domains</h4>
-                    {renderKeywordShareChart()}
+                    {/*  {renderKeywordShareChart()}*/}
                   </div>
-                  <div className={`${styles.chartItem} ${styles.larger}`}>
+                 {/* <div className={`${styles.chartItem} ${styles.larger}`}>
                     <h4>Keyword Share Between Domains</h4>
                     {renderKeywordShareChart()}
                   </div>
+                  */}
 
 
                   

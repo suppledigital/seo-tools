@@ -42,6 +42,7 @@ export default function Home() {
         <li className={styles.listItem}>
           <Link href="/chat" className={styles.link}>Chat</Link>
         </li>
+        
       </ul>
     </div>
   );
