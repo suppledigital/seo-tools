@@ -42,8 +42,8 @@ export default async function handler(req, res) {
         const latestPosition = row.positions && row.positions.length > 0
           ? row.positions[row.positions.length - 1]
           : {};
-          const landingURL = row.positions && row.landing_pages.length > 0
-          ? row.positions[row.positions.length - 1]
+          const landingURL = row.landing_pages && row.landing_pages.length > 0
+          ? row.landing_pages[row.landing_pages.length - 1]
           : {};
         return {
           keyword_id: getPrimitiveValue(row.keyword_id),
