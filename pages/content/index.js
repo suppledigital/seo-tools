@@ -4,6 +4,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import styles from './index.module.css'; // Import the CSS module
 
+
 export default function ContentHome() {
   const { data: session, status } = useSession();
   const [projects, setProjects] = useState([]);

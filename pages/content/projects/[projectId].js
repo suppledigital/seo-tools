@@ -10,6 +10,8 @@ import 'handsontable/dist/handsontable.full.css';
 import { getSession } from 'next-auth/react';
 import { Line } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
+import SmartAnalysisSidebar from '../../../components/SmartAnalysisSidebar/SmartAnalysisSidebar';
+
 
 import {
   Chart as ChartJS,
@@ -72,6 +74,7 @@ export default function ProjectPage({ initialData }) {
   const [selectedBroadMatchKeywords, setSelectedBroadMatchKeywords] = useState([]);
   const [selectedPhraseQuestions, setSelectedPhraseQuestions] = useState([]);
   const [keywordInput, setKeywordInput] = useState('');
+  const [sidebarType, setSidebarType] = useState(null); // 'keyword' or 'smartAnalysis'
 
   
 
@@ -287,6 +290,7 @@ export default function ProjectPage({ initialData }) {
     alert('Content copied to clipboard!');
   };
   
+  
   const handleEditContent = (entryId) => {
     // Implement edit functionality (e.g., open a modal for editing)
     console.log('Edit content for entry:', entryId);
@@ -308,7 +312,9 @@ export default function ProjectPage({ initialData }) {
     setCurrentEntryId(entryId);
     setSelectedKeyword(keyword);
     setIsSidebarOpen(true);
-    setSidebarContent(null); // Reset previous content
+    //setSidebarContent(null); // Reset previous content
+    setSidebarType('keyword'); // Set sidebar type
+
     setLoadingAnalyzeKeyword(true);
     //setLoadingSerpResults(true);
     setLoadingSemrushData(true);
@@ -375,6 +381,33 @@ export default function ProjectPage({ initialData }) {
       setLoadingSerpResults(false);
     }
   };
+  const handleSmartAnalysis = async (e, keyword, entryId) => {
+    e.stopPropagation();
+    setCurrentEntryId(entryId);
+    setSelectedKeyword(keyword);
+    setIsSidebarOpen(true);
+    setSidebarContent(null); // Clear previous content
+    setSidebarType('smartAnalysis'); // Set sidebar type
+    setLoadingAnalyzeKeyword(true); // Optional: to show a loading state
+  
+    try {
+      const response = await axios.post('/api/content/frase/process', {
+        query: keyword,
+        lang: 'en',
+        country: 'au',
+      });
+      setSidebarContent({
+        smartAnalysisData: response.data,
+      });
+    } catch (error) {
+      console.error('Error fetching smart analysis data:', error);
+      alert('Error fetching smart analysis data.');
+    } finally {
+      setLoadingAnalyzeKeyword(false);
+    }
+  };
+
+  
   
   
   const loadPrompt = async (entryId) => {
@@ -894,6 +927,13 @@ export default function ProjectPage({ initialData }) {
                       className={`fas fa-search ${styles.lookupIcon}`}
                       onClick={(e) => handleKeywordLookup(e, entry.primary_keyword, entry.entry_id)}
                       ></i>
+                      <i
+                        className="fas fa-brain" // Smart analysis icon
+                        onClick={(e) => handleSmartAnalysis(e, entry.primary_keyword, entry.entry_id)}
+                        style={{ marginLeft: '8px', cursor: 'pointer' }} // Optional styling
+                        title="Smart Analysis"
+                      ></i>
+
                     <br />
                     Secondary: {entry.secondary_keyword}
                     <i
@@ -1020,7 +1060,7 @@ export default function ProjectPage({ initialData }) {
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
           ></i>
           <div className={styles.sidebarHeader}>
-
+            {/* Existing Keyword Input and Controls */}
             <div className={styles.keywordInputContainer}>
               <input
                 type="text"
@@ -1034,7 +1074,8 @@ export default function ProjectPage({ initialData }) {
                 placeholder="Enter keyword"
               />
               <i className="fas fa-paper-plane" onClick={handleKeywordSearch}></i>
-            </div><br/>
+            </div>
+            <br />
             <select
               value={selectedCountry}
               onChange={(e) => {
@@ -1043,9 +1084,13 @@ export default function ProjectPage({ initialData }) {
                 setLoadingAnalyzeKeyword(true);
                 setLoadingSerpResults(true);
                 setLoadingSemrushData(true);
-                fetchKeywordAnalysis(selectedKeyword, e.target.value);
-                fetchSerpResults(selectedKeyword, e.target.value);
-                fetchSemrushData(selectedKeyword, e.target.value);
+                if (sidebarType === 'keyword') {
+                  fetchKeywordAnalysis(selectedKeyword, e.target.value);
+                  fetchSerpResults(selectedKeyword, e.target.value);
+                  fetchSemrushData(selectedKeyword, e.target.value);
+                } else if (sidebarType === 'smartAnalysis') {
+                  handleSmartAnalysis(null, selectedKeyword, currentEntryId);
+                }
               }}
             >
               <option value="AU">Australia</option>
@@ -1056,6 +1101,8 @@ export default function ProjectPage({ initialData }) {
             </select>
           </div>
           <div className={styles.sidebarContent}>
+          {sidebarType === 'keyword' && sidebarContent && (
+            <>
             {loadingAnalyzeKeyword ? (
               <div>Loading keyword analysis...</div>
             ) : (
@@ -1403,7 +1450,14 @@ export default function ProjectPage({ initialData }) {
                 </div>
               )
             )}
-          </div>
+          
+          </>
+      )}
+
+          {sidebarType === 'smartAnalysis' && sidebarContent && (
+            <SmartAnalysisSidebar smartAnalysisData={sidebarContent.smartAnalysisData} />
+          )}
+        </div>
         </div>
       )}
       

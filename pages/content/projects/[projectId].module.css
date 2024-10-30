@@ -418,7 +418,9 @@ color: #721c24;
     position: fixed;
     right: 0;
     top: 0;
-    width: 300px;
+   /* width: 300px;*/
+    width: 30vw; /*Set width to 40vw */
+
     height: 100%;
     background-color: #ededed;
     border-left: 1px solid #ddd;

@@ -1,0 +1,38 @@
+/* components/keyword-research/KeywordResearch.module.css */
+.keywordResearch {
+    margin-top: 20px;
+  }
+  
+  .keywordResearch h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+  }
+  
+  .tableWrapper {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .sortableTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .sortableTable th,
+  .sortableTable td {
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    text-align: left;
+  }
+  
+  .sortableTable th {
+    background-color: #e9ecef;
+    cursor: pointer;
+  }
+  
+  .noData {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+  }
+  

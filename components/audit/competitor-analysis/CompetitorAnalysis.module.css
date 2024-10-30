@@ -1,0 +1,15 @@
+/* components/competitor-analysis/CompetitorAnalysis.module.css */
+.competitorAnalysis {
+    margin-top: 20px;
+  }
+  
+  .competitorAnalysis h3 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+  }
+  
+  .competitorAnalysis canvas {
+    width: 100%;
+    height: 400px;
+  }
+  

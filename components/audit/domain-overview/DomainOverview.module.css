@@ -1,0 +1,235 @@
+/* components/domain-overview/DomainOverview.module.css */
+.overview {
+    margin-top: 20px;
+  }
+  
+  .domainOverviewGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 20px;
+  }
+  
+  /* Adjust based on screen size for responsiveness */
+  @media (max-width: 1200px) {
+    .domainOverviewGrid {
+      grid-template-columns: repeat(2, 1fr); /* 2 columns on smaller screens */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .domainOverviewGrid {
+      grid-template-columns: 1fr; /* Single column on mobile */
+    }
+  }
+  
+  .metricItem {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .metricItem h3 {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+  }
+  
+  .chartItem {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 300px; /* Adjust as needed */
+    overflow: hidden;
+  }
+  
+  .chartItem h3 {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.2rem;
+  }
+  
+  .chartItem canvas {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .tableContainer {
+    grid-column: span 2;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    max-height: 400px; /* Adjust as needed */
+  }
+  
+  .tableWrapper {
+    max-height: 250px; /* Slightly less than container */
+    overflow-y: auto;
+  }
+  
+  .competitorsSection {
+    grid-column: span 4;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .competitorsSelect {
+    margin-bottom: 20px;
+  }
+  
+  .competitorsSelect label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .competitorCharts {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+  
+  .larger {
+    height: 600px;
+  }
+  
+  .paidKeywordsCarousel {
+    grid-column: span 4;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+  }
+  
+  .paidKeywordsCarousel h3 {
+    margin-bottom: 15px;
+    font-size: 1.2em;
+  }
+  
+  .carouselItem {
+    display: flex;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #f1f3f5;
+    height: 150px; /* Adjust height as needed */
+    overflow: hidden;
+  }
+  
+  .carouselContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .carouselUrl {
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+    margin-bottom: 5px;
+  }
+  
+  .carouselUrl:hover {
+    text-decoration: underline;
+  }
+  
+  .carouselDescription {
+    flex-grow: 1;
+    margin-bottom: 5px;
+    color: #6c757d;
+  }
+  
+  .carouselDisplayUrl {
+    color: #17a2b8;
+    text-decoration: none;
+    margin-bottom: 5px;
+  }
+  
+  .carouselDisplayUrl:hover {
+    text-decoration: underline;
+  }
+  
+  .carouselMetrics span {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 0.9em;
+    color: #495057;
+  }
+  
+  .advertisingSnippets {
+    grid-column: span 4;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+  }
+  
+  .advertisingTableWrapper {
+    position: relative;
+    overflow-x: auto;
+  }
+  
+  .scrollArrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+  
+  .scrollArrow.left {
+    left: 0;
+  }
+  
+  .scrollArrow.right {
+    right: 0;
+  }
+  
+  .pivotTable {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px; /* Ensure table is wide enough for horizontal scroll */
+  }
+  
+  .pivotTable th, .pivotTable td {
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    text-align: left;
+  }
+  
+  .pivotTable th {
+    background-color: #e9ecef;
+  }
+  
+  .snippetUrl {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .snippetUrl:hover {
+    text-decoration: underline;
+  }
+  
+  .snippetDescription {
+    color: #6c757d;
+    margin: 5px 0;
+  }
+  
+  .snippetDisplayUrl {
+    color: #28a745;
+    text-decoration: none;
+  }
+  
+  .snippetDisplayUrl:hover {
+    text-decoration: underline;
+  }
+  

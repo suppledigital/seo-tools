@@ -1,0 +1,32 @@
+/* components/common/SortableTable.module.css */
+.sortableTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.sortableTable th,
+.sortableTable td {
+  border: 1px solid #dee2e6;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.sortableTable th {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.asc::after {
+  content: ' 🔼';
+}
+
+.desc::after {
+  content: ' 🔽';
+}
+
+.noData {
+  text-align: center;
+  padding: 1rem;
+  color: #6c757d;
+}
