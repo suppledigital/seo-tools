@@ -80,7 +80,7 @@
     background-color: #e6e6e6;
   }
   
-  .clusterInfo button {
+  .clusterInfo button, .searchResults button {
     padding: 5px 10px;
     background-color: #0070f3;
     color: #ffffff;
@@ -107,5 +107,14 @@
     text-decoration: underline;
   }
  .innerTable{
-    padding:0px;
+    padding:0px!important;
  }
+ .innerTable td:first-child{
+  width:40%;
+ }
+ .iconsContainer {
+  margin-top:15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}

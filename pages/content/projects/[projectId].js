@@ -75,6 +75,7 @@ export default function ProjectPage({ initialData }) {
   const [selectedPhraseQuestions, setSelectedPhraseQuestions] = useState([]);
   const [keywordInput, setKeywordInput] = useState('');
   const [sidebarType, setSidebarType] = useState(null); // 'keyword' or 'smartAnalysis'
+  const [loadingAnalysisResults, setLoadingAnalysisResults] = useState(false);
 
   
 
@@ -385,10 +386,11 @@ export default function ProjectPage({ initialData }) {
     e.stopPropagation();
     setCurrentEntryId(entryId);
     setSelectedKeyword(keyword);
+    setLoadingAnalysisResults(true);
     setIsSidebarOpen(true);
     setSidebarContent(null); // Clear previous content
     setSidebarType('smartAnalysis'); // Set sidebar type
-    setLoadingAnalyzeKeyword(true); // Optional: to show a loading state
+    setLoadingAnalysisResults(true); // Optional: to show a loading state
   
     try {
       const response = await axios.post('/api/content/frase/process', {
@@ -403,7 +405,7 @@ export default function ProjectPage({ initialData }) {
       console.error('Error fetching smart analysis data:', error);
       alert('Error fetching smart analysis data.');
     } finally {
-      setLoadingAnalyzeKeyword(false);
+      setLoadingAnalysisResults(false);
     }
   };
 
@@ -1453,10 +1455,13 @@ export default function ProjectPage({ initialData }) {
           
           </>
       )}
-
-          {sidebarType === 'smartAnalysis' && sidebarContent && (
+{loadingAnalysisResults ? (
+              <div>Loading SERP Analysis...</div>
+            ) : (
+              !loadingAnalysisResults && sidebarType === 'smartAnalysis' && sidebarContent && (
             <SmartAnalysisSidebar smartAnalysisData={sidebarContent.smartAnalysisData} />
-          )}
+          )
+        )}
         </div>
         </div>
       )}
