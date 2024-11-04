@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Session not found." });
     }
 
-    const { messages, model = 'gpt-4o' } = chatSession;
+    const { messages, model } = chatSession;
 
     if (!messages) {
       console.error("Error: No messages found in session data for sessionId:", sessionId);
@@ -92,6 +92,7 @@ export default async function handler(req, res) {
                   const content = parsed.delta.text;
                   assistantMessage += content; // Accumulate the message
                   console.log(assistantMessage);
+                  console.log(model);
                   res.write(`data: ${JSON.stringify({ content, model })}\n\n`);
                   res.flush(); // Ensure data is sent immediately
                 }

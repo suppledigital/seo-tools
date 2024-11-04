@@ -14,6 +14,7 @@ const anthropic = new Anthropic({
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     let { messages, model, sessionId } = req.body;
+    console.log("Model: ",model);
 
     // If sessionId is not provided, generate a new one
     if (!sessionId) {

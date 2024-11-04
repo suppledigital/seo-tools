@@ -81,7 +81,8 @@ export default function ChatHome() {
         if (data.sessionId && !sessionId) {
           setSessionId(data.sessionId);
         }
-        if (data.message === "[DONE]") {
+        if (data.end == true) {
+          
           setIsLoading(false);
           return;
         }
