@@ -1,3 +1,5 @@
+// api/stream.js
+
 import OpenAI from "openai";
 import fetch from 'node-fetch';
 import { Readable } from 'stream';
@@ -10,7 +12,7 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const { sessionId } = req.query;
 
-    const chatSession = global.chatMessages[sessionId];
+    const chatSession = global.chatMessages?.[sessionId];
     if (!chatSession) {
       console.error("Error: Session not found in /api/chat/stream for sessionId:", sessionId);
       return res.status(400).json({ error: "Session not found." });
@@ -77,7 +79,7 @@ export default async function handler(req, res) {
                   assistantMessage += content; // Accumulate the message
                   console.log(assistantMessage);
                   res.write(`data: ${JSON.stringify({ content, model })}\n\n`);
-                  //res.flush();
+                  res.flush(); // Ensure data is sent immediately
                 }
               } catch (error) {
                 console.error("Failed to parse chunk:", error.message);
@@ -105,7 +107,7 @@ export default async function handler(req, res) {
 
           // Stream the response to the client
           res.write(`data: ${JSON.stringify({ content, model })}\n\n`);
-          //res.flush();
+          res.flush(); // Ensure data is sent immediately
         }
 
         // Save the full assistant response to the chat history
