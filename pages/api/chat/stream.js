@@ -1,7 +1,6 @@
 // api/stream.js
 
 import OpenAI from "openai";
-import fetch from 'node-fetch';
 import { Readable } from 'stream';
 
 const openai = new OpenAI({
@@ -56,23 +55,38 @@ export default async function handler(req, res) {
           throw new Error(`Anthropic API request failed with status ${response.status}`);
         }
 
-        const stream = Readable.from(response.body);
-        console.log("Server stream log");
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
 
-        for await (const chunk of stream) {
-          const chunkText = chunk.toString().trim();
-          const lines = chunkText.split("\n");
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+
+          buffer += decoder.decode(value, { stream: true });
+
+          // Split the buffer by newline to handle multiple JSON messages
+          const lines = buffer.split('\n');
+          // Keep the last partial line in the buffer
+          buffer = lines.pop();
 
           for (let line of lines) {
-            line = line.trim();
+            const trimmedLine = line.trim();
 
-            if (line.startsWith('event:')) continue;
+            if (trimmedLine.startsWith('event:')) continue;
 
-            if (line.startsWith('data:')) {
-              const dataLine = line.replace(/^data: /, '').trim();
+            if (trimmedLine.startsWith('data: ')) {
+              const jsonData = trimmedLine.slice(6).trim();
+
+              if (!jsonData) {
+                console.log("Skipping empty content");
+                continue;
+              }
 
               try {
-                const parsed = JSON.parse(dataLine);
+                const parsed = JSON.parse(jsonData);
 
                 if (parsed.delta && parsed.delta.text) {
                   const content = parsed.delta.text;
@@ -84,6 +98,27 @@ export default async function handler(req, res) {
               } catch (error) {
                 console.error("Failed to parse chunk:", error.message);
               }
+            }
+          }
+        }
+
+        // Handle any remaining data in the buffer
+        if (buffer.trim().startsWith('data: ')) {
+          const jsonData = buffer.trim().slice(6).trim();
+
+          if (jsonData) {
+            try {
+              const parsed = JSON.parse(jsonData);
+
+              if (parsed.delta && parsed.delta.text) {
+                const content = parsed.delta.text;
+                assistantMessage += content;
+                console.log(assistantMessage);
+                res.write(`data: ${JSON.stringify({ content, model })}\n\n`);
+                res.flush();
+              }
+            } catch (error) {
+              console.error("Failed to parse remaining chunk:", error.message);
             }
           }
         }
@@ -109,6 +144,9 @@ export default async function handler(req, res) {
           res.write(`data: ${JSON.stringify({ content, model })}\n\n`);
           res.flush(); // Ensure data is sent immediately
         }
+
+        // Handle any remaining data in the buffer if necessary
+        // (Not needed here as `for await` handles all chunks)
 
         // Save the full assistant response to the chat history
         global.chatMessages[sessionId].messages.push({ role: "assistant", content: assistantMessage, model });
