@@ -77,6 +77,7 @@ export default function ChatHome() {
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        console.log(data);
         if (data.sessionId && !sessionId) {
           setSessionId(data.sessionId);
         }

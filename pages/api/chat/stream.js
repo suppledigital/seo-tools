@@ -55,6 +55,7 @@ export default async function handler(req, res) {
         }
 
         const stream = Readable.from(response.body);
+        console.log("Server stream log");
 
         for await (const chunk of stream) {
           const chunkText = chunk.toString().trim();
@@ -74,8 +75,9 @@ export default async function handler(req, res) {
                 if (parsed.delta && parsed.delta.text) {
                   const content = parsed.delta.text;
                   assistantMessage += content; // Accumulate the message
+                  console.log(assistantMessage);
                   res.write(`data: ${JSON.stringify({ content, model })}\n\n`);
-                  res.flush();
+                  //res.flush();
                 }
               } catch (error) {
                 console.error("Failed to parse chunk:", error.message);
@@ -103,7 +105,7 @@ export default async function handler(req, res) {
 
           // Stream the response to the client
           res.write(`data: ${JSON.stringify({ content, model })}\n\n`);
-          res.flush();
+          //res.flush();
         }
 
         // Save the full assistant response to the chat history

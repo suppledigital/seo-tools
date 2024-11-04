@@ -59,7 +59,7 @@ const ChatDisplay = ({ messages, userImage }) => {
     } else {
       return (
         <div key={index} className={styles.userMessage}>
-          <img src={userImage} alt="User" className={styles.userIcon} />
+         {/* <img src={userImage} alt="User" className={styles.userIcon} />*/}
           <div className={styles.messageContent}>{message.content}</div>
         </div>
       );

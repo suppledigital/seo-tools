@@ -3,6 +3,9 @@ import React, { useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import styles from './SiteAudit.module.css';
 import SortableTable from '../../common/SortableTable';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimesCircle, faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+
 
 // Dynamically import Highcharts to prevent SSR issues
 const Highcharts = dynamic(() => import('highcharts'), { ssr: false });
