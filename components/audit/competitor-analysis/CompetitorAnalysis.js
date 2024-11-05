@@ -220,30 +220,32 @@ const CompetitorAnalysis = ({
 
 
   const renderCompetitivePositioningChart = () => {
-    if (competitivePositioningChartRef.current && overviewData && overviewData.overview && overviewData.overview.organic) {
+    if (
+      competitivePositioningChartRef.current &&
+      overviewData &&
+      overviewData.overview &&
+      overviewData.overview.organic
+    ) {
       const ctx = competitivePositioningChartRef.current.getContext('2d');
       if (chartInstances.current['competitivePositioningChart']) {
         chartInstances.current['competitivePositioningChart'].destroy();
       }
-
+  
       const userDomain = overviewData.overview.organic.base_domain || 'Your Domain';
       const userTotalKeywords = overviewData.overview.organic.keywords_count || 0;
       const ownOrganicTrafficSum = overviewData.overview.organic.traffic_sum || 1; // Prevent division by zero
-
+  
       // Calculate total organic traffic including selected competitors
-      const selectedCompData = allCompetitors.filter(c => selectedCompetitorDomains.includes(c.domain));
+      const selectedCompData = allCompetitors.filter((c) =>
+        selectedCompetitorDomains.includes(c.domain)
+      );
       const totalOrganicTraffic =
         ownOrganicTrafficSum +
         selectedCompData.reduce((acc, c) => acc + (c.traffic_sum || 0), 0);
-
-      // Determine the maximum competition value among selected competitors and your domain
-      const maxCompetition = Math.max(
-        ...selectedCompData.map((c) => c.common_keywords || 0),
-        userTotalKeywords
-      );
-
-      const fixedMaxRadius = 20; // Fixed radius for the highest competition
-
+  
+      // Prepare data points
+      const allDataPoints = [];
+  
       // Generate unique colors for each competitor and your domain
       const colorPalette = [
         'rgba(255, 99, 132, 0.7)', // Red
@@ -257,58 +259,62 @@ const CompetitorAnalysis = ({
         'rgba(102, 102, 255, 0.7)', // Indigo
         'rgba(255, 102, 255, 0.7)', // Pink
       ];
-
-      // Create datasets for each selected competitor
-      const competitorDatasets = selectedCompData.map((c, idx) => {
+  
+      // Create data point for your own domain
+      const ownTrafficPercentage =
+        Number(((ownOrganicTrafficSum / totalOrganicTraffic) * 100).toFixed(2)) || 0;
+  
+      const ownDataPoint = {
+        label: userDomain,
+        x: userTotalKeywords,
+        y: ownTrafficPercentage,
+        trafficPercentage: ownTrafficPercentage,
+      };
+  
+      allDataPoints.push(ownDataPoint);
+  
+      // Create data points for each selected competitor
+      selectedCompData.forEach((c) => {
         const x = c.common_keywords || 0;
         const y =
           Number(((c.traffic_sum / totalOrganicTraffic) * 100).toFixed(2)) || 0;
-        const r =
-          maxCompetition > 0
-            ? (c.common_keywords / maxCompetition) * fixedMaxRadius
-            : fixedMaxRadius;
-
-        return {
+  
+        const dataPoint = {
           label: c.domain,
-          data: [{ x, y, r }],
-          backgroundColor: colorPalette[idx % colorPalette.length],
-          borderColor: colorPalette[idx % colorPalette.length].replace('0.7', '1'),
+          x,
+          y,
+          trafficPercentage: y,
+        };
+  
+        allDataPoints.push(dataPoint);
+      });
+  
+      // Determine min and max traffic percentages for scaling radius
+      const minRadius = 10; // Adjust minimum radius as desired
+      const maxRadius = 40; // Adjust maximum radius as desired
+  
+      // Now, create datasets with radius based on traffic percentage
+      const datasets = allDataPoints.map((dp, idx) => {
+        // Calculate radius based on traffic percentage
+        const r = minRadius + (dp.trafficPercentage / 100) * (maxRadius - minRadius);
+  
+        const color = colorPalette[idx % colorPalette.length];
+  
+        return {
+          label: dp.label,
+          data: [{ x: dp.x, y: dp.y, r }],
+          backgroundColor: color,
+          borderColor: color.replace('0.7', '1'),
           borderWidth: 1,
-          hoverBackgroundColor: colorPalette[idx % colorPalette.length].replace('0.7', '0.9'),
-          hoverBorderColor: colorPalette[idx % colorPalette.length].replace('0.7', '1'),
+          hoverBackgroundColor: color.replace('0.7', '0.9'),
+          hoverBorderColor: color.replace('0.7', '1'),
         };
       });
-
-      // Create dataset for your own domain
-      const ownDataPoint = {
-        x: userTotalKeywords,
-        y:
-          Number(
-            ((ownOrganicTrafficSum / totalOrganicTraffic) * 100).toFixed(2)
-          ) || 0,
-        r:
-          maxCompetition > 0
-            ? (userTotalKeywords / maxCompetition) * fixedMaxRadius
-            : fixedMaxRadius,
-      };
-
-      const ownDataset = {
-        label: userDomain,
-        data: [ownDataPoint],
-        backgroundColor: 'rgba(255, 99, 132, 0.9)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1,
-        hoverBackgroundColor: 'rgba(255, 99, 132, 1)',
-        hoverBorderColor: 'rgba(255, 99, 132, 1)',
-      };
-
-      // Combine all datasets
-      const allDatasets = [ownDataset, ...competitorDatasets];
-
+  
       chartInstances.current['competitivePositioningChart'] = new Chart(ctx, {
         type: 'bubble',
         data: {
-          datasets: allDatasets,
+          datasets,
         },
         options: {
           responsive: true,
@@ -364,6 +370,7 @@ const CompetitorAnalysis = ({
       });
     }
   };
+  
 
   // Re-render competitive positioning chart when selected competitors change
   useEffect(() => {
