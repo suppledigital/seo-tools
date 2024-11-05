@@ -35,8 +35,13 @@ export default function ChatHome() {
   const [currentChatId, setCurrentChatId] = useState(null);
   const [sessionId, setSessionId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('gpt-4o');
-  const [socket, setSocket] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('selectedModel') || 'gpt-4';
+    }
+    return 'gpt-4';
+  });
+    const [socket, setSocket] = useState(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
@@ -50,6 +55,17 @@ export default function ChatHome() {
       setCurrentChatId(chatIdFromUrl);
     }
   }, []);
+  useEffect(() => {
+    console.log("Selected model changed to:", selectedModel);
+  }, [selectedModel]);
+  useEffect(() => {
+    if (selectedModel) {
+      localStorage.setItem('selectedModel', selectedModel);
+    }
+  }, [selectedModel]);
+  
+  
+  
 
   useEffect(() => {
     if (currentChatId) {

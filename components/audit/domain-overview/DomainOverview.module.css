@@ -41,6 +41,8 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: 300px; /* Adjust as needed */
     overflow: hidden;
+    width: 100%; /* Added to ensure the chart item takes full width */
+
   }
   
   .chartItem h3 {
@@ -88,7 +90,8 @@
   
   .competitorCharts {
     display: flex;
-    flex-direction: row;
+    flex-direction: column; /* Changed from row to column */
+    width: 100%; /* Ensured full width */
     gap: 20px;
   }
   
@@ -116,9 +119,10 @@
     border: 1px solid #dee2e6;
     border-radius: 8px;
     background-color: #f1f3f5;
-    height: 150px; /* Adjust height as needed */
+    height: 300px; /* Adjust height as needed */
     overflow: hidden;
   }
+  
   
   .carouselContent {
     flex: 1;
@@ -232,4 +236,17 @@
   .snippetDisplayUrl:hover {
     text-decoration: underline;
   }
-  
+  /* components/audit/domain-overview/DomainOverview.module.css */
+
+.viewAllLink {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.viewAllButton {
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -7,6 +7,8 @@ import dynamic from 'next/dynamic';
 import DomainOverview from '../../components/audit/domain-overview/DomainOverview';
 import SiteAudit from '../../components/audit/site-audit/SiteAudit';
 import KeywordResearch from '../../components/audit/keyword-research/KeywordResearch';
+import CompetitorAnalysis from '../../components/audit/competitor-analysis/CompetitorAnalysis';
+
 import SortableTable from '../../components/common/SortableTable'; // Ensure SortableTable is correctly imported
 
 // Dynamically import HighchartsReact with SSR disabled if needed in other components
@@ -78,7 +80,7 @@ export default function AuditHome() {
     if (value.startsWith('http://') || value.startsWith('https://')) {
       setInputType('url');
       setButtonLabel('Show Domain Overview');
-      setDropdownOptions(['Show Domain Overview + Start Audit']);
+      setDropdownOptions(['Show Domain Overview + Start Audit','Competitor Analysis']);
       setSelectedOption('Show Domain Overview');
     } else if (value.includes(' ')) {
       setInputType('keyword');
@@ -88,7 +90,7 @@ export default function AuditHome() {
     } else if (value) {
       setInputType('domain');
       setButtonLabel('Show Domain Overview');
-      setDropdownOptions(['Show Domain Overview', 'Show Domain Overview + Start Audit', 'Show Keyword Overview']);
+      setDropdownOptions(['Show Domain Overview', 'Show Domain Overview + Start Audit', 'Show Keyword Overview','Competitor Analysis']);
       setSelectedOption('Show Domain Overview');
     } else {
       setInputType('');
@@ -138,7 +140,11 @@ export default function AuditHome() {
         // Start Audit
         await handleStartAudit(domain);
         setCurrentTab('Site Audit');
+      }  else if (selectedOption === 'Competitor Analysis') {
+        // Set current tab to Competitor Analysis
+        setCurrentTab('Competitor Analysis');
       } else {
+        // Show Domain Overview
         setCurrentTab('Domain Overview');
       }
 
@@ -308,6 +314,10 @@ export default function AuditHome() {
     }
   }, [selectedCompetitors]);
 
+  const handleSetCurrentTab = (tab) => {
+    setCurrentTab(tab);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.sidebar}>
@@ -393,7 +403,17 @@ export default function AuditHome() {
             setSelectedCompetitors={setSelectedCompetitors}
             selectedCompetitorDomains={selectedCompetitorDomains}
             setSelectedCompetitorDomains={setSelectedCompetitorDomains}
+            setCurrentTab={handleSetCurrentTab} // Pass the function to set the current tab
+
           />
+        )}
+         {/* Competitor Analysis Tab */}
+        {currentTab === 'Competitor Analysis' && overviewData && (
+          <CompetitorAnalysis
+            overviewData={overviewData}
+            allCompetitors={allCompetitors}
+          />
+
         )}
 
         {/* Site Audit Tab */}

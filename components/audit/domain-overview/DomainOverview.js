@@ -24,31 +24,37 @@ const DomainOverview = ({
   setSelectedCompetitors,
   selectedCompetitorDomains,
   setSelectedCompetitorDomains,
+  setCurrentTab
 }) => {
-  // Refs for Chart.js canvases
-  const chartInstances = useRef({});
-  const trafficTrendChartRef = useRef(null);
-  const organicVsPaidChartRef = useRef(null);
-  const topKeywordsChartRef = useRef(null);
-  const competitivePositioningChartRef = useRef(null);
+ // Refs for Chart.js canvases
+ const chartInstances = useRef({});
+ const trafficTrendChartRef = useRef(null);
+ const organicVsPaidChartRef = useRef(null);
+ const topKeywordsChartRef = useRef(null);
+ const competitivePositioningChartRef = useRef(null);
 
-  // Effect to render charts when overviewData or selectedCompetitors change
-  useEffect(() => {
-    if (overviewData) {
-      renderTrafficTrendChart();
-      renderOrganicVsPaidChart();
-      renderTopKeywordsChart();
-      renderCompetitivePositioningChart();
-    }
+ // Update the useEffect to render the chart when selectedCompetitors change
+ useEffect(() => {
+  if (overviewData) {
+    renderTrafficTrendChart();
+    renderOrganicVsPaidChart();
+    renderTopKeywordsChart();
+  }
+  if (selectedCompetitors.length > 0) {
+    renderCompetitivePositioningChart();
+  }
 
-    // Cleanup charts on unmount
-    return () => {
-      Object.values(chartInstances.current).forEach((chart) => {
-        if (chart) chart.destroy();
-      });
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [overviewData, selectedCompetitors]);
+  console.log('Selected Competitors:', selectedCompetitors);
+
+  return () => {
+    Object.values(chartInstances.current).forEach((chart) => {
+      if (chart) chart.destroy();
+    });
+  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [overviewData, selectedCompetitors]);
+
+
 
   // Define columns for Organic Keywords
   const organicColumns = [
@@ -312,49 +318,105 @@ const DomainOverview = ({
   };
 
   const renderCompetitivePositioningChart = () => {
-    if (competitivePositioningChartRef.current && selectedCompetitors.length > 0) {
+    if (
+      competitivePositioningChartRef.current &&
+      selectedCompetitors.length > 0 &&
+      overviewData &&
+      overviewData.overview &&
+      overviewData.overview.organic
+    ) {
       const ctx = competitivePositioningChartRef.current.getContext('2d');
       if (chartInstances.current['competitivePositioningChart']) {
         chartInstances.current['competitivePositioningChart'].destroy();
       }
 
-      const userDomain = overviewData.overview.organic?.base_domain || 'Your Domain';
-      const userTotalKeywords = overviewData.overview.organic?.keywords_count || 0;
-      const userTrafficShare = overviewData.overview.organic?.traffic_share || 0;
+      const userDomain = overviewData.overview.organic.base_domain || 'Your Domain';
+      const userTotalKeywords = overviewData.overview.organic.keywords_count || 0;
+      const ownOrganicTrafficSum = overviewData.overview.organic.traffic_sum || 1; // Prevent division by zero
 
-      const datasets = [
-        {
-          label: userDomain,
-          data: [
-            {
-              x: userTotalKeywords,
-              y: userTrafficShare,
-              r: 10,
-            },
-          ],
-          backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 1,
-        },
-        ...selectedCompetitors.map((competitor) => ({
-          label: competitor.domain,
-          data: [
-            {
-              x: competitor.keywords || 0,
-              y: competitor.traffic_share || 0,
-              r: (competitor.difficulty || 1) * 2,
-            },
-          ],
-          backgroundColor: 'rgba(54, 162, 235, 0.5)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1,
-        })),
+      // Calculate total organic traffic including competitors
+      const totalOrganicTraffic =
+        ownOrganicTrafficSum +
+        selectedCompetitors.reduce((acc, c) => acc + (c.traffic_sum || 0), 0);
+
+      // Determine the maximum competition value among competitors and your domain
+      const maxCompetition = Math.max(
+        ...selectedCompetitors.map((c) => c.common_keywords || 0),
+        userTotalKeywords
+      );
+
+      const fixedMaxRadius = 20; // Fixed radius for the highest competition
+
+      // Generate unique colors for each competitor and your domain
+      const colorPalette = [
+        'rgba(255, 99, 132, 0.7)', // Red
+        'rgba(54, 162, 235, 0.7)', // Blue
+        'rgba(255, 206, 86, 0.7)', // Yellow
+        'rgba(75, 192, 192, 0.7)', // Teal
+        'rgba(153, 102, 255, 0.7)', // Purple
+        'rgba(255, 159, 64, 0.7)', // Orange
+        'rgba(201, 203, 207, 0.7)', // Grey
+        'rgba(0, 204, 102, 0.7)', // Green
+        'rgba(102, 102, 255, 0.7)', // Indigo
+        'rgba(255, 102, 255, 0.7)', // Pink
       ];
+
+      // Assign colors to competitors
+      const competitorColors = selectedCompetitors.map(
+        (_, idx) => colorPalette[idx % colorPalette.length]
+      );
+
+      // Create datasets for each competitor
+      const competitorDatasets = selectedCompetitors.map((c, idx) => {
+        const x = c.common_keywords || 0;
+        const y =
+          Number(((c.traffic_sum / totalOrganicTraffic) * 100).toFixed(2)) || 0;
+        const r =
+          maxCompetition > 0
+            ? (c.common_keywords / maxCompetition) * fixedMaxRadius
+            : fixedMaxRadius;
+
+        return {
+          label: c.domain,
+          data: [{ x, y, r }],
+          backgroundColor: competitorColors[idx],
+          borderColor: competitorColors[idx].replace('0.7', '1'),
+          borderWidth: 1,
+          hoverBackgroundColor: competitorColors[idx].replace('0.7', '0.9'),
+          hoverBorderColor: competitorColors[idx].replace('0.7', '1'),
+        };
+      });
+
+      // Create dataset for your own domain
+      const ownDataPoint = {
+        x: userTotalKeywords, // Number of organic keywords
+        y:
+          Number(
+            ((ownOrganicTrafficSum / totalOrganicTraffic) * 100).toFixed(2)
+          ) || 0, // Organic traffic share as percentage
+        r:
+          maxCompetition > 0
+            ? (userTotalKeywords / maxCompetition) * fixedMaxRadius
+            : fixedMaxRadius,
+      };
+
+      const ownDataset = {
+        label: userDomain,
+        data: [ownDataPoint],
+        backgroundColor: 'rgba(255, 99, 132, 0.9)', // Distinct color for your domain
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+        hoverBackgroundColor: 'rgba(255, 99, 132, 1)',
+        hoverBorderColor: 'rgba(255, 99, 132, 1)',
+      };
+
+      // Combine all datasets
+      const allDatasets = [ownDataset, ...competitorDatasets];
 
       chartInstances.current['competitivePositioningChart'] = new Chart(ctx, {
         type: 'bubble',
         data: {
-          datasets,
+          datasets: allDatasets,
         },
         options: {
           responsive: true,
@@ -371,10 +433,21 @@ const DomainOverview = ({
             },
             legend: {
               display: true,
-              position: 'right',
+              position: 'bottom',
               labels: {
                 boxWidth: 20,
                 padding: 15,
+                generateLabels: function (chart) {
+                  const datasets = chart.data.datasets;
+                  return datasets.map((dataset, idx) => ({
+                    text: dataset.label,
+                    fillStyle: dataset.backgroundColor,
+                    strokeStyle: dataset.borderColor,
+                    lineWidth: dataset.borderWidth,
+                    hidden: false,
+                    index: idx,
+                  }));
+                },
               },
             },
           },
@@ -421,6 +494,7 @@ const DomainOverview = ({
 
       {/* Unified Grid Container */}
       <div className={styles.domainOverviewGrid}>
+
 
         {/* Row 1: Overview Metrics */}
         <div className={styles.metricItem}>
@@ -494,9 +568,8 @@ const DomainOverview = ({
         <div className={styles.competitorsSection}>
           <h3>Competitors</h3>
 
-          {/* Competitors Selection */}
           <div className={styles.competitorsSelect}>
-            <label htmlFor="competitors">Select Competitors (up to 4):</label>
+            <label htmlFor="competitors">Select Competitors:</label>
             <select
               id="competitors"
               multiple
@@ -509,15 +582,13 @@ const DomainOverview = ({
                     selected.push(options[i].value);
                   }
                 }
-                const selectedComps = allCompetitors.filter((comp) => selected.includes(comp.domain));
+                const selectedComps = allCompetitors.filter((comp) =>
+                  selected.includes(comp.domain)
+                );
 
-                // Limit to 4 competitors
-                if (selectedComps.length <= 4) {
-                  setSelectedCompetitorDomains(selected);
-                  setSelectedCompetitors(selectedComps);
-                } else {
-                  alert('You can select up to 4 competitors.');
-                }
+                // Removed limit to allow selecting as many competitors as desired
+                setSelectedCompetitorDomains(selected);
+                setSelectedCompetitors(selectedComps);
               }}
             >
               {allCompetitors.map((competitor, idx) => (
@@ -530,33 +601,24 @@ const DomainOverview = ({
 
           {/* Competitor Charts */}
           <div className={styles.competitorCharts}>
-            {/* VennChart is currently disabled/commented out */}
-            {/* <div className={`${styles.chartItem} ${styles.larger}`}>
-              <h4>Keyword Share Between Domains</h4>
-              <VennChart options={constructVennOptions()} />
-            </div> */}
-            <div className={`${styles.chartItem} ${styles.larger}`} style={{ height: '400px' }}>
-              <h4>Competitive Positioning</h4>
+          <h4>Competitive Positioning</h4>
+
+            <div
+              className={`${styles.chartItem} ${styles.larger}`}
+              style={{ gridColumn: 'span 4', height: '400px' }} // Made the canvas full width
+            >
               {selectedCompetitors.length > 0 && (
-                <>
-                  <Slider {...carouselSettings}>
-                    {selectedCompetitors.map((competitor, index) => (
-                      <div key={index} className={styles.carouselItem}>
-                        <div className={styles.carouselContent}>
-                          <h5>{competitor.domain}</h5>
-                          <p>Common Keywords: {competitor.common_keywords}</p>
-                          <p>Traffic Sum: {competitor.traffic_sum}</p>
-                          {/* Add more competitor details as needed */}
-                        </div>
-                      </div>
-                    ))}
-                  </Slider>
-                  <canvas ref={competitivePositioningChartRef}></canvas>
-                </>
+                <canvas ref={competitivePositioningChartRef}></canvas>
               )}
+            </div>
+            <div className={styles.viewAllLink}>
+              <button onClick={() => setCurrentTab('Competitor Analysis')} className={styles.viewAllButton}>
+                View all competition info
+              </button>
             </div>
           </div>
         </div>
+
 
         {/* Row 5: Paid Keywords Carousel */}
         <div className={styles.paidKeywordsCarousel}>
