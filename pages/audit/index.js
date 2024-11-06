@@ -17,6 +17,8 @@ const HighchartsReactNoSSR = dynamic(() => import('highcharts-react-official'), 
 // Initialize Chart.js
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
+// Import an icon for the sidebar toggle (using react-icons)
+import { FaBars } from 'react-icons/fa';
 
 export default function AuditHome() {
   const [audits, setAudits] = useState([]);
@@ -39,6 +41,8 @@ export default function AuditHome() {
   const [allCompetitors, setAllCompetitors] = useState([]);
   const [selectedCompetitors, setSelectedCompetitors] = useState([]);
   const [selectedCompetitorDomains, setSelectedCompetitorDomains] = useState([]);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Sidebar collapsed by default
+
 
   const carouselSettings = {
     dots: true,
@@ -56,6 +60,9 @@ export default function AuditHome() {
         },
       },
     ],
+  };
+  const handleSidebarToggle = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
   };
 
   useEffect(() => {
@@ -320,22 +327,39 @@ export default function AuditHome() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.sidebar}>
-        <h3>Audit History</h3>
-        <ul>
-          {audits.map((audit) => (
-            <li
-              key={audit.id}
-              className={audit.status === 'finished' ? styles.finished : styles.pending}
-              onClick={() => handleAuditClick(audit.id)}
-            >
-              {audit.title}
-            </li>
-          ))}
-        </ul>
+      <div className={`${styles.sidebar} ${sidebarCollapsed ? styles.collapsed : ''}`}>
+        <div className={styles.sidebarHeader}>
+          <h3>Audit History</h3>
+          <button
+            className={styles.sidebarToggle}
+            onClick={handleSidebarToggle}
+          >
+            {sidebarCollapsed ? '>' : '<'}
+          </button>
+        </div>
+        {!sidebarCollapsed && (
+          <ul>
+            {audits.map((audit) => (
+              <li
+                key={audit.id}
+                className={audit.status === 'finished' ? styles.finished : styles.pending}
+                onClick={() => handleAuditClick(audit.id)}
+              >
+                {audit.title}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className={styles.main}>
+        {/* Sidebar Toggle Icon */}
+        {sidebarCollapsed && (
+          <button className={styles.sidebarToggleIcon} onClick={handleSidebarToggle}>
+            <FaBars />
+          </button>
+        )}
+
         <h1>SEO Tool</h1>
         <div className={styles.inputGroup}>
           <input

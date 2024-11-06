@@ -10,8 +10,37 @@
   padding: 20px;
   border-right: 1px solid #ddd;
   overflow-y: auto;
+  transition: width 0.3s, padding 0.3s;
 }
 
+.collapsed {
+  width: 0;
+  padding: 0;
+  border: none;
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sidebarToggle {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.sidebarToggleIcon {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  position: fixed; /* Changed to fixed for better positioning */
+  top: 10px;
+  left: 20px;
+  z-index: 1000; /* Ensure it appears above other elements */
+  color:gray;
+}
 .sidebar h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
@@ -47,6 +76,20 @@
   flex: 1;
   padding: 20px;
   overflow-y: auto;
+  position: relative;
+}
+/* Adjust main content when sidebar is collapsed */
+.container .main {
+  margin-left: 0;
+}
+
+.container .sidebar.collapsed + .main {
+  margin-left: 0;
+}
+
+.container .sidebar + .main {
+  margin-left: 250px;
+  transition: margin-left 0.3s;
 }
 
 .main h1 {
