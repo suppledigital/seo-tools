@@ -19,6 +19,7 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.6",
     "d3": "^7.9.0",
+    "d3-transition": "^3.0.1",
     "dotenv": "^16.4.5",
     "handsontable": "^14.6.0",
     "highcharts": "^11.4.8",

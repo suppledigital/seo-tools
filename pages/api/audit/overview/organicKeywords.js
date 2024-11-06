@@ -5,7 +5,7 @@ import NodeCache from 'node-cache';
 const cache = new NodeCache({ stdTTL: 3600 }); // Cache for 1 hour
 
 export default async function handler(req, res) {
-  const { domain, page = 1, limit = 100, order_field = "traffic_percent" } = req.query;
+  const { domain, page = 1, limit =1000, order_field = "traffic_percent" } = req.query;
   const cacheKey = `organicKeywords-${domain}-page${page}-limit${limit}-order_field${order_field}`;
 
   if (!domain) {

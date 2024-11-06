@@ -80,7 +80,7 @@
 }
 /* Adjust main content when sidebar is collapsed */
 .container .main {
-  margin-left: 0;
+  margin-left: 0!important;
 }
 
 .container .sidebar.collapsed + .main {
