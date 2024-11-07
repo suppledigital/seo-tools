@@ -44,7 +44,7 @@
     "recharts": "^2.13.0",
     "remark-gfm": "^4.0.0",
     "slick-carousel": "^1.8.1",
-    "venn.js": "^0.2.20",
+    "venn.js": "^0.2.10",
     "ws": "^8.18.0"
   }
 }

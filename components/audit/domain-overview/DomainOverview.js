@@ -3,22 +3,30 @@
 import React, { useRef, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import styles from './DomainOverview.module.css';
-import { FaInfoCircle, FaArrowUp, FaArrowDown, FaMinus, FaLink, FaStar, FaStarHalfAlt } from 'react-icons/fa';
+import {
+  FaInfoCircle,
+  FaArrowUp,
+  FaArrowDown,
+  FaMinus,
+  FaLink,
+  FaStar,
+  FaStarHalfAlt,
+} from 'react-icons/fa';
 import { MdFeaturedPlayList } from 'react-icons/md';
 import { Chart } from 'chart.js';
 import Select from 'react-select';
 
-// Import d3 modules
-import { select } from 'd3-selection';
-import 'd3-transition'; // Import d3-transition
-import * as venn from 'venn.js';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+import vennModule from 'highcharts/modules/venn';
+
+// Initialize the module
+vennModule(Highcharts);
 
 // Dynamically import DataTable
 const DataTable = dynamic(() => import('react-data-table-component'), {
   ssr: false,
 });
-
-
 
 const DomainOverview = ({
   overviewData,
@@ -33,11 +41,11 @@ const DomainOverview = ({
   const trendChartRef = useRef(null);
   const intentChartRef = useRef(null);
   const rankingDistributionRef = useRef(null);
-  const vennDiagramRef = useRef(null);
   const competitivePositioningChartRef = useRef(null);
 
   // State for tabs and data
-  const [trafficType, setTrafficType] = useState('organic'); // 'organic' or 'paid'
+  const [trafficType, setTrafficType] = useState('organic'); // 'organic' or 'paid' (used in Country Distribution)
+  const [rankingTrafficType, setRankingTrafficType] = useState('organic'); // 'organic' or 'paid' (used in Ranking Distribution)
   const [selectedMetric, setSelectedMetric] = useState('traffic_sum');
   const [dateRange, setDateRange] = useState('12');
   const [keywordTab, setKeywordTab] = useState('all'); // 'all', 'improved', 'decreased', 'new', 'lost'
@@ -51,44 +59,42 @@ const DomainOverview = ({
   // Prepare data for organic competitors
   const organicCompetitors = overviewData.competitors || [];
 
-   // Data for Organic Keywords
-   const [filteredOrganicKeywords, setFilteredOrganicKeywords] = useState([]);
-   // Calculate Improved, Decreased, New, Lost keywords
-   useEffect(() => {
-     let filteredKeywords = [...sortedOrganicKeywords];
- 
-     switch (keywordTab) {
-       case 'improved':
-         filteredKeywords = filteredKeywords.filter(
-           (kw) => kw.prev_pos && kw.position < kw.prev_pos
-         );
-         break;
-       case 'decreased':
-         filteredKeywords = filteredKeywords.filter(
-           (kw) => kw.prev_pos && kw.position > kw.prev_pos
-         );
-         break;
-       case 'new':
-         filteredKeywords = filteredKeywords.filter(
-           (kw) => (!kw.prev_pos || kw.prev_pos === 0) && kw.position > 0
-         );
-         break;
-       case 'lost':
-         filteredKeywords = filteredKeywords.filter(
-           (kw) => kw.prev_pos > 0 && kw.position === 0
-         );
-         break;
-       default:
-         break;
-     }
- 
-     setFilteredOrganicKeywords(filteredKeywords);
-   }, [keywordTab, sortedOrganicKeywords]);
+  // Data for Organic Keywords
+  const [filteredOrganicKeywords, setFilteredOrganicKeywords] = useState([]);
+  // Calculate Improved, Decreased, New, Lost keywords
+  useEffect(() => {
+    let filteredKeywords = [...sortedOrganicKeywords];
 
+    switch (keywordTab) {
+      case 'improved':
+        filteredKeywords = filteredKeywords.filter(
+          (kw) => kw.prev_pos && kw.position < kw.prev_pos
+        );
+        break;
+      case 'decreased':
+        filteredKeywords = filteredKeywords.filter(
+          (kw) => kw.prev_pos && kw.position > kw.prev_pos
+        );
+        break;
+      case 'new':
+        filteredKeywords = filteredKeywords.filter(
+          (kw) => (!kw.prev_pos || kw.prev_pos === 0) && kw.position > 0
+        );
+        break;
+      case 'lost':
+        filteredKeywords = filteredKeywords.filter(
+          (kw) => kw.prev_pos > 0 && kw.position === 0
+        );
+        break;
+      default:
+        break;
+    }
 
+    setFilteredOrganicKeywords(filteredKeywords);
+  }, [keywordTab, sortedOrganicKeywords]);
 
-   // Define columns for Organic Keywords with function selectors
-   const organicColumns = [
+  // Define columns for Organic Keywords with function selectors
+  const organicColumns = [
     {
       name: 'Keyword',
       selector: (row) => row.keyword,
@@ -151,6 +157,7 @@ const DomainOverview = ({
       format: (row) => `$${row.cpc}`,
     },
   ];
+
   // Define columns for Organic Competitors with function selectors
   const competitorsColumns = [
     {
@@ -184,290 +191,309 @@ const DomainOverview = ({
   ];
   const dateRangeOptions = ['6', '12', '18', '24', '30', '36', 'All'];
 
-   // Function to map block_type to icons
-   const getBlockTypeIcon = (blockType) => {
+  // Function to map block_type to icons
+  const getBlockTypeIcon = (blockType) => {
     switch (blockType) {
       case 'sitelinks':
         return <FaLink title="Sitelinks" className={styles.blockIcon} />;
       case 'reviews':
         return <FaStar title="Reviews" className={styles.blockIcon} />;
       case 'featured_snippets':
-        return <MdFeaturedPlayList title="Featured Snippets" className={styles.blockIcon} />;
+        return (
+          <MdFeaturedPlayList
+            title="Featured Snippets"
+            className={styles.blockIcon}
+          />
+        );
       // Add more cases as needed
       default:
         return null;
     }
   };
 
+ // Chart Rendering Functions
+ const renderTrendChart = () => {
+  if (trendChartRef.current && trendData.length > 0) {
+    const ctx = trendChartRef.current.getContext('2d');
+    if (chartInstances.current['trendChart']) {
+      chartInstances.current['trendChart'].destroy();
+    }
 
-  // Chart Rendering Functions
-  const renderTrendChart = () => {
-    if (trendChartRef.current && trendData.length > 0) {
-      const ctx = trendChartRef.current.getContext('2d');
-      if (chartInstances.current['trendChart']) {
-        chartInstances.current['trendChart'].destroy();
-      }
+    // Determine months to show based on dateRange
+    const monthsToShow = dateRange === 'All' ? Infinity : parseInt(dateRange);
+    const limitedData =
+      monthsToShow !== Infinity ? trendData.slice(-monthsToShow) : trendData;
 
-      // Determine months to show based on dateRange
-      const monthsToShow = dateRange === 'All' ? Infinity : parseInt(dateRange);
-      const limitedData =
-        monthsToShow !== Infinity ? trendData.slice(-monthsToShow) : trendData;
+    const labels = limitedData.map((item) => `${item.month}/${item.year}`);
+    const data = limitedData.map((item) => item[selectedMetric] || 0);
 
-      const labels = limitedData.map((item) => `${item.month}/${item.year}`);
-      const data = limitedData.map((item) => item[selectedMetric] || 0);
-
-      chartInstances.current['trendChart'] = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [
-            {
-              label:
-                selectedMetric === 'traffic_sum'
-                  ? 'Total Traffic'
-                  : selectedMetric === 'keywords_count'
-                  ? 'Keywords'
-                  : 'Traffic Cost',
-              data,
-              fill: false,
-              borderColor: '#007bff',
-              tension: 0.4,
-            },
-          ],
+    chartInstances.current['trendChart'] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label:
+              selectedMetric === 'traffic_sum'
+                ? 'Total Traffic'
+                : selectedMetric === 'keywords_count'
+                ? 'Keywords'
+                : 'Traffic Cost',
+            data,
+            fill: false,
+            borderColor: '#007bff',
+            tension: 0.4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false,
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: {
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
             mode: 'index',
             intersect: false,
           },
-          plugins: {
-            legend: { position: 'top' },
-            tooltip: {
-              mode: 'index',
-              intersect: false,
-            },
-          },
-          scales: {
-            x: {
-              grid: {
-                display: false,
-                drawBorder: false,
-                drawOnChartArea: false,
-              },
-              ticks: {
-                display: true,
-              },
-            },
-            y: {
-              grid: {
-                display: true,
-                drawBorder: false,
-              },
-              ticks: {
-                display: true,
-              },
-              beginAtZero: true,
-            },
-          },
         },
-      });
-    }
-  };
-
-  useEffect(() => {
-    renderTrendChart();
-
-    return () => {
-      Object.values(chartInstances.current).forEach((chart) => {
-        if (chart) chart.destroy();
-      });
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [overviewData, selectedMetric, dateRange]);
-
-  // Keyword by Intent
-  const [intentData, setIntentData] = useState([]);
-  useEffect(() => {
-    fetchIntentData();
-  }, []);
-
-  const fetchIntentData = async () => {
-    // Make an API call to fetch intent data
-    // For now, use dummy data
-    const dummyIntentData = [
-      { intent: 'Informational', keywords: 1200 },
-      { intent: 'Navigational', keywords: 800 },
-      { intent: 'Transactional', keywords: 600 },
-      { intent: 'Commercial', keywords: 400 },
-    ];
-    setIntentData(dummyIntentData);
-  };
-
-  const renderIntentChart = () => {
-    if (intentChartRef.current && intentData.length > 0) {
-      const ctx = intentChartRef.current.getContext('2d');
-      if (chartInstances.current['intentChart']) {
-        chartInstances.current['intentChart'].destroy();
-      }
-
-      const labels = intentData.map((item) => item.intent);
-      const data = intentData.map((item) => item.keywords);
-
-      chartInstances.current['intentChart'] = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [
-            {
-              data,
-              backgroundColor: '#007bff',
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: { enabled: true },
-          },
-          scales: {
-            x: {
+        scales: {
+          x: {
+            grid: {
               display: false,
+              drawBorder: false,
+              drawOnChartArea: false,
             },
-            y: {
-              display: false,
+            ticks: {
+              display: true,
             },
           },
+          y: {
+            grid: {
+              display: true,
+              drawBorder: false,
+            },
+            ticks: {
+              display: true,
+            },
+            beginAtZero: true,
+          },
         },
-      });
-    }
-  };
-
-  useEffect(() => {
-    renderIntentChart();
-  }, [intentData]);
-
-    // Similarly, update SERP Features section
-    const getSERPFeatureIcon = (feature) => {
-      switch (feature) {
-        case 'sitelinks':
-          return <FaLink title="Sitelinks" className={styles.serpFeatureIcon} />;
-        case 'reviews':
-          return <FaStar title="Reviews" className={styles.serpFeatureIcon} />;
-        case 'featured_snippets':
-          return <MdFeaturedPlayList title="Featured Snippets" className={styles.serpFeatureIcon} />;
-        // Add more cases as needed
-        default:
-          return null;
-      }
-    };
-
-  // SERP Features
-  const [serpFeatures, setSerpFeatures] = useState([]);
-
-  useEffect(() => {
-    calculateSerpFeatures();
-  }, [sortedOrganicKeywords]);
-
-  const calculateSerpFeatures = () => {
-    const featureCounts = {};
-
-    sortedOrganicKeywords.forEach((kw) => {
-      if (kw.block_type) {
-        const blockType = kw.block_type;
-        featureCounts[blockType] = (featureCounts[blockType] || 0) + 1;
-      }
+      },
     });
+  }
+};
 
-    const featuresArray = Object.keys(featureCounts).map((feature) => ({
-      feature,
-      count: featureCounts[feature],
-    }));
+useEffect(() => {
+  renderTrendChart();
 
-    setSerpFeatures(featuresArray);
+  return () => {
+    Object.values(chartInstances.current).forEach((chart) => {
+      if (chart) chart.destroy();
+    });
   };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [overviewData, selectedMetric, dateRange]);
 
-  // Distribution of Organic Keyword Rankings
-  const renderRankingDistributionChart = () => {
-    if (rankingDistributionRef.current && sortedOrganicKeywords.length > 0) {
-      const ctx = rankingDistributionRef.current.getContext('2d');
-      if (chartInstances.current['rankingDistributionChart']) {
-        chartInstances.current['rankingDistributionChart'].destroy();
-      }
+// Keyword by Intent
+const [intentData, setIntentData] = useState([]);
+useEffect(() => {
+  fetchIntentData();
+}, []);
 
-      const ranges = [
-        { range: '1-5', count: 0 },
-        { range: '6-10', count: 0 },
-        { range: '11-20', count: 0 },
-        { range: '21-50', count: 0 },
-        { range: '51-100', count: 0 },
-      ];
+const fetchIntentData = async () => {
+  // Make an API call to fetch intent data
+  // For now, use dummy data
+  const dummyIntentData = [
+    { intent: 'Informational', keywords: 1200 },
+    { intent: 'Navigational', keywords: 800 },
+    { intent: 'Transactional', keywords: 600 },
+    { intent: 'Commercial', keywords: 400 },
+  ];
+  setIntentData(dummyIntentData);
+};
 
-      sortedOrganicKeywords.forEach((kw) => {
-        const pos = kw.position;
-        if (pos >= 1 && pos <= 5) ranges[0].count += 1;
-        else if (pos >= 6 && pos <= 10) ranges[1].count += 1;
-        else if (pos >= 11 && pos <= 20) ranges[2].count += 1;
-        else if (pos >= 21 && pos <= 50) ranges[3].count += 1;
-        else if (pos >= 51 && pos <= 100) ranges[4].count += 1;
-      });
-
-      const totalKeywords = sortedOrganicKeywords.length;
-      const percentages = ranges.map((r) =>
-        ((r.count / totalKeywords) * 100).toFixed(2)
-      );
-
-      chartInstances.current['rankingDistributionChart'] = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ranges.map((r) => r.range),
-          datasets: [
-            {
-              data: percentages,
-              backgroundColor: '#007bff',
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: (context) => `${context.raw}%`,
-              },
-            },
-          },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'Position Ranges',
-              },
-            },
-            y: {
-              title: {
-                display: true,
-                text: '% of Keywords',
-              },
-              beginAtZero: true,
-            },
-          },
-        },
-      });
+const renderIntentChart = () => {
+  if (intentChartRef.current && intentData.length > 0) {
+    const ctx = intentChartRef.current.getContext('2d');
+    if (chartInstances.current['intentChart']) {
+      chartInstances.current['intentChart'].destroy();
     }
-  };
 
-  useEffect(() => {
-    renderRankingDistributionChart();
-  }, [sortedOrganicKeywords]);
+    const labels = intentData.map((item) => item.intent);
+    const data = intentData.map((item) => item.keywords);
+
+    chartInstances.current['intentChart'] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            data,
+            backgroundColor: '#007bff',
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true },
+        },
+        scales: {
+          x: {
+            display: false,
+          },
+          y: {
+            display: false,
+          },
+        },
+      },
+    });
+  }
+};
+
+useEffect(() => {
+  renderIntentChart();
+}, [intentData]);
+
+// Similarly, update SERP Features section
+const getSERPFeatureIcon = (feature) => {
+  switch (feature) {
+    case 'sitelinks':
+      return <FaLink title="Sitelinks" className={styles.serpFeatureIcon} />;
+    case 'reviews':
+      return <FaStar title="Reviews" className={styles.serpFeatureIcon} />;
+    case 'featured_snippets':
+      return (
+        <MdFeaturedPlayList
+          title="Featured Snippets"
+          className={styles.serpFeatureIcon}
+        />
+      );
+    // Add more cases as needed
+    default:
+      return null;
+  }
+};
+
+// SERP Features
+const [serpFeatures, setSerpFeatures] = useState([]);
+
+useEffect(() => {
+  calculateSerpFeatures();
+}, [sortedOrganicKeywords]);
+
+const calculateSerpFeatures = () => {
+  const featureCounts = {};
+
+  sortedOrganicKeywords.forEach((kw) => {
+    if (kw.block_type) {
+      const blockType = kw.block_type;
+      featureCounts[blockType] = (featureCounts[blockType] || 0) + 1;
+    }
+  });
+
+  const featuresArray = Object.keys(featureCounts).map((feature) => ({
+    feature,
+    count: featureCounts[feature],
+  }));
+
+  setSerpFeatures(featuresArray);
+};
+
+// Distribution of Keyword Rankings
+const renderRankingDistributionChart = () => {
+  if (
+    rankingDistributionRef.current &&
+    overviewData.overview &&
+    overviewData.overview[rankingTrafficType]
+  ) {
+    const ctx = rankingDistributionRef.current.getContext('2d');
+    if (chartInstances.current['rankingDistributionChart']) {
+      chartInstances.current['rankingDistributionChart'].destroy();
+    }
+
+    const data = overviewData.overview[rankingTrafficType];
+
+    let ranges;
+    let totalKeywords;
+    if (rankingTrafficType === 'organic') {
+      ranges = [
+        { range: '1-5', count: data.top1_5 || 0 },
+        { range: '6-10', count: data.top6_10 || 0 },
+        { range: '11-20', count: data.top11_20 || 0 },
+        { range: '21-50', count: data.top21_50 || 0 },
+        { range: '51-100', count: data.top51_100 || 0 },
+      ];
+      totalKeywords = data.keywords_count || 1;
+    } else if (rankingTrafficType === 'adv') {
+      ranges = [
+        { range: '1-2', count: data.top1_2 || 0 },
+        { range: '3-5', count: data.top3_5 || 0 },
+        { range: '6-8', count: data.top6_8 || 0 },
+        { range: '9-11', count: data.top9_11 || 0 },
+      ];
+      totalKeywords = data.keywords_count || 1;
+    }
+
+    const percentages = ranges.map((r) =>
+      ((r.count / totalKeywords) * 100).toFixed(2)
+    );
+
+    chartInstances.current['rankingDistributionChart'] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ranges.map((r) => r.range),
+        datasets: [
+          {
+            data: percentages,
+            backgroundColor: '#007bff',
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${context.raw}%`,
+            },
+          },
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Position Ranges',
+            },
+          },
+          y: {
+            title: {
+              display: true,
+              text: '% of Keywords',
+            },
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+  }
+};
+
+useEffect(() => {
+  renderRankingDistributionChart();
+}, [rankingTrafficType, overviewData]);
 
   // Organic Competitor Semantics Comparison (Venn Diagram)
   const [selectedVennCompetitors, setSelectedVennCompetitors] = useState([]);
+  const [vennOptions, setVennOptions] = useState(null);
 
   useEffect(() => {
     const ownDomain = overviewData.overview?.organic?.base_domain || 'N/A';
@@ -492,13 +518,10 @@ const DomainOverview = ({
     setSelectedVennCompetitors(selectedOptions.map((option) => option.value));
   };
 
-  const renderVennDiagram = () => {
-    if (vennDiagramRef.current && selectedVennCompetitors.length >= 2) {
-      const container = select(vennDiagramRef.current);
-      container.selectAll('*').remove(); // Clear previous diagram
-
-      const ownDomain = overviewData.overview?.organic?.base_domain || 'N/A';
-      const ownTotalKeywords = overviewData.overview?.organic?.keywords_count || 0;
+  const buildVennDiagramOptions = () => {
+    if (selectedVennCompetitors.length >= 2 && overviewData && overviewData.overview && overviewData.overview.organic) {
+      const ownDomain = overviewData.overview.organic.base_domain || 'N/A';
+      const ownTotalKeywords = overviewData.overview.organic.keywords_count || 0;
 
       // Prepare domain data
       const domainData = {};
@@ -519,15 +542,15 @@ const DomainOverview = ({
       });
 
       const selectedDomains = selectedVennCompetitors;
-
-      const sets = [];
+      const data = [];
 
       // Add sets for each domain
       selectedDomains.forEach((domain) => {
-        const data = domainData[domain];
-        sets.push({
+        const dataItem = domainData[domain];
+        data.push({
           sets: [domain],
-          size: data.total_keywords,
+          value: dataItem.total_keywords,
+          name: domain,
         });
       });
 
@@ -551,9 +574,9 @@ const DomainOverview = ({
             overlapSize = Math.min(competitorDataA.total_keywords, competitorDataB.total_keywords) * 0.1; // Assume 10% overlap
           }
 
-          sets.push({
+          data.push({
             sets: [domainA, domainB],
-            size: overlapSize,
+            value: overlapSize,
           });
         }
       }
@@ -575,26 +598,40 @@ const DomainOverview = ({
 
         const tripleOverlapSize = minTotalKeywords * 0.05; // Assume 5% overlap
 
-        sets.push({
+        data.push({
           sets: [domainA, domainB, domainC],
-          size: tripleOverlapSize,
+          value: tripleOverlapSize,
         });
       }
 
-      // Now render the Venn diagram
-      venn.VennDiagram()(container.datum(sets));
+      const options = {
+        series: [{
+          type: 'venn',
+          data: data,
+          name: 'Domain Overlaps',
+          dataLabels: {
+            style: {
+              fontSize: '15px',
+              textOutline: 'none'
+            }
+          }
+        }],
+        title: {
+          text: 'Organic Competitor Semantics Comparison'
+        },
+        tooltip: {
+          headerFormat: '',
+          pointFormat: '<b>{point.name}</b><br>Overlap: {point.value}'
+        },
+      };
 
-      // Add tooltip or labels
-      container.selectAll('text')
-        .style('fill', 'black')
-        .style('font-size', '12px');
+      setVennOptions(options);
     }
   };
 
   useEffect(() => {
-    renderVennDiagram();
+    buildVennDiagramOptions();
   }, [selectedVennCompetitors, overviewData]);
-
 
    // Competitive Positioning Chart
    const [selectedCompetitorDomains, setSelectedCompetitorDomains] = useState([]);
@@ -606,13 +643,13 @@ const DomainOverview = ({
      ].slice(0, 5); // Limit default to 5 domains
      setSelectedCompetitorDomains(defaultCompetitors);
    }, [overviewData, allCompetitors]);
- 
+
    // Prepare options for react-select
    const competitorOptions = [
      { value: overviewData.overview?.organic?.base_domain || 'N/A', label: overviewData.overview?.organic?.base_domain || 'N/A' },
      ...allCompetitors.map(c => ({ value: c.domain, label: c.domain })),
    ];
- 
+
    const renderCompetitivePositioningChart = () => {
      if (
        competitivePositioningChartRef.current &&
@@ -624,24 +661,24 @@ const DomainOverview = ({
        if (chartInstances.current['competitivePositioningChart']) {
          chartInstances.current['competitivePositioningChart'].destroy();
        }
- 
+
        const userDomain = overviewData.overview.organic.base_domain || 'Your Domain';
        const userTotalKeywords = overviewData.overview.organic.keywords_count || 0;
        const ownOrganicTrafficSum = overviewData.overview.organic.traffic_sum || 1; // Prevent division by zero
- 
+
        // Filter competitors based on selectedCompetitorDomains
        const selectedCompData = allCompetitors.filter((c) =>
          selectedCompetitorDomains.includes(c.domain)
        );
- 
+
        // Calculate total organic traffic including selected competitors
        const totalOrganicTraffic =
          ownOrganicTrafficSum +
          selectedCompData.reduce((acc, c) => acc + (c.traffic_sum || 0), 0);
- 
+
        // Prepare data points
        const allDataPoints = [];
- 
+
        // Generate unique colors for each competitor and your domain
        const colorPalette = [
          'rgba(255, 99, 132, 0.7)', // Red
@@ -655,49 +692,49 @@ const DomainOverview = ({
          'rgba(102, 102, 255, 0.7)', // Indigo
          'rgba(255, 102, 255, 0.7)', // Pink
        ];
- 
+
        // Include own domain if selected
        if (selectedCompetitorDomains.includes(userDomain)) {
          const ownTrafficPercentage =
            Number(((ownOrganicTrafficSum / totalOrganicTraffic) * 100).toFixed(2)) || 0;
- 
+
          const ownDataPoint = {
            label: userDomain,
            x: userTotalKeywords,
            y: ownTrafficPercentage,
            trafficPercentage: ownTrafficPercentage,
          };
- 
+
          allDataPoints.push(ownDataPoint);
        }
- 
+
        // Create data points for each selected competitor
        selectedCompData.forEach((c) => {
          const x = c.total_keywords || 0;
          const y =
            Number(((c.traffic_sum / totalOrganicTraffic) * 100).toFixed(2)) || 0;
- 
+
          const dataPoint = {
            label: c.domain,
            x,
            y,
            trafficPercentage: y,
          };
- 
+
          allDataPoints.push(dataPoint);
        });
- 
+
        // Determine min and max traffic percentages for scaling radius
        const minRadius = 10; // Adjust minimum radius as desired
        const maxRadius = 40; // Adjust maximum radius as desired
- 
+
        // Now, create datasets with radius based on traffic percentage
        const datasets = allDataPoints.map((dp, idx) => {
          // Calculate radius based on traffic percentage
          const r = minRadius + (dp.trafficPercentage / 100) * (maxRadius - minRadius);
- 
+
          const color = colorPalette[idx % colorPalette.length];
- 
+
          return {
            label: dp.label,
            data: [{ x: dp.x, y: dp.y, r }],
@@ -708,7 +745,7 @@ const DomainOverview = ({
            hoverBorderColor: color.replace('0.7', '1'),
          };
        });
- 
+
        chartInstances.current['competitivePositioningChart'] = new Chart(ctx, {
          type: 'bubble',
          data: {
@@ -770,11 +807,11 @@ const DomainOverview = ({
        });
      }
    };
- 
+
    useEffect(() => {
      renderCompetitivePositioningChart();
    }, [selectedCompetitorDomains, overviewData]);
- 
+
   
 
   return (
@@ -1105,9 +1142,27 @@ const DomainOverview = ({
 
       {/* Distribution Row */}
       <div className={styles.distributionRow}>
-        {/* Distribution of Organic Keyword Rankings */}
+        {/* Distribution of Keyword Rankings */}
         <div className={styles.distributionSection}>
-          <h3>Distribution of Organic Keyword Rankings</h3>
+          <div className={styles.tabHeader}>
+            <button
+              className={
+                rankingTrafficType === 'organic' ? styles.activeTab : ''
+              }
+              onClick={() => setRankingTrafficType('organic')}
+            >
+              Organic
+            </button>
+            <button
+              className={
+                rankingTrafficType === 'adv' ? styles.activeTab : ''
+              }
+              onClick={() => setRankingTrafficType('adv')}
+            >
+              Paid
+            </button>
+          </div>
+          <h3>Distribution of Keyword Rankings</h3>
           <div className={styles.distributionChartContainer}>
             <canvas ref={rankingDistributionRef}></canvas>
           </div>
@@ -1132,7 +1187,14 @@ const DomainOverview = ({
               }}
             />
           </div>
-          <div ref={vennDiagramRef} className={styles.vennDiagram}></div>
+          <div className={styles.vennDiagram}>
+            {vennOptions && (
+              <HighchartsReact
+                highcharts={Highcharts}
+                options={vennOptions}
+              />
+            )}
+          </div>
         </div>
       </div>
 
