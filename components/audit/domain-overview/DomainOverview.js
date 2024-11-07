@@ -577,6 +577,7 @@ useEffect(() => {
           data.push({
             sets: [domainA, domainB],
             value: overlapSize,
+            name: `Overlap between ${domainA} and ${domainB}`,
           });
         }
       }
@@ -601,6 +602,8 @@ useEffect(() => {
         data.push({
           sets: [domainA, domainB, domainC],
           value: tripleOverlapSize,
+          name: `Overlap among ${domainA}, ${domainB}, and ${domainC}`,
+
         });
       }
 
@@ -621,7 +624,13 @@ useEffect(() => {
         },
         tooltip: {
           headerFormat: '',
-          pointFormat: '<b>{point.name}</b><br>Overlap: {point.value}'
+          pointFormatter: function () {
+            if (this.sets.length === 1) {
+              return `<b>${this.name}</b><br>Keywords: ${this.value}`;
+            } else {
+              return `<b>${this.name}</b><br>Overlap Keywords: ${this.value}`;
+            }
+          }
         },
       };
 
