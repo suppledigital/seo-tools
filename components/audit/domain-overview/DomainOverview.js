@@ -4,8 +4,11 @@ import React, { useRef, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import exportingInit from 'highcharts/modules/exporting';
+import offlineExporting from 'highcharts/modules/offline-exporting';
+
 import styles from './DomainOverview.module.css';
-import { FaInfoCircle, FaArrowUp, FaArrowDown, FaMinus, FaLink, FaStar, FaRobot, FaDownload } from 'react-icons/fa';
+import { FaInfoCircle, FaLocationArrow, FaArrowUp, FaArrowDown, FaMinus, FaLink, FaStar, FaRobot, FaDownload } from 'react-icons/fa';
 import axios from 'axios';
 import qs from 'qs';
 
@@ -47,8 +50,54 @@ const DomainOverview = ({
   const [selectedMetric, setSelectedMetric] = useState('traffic_sum');
   const [dateRange, setDateRange] = useState('12');
   const [keywordTab, setKeywordTab] = useState('all'); // 'all', 'improved', 'decreased', 'new', 'lost'
+  const vennChartRef = useRef(null);
 
-
+  const handleAIInsights = () => {
+    alert('AI Insights coming soon!');
+  };
+  
+  const handleDownloadTrendChart = () => {
+    if (chartInstances.current['trendChart']) {
+      const link = document.createElement('a');
+      link.href = chartInstances.current['trendChart'].toBase64Image();
+      link.download = 'trend-chart.png';
+      link.click();
+    }
+  };
+  
+  const handleDownloadIntentChart = () => {
+    if (chartInstances.current['intentChart']) {
+      const link = document.createElement('a');
+      link.href = chartInstances.current['intentChart'].toBase64Image();
+      link.download = 'intent-chart.png';
+      link.click();
+    }
+  };
+  
+  const handleDownloadRankingChart = () => {
+    if (chartInstances.current['rankingDistributionChart']) {
+      const link = document.createElement('a');
+      link.href = chartInstances.current['rankingDistributionChart'].toBase64Image();
+      link.download = 'ranking-distribution-chart.png';
+      link.click();
+    }
+  };
+  
+  const handleDownloadVennChart = () => {
+    if (vennChartRef.current && vennChartRef.current.chart) {
+      vennChartRef.current.chart.exportChartLocal();
+    }
+  };
+  
+  const handleDownloadCompetitiveChart = () => {
+    if (chartInstances.current['competitivePositioningChart']) {
+      const link = document.createElement('a');
+      link.href = chartInstances.current['competitivePositioningChart'].toBase64Image();
+      link.download = 'competitive-positioning-chart.png';
+      link.click();
+    }
+  };
+  
 
 
   // Prepare data for the trend chart
@@ -148,8 +197,10 @@ const DomainOverview = ({
             {blockIcon}
             {row.position > 0 ? row.position : '-'}
             {positionChange !== null && (
-              <span className={styles.changeIcon}>{changeIcon}</span>
+              <span className={styles.changeIcon}>{changeIcon}</span> 
             )}
+                        <small>{positionChange}</small>
+
           </div>
         );
       },
@@ -213,6 +264,8 @@ const DomainOverview = ({
         return <FaLink title="Sitelinks" className={styles.blockIcon} />;
       case 'reviews':
         return <FaStar title="Reviews" className={styles.blockIcon} />;
+        case 'local_pack':
+          return <FaLink title="Local Pack" className={styles.blockIcon} />;
       case 'featured_snippets':
         return (
           <MdFeaturedPlayList
@@ -383,6 +436,8 @@ const getSERPFeatureIcon = (feature) => {
       return <FaLink title="Sitelinks" className={styles.serpFeatureIcon} />;
     case 'reviews':
       return <FaStar title="Reviews" className={styles.serpFeatureIcon} />;
+    case 'local_pack':
+      return <FaLocationArrow title="Lock Pack" className={styles.serpFeatureIcon} />;
     case 'featured_snippets':
       return (
         <MdFeaturedPlayList
@@ -639,9 +694,12 @@ useEffect(() => {
     if (typeof window !== 'undefined' && typeof Highcharts === 'object') {
       const HighchartsVenn = require('highcharts/modules/venn');
       HighchartsVenn(Highcharts);
+      exportingInit(Highcharts);
+      offlineExporting(Highcharts);
       setIsHighchartsReady(true);
     }
   }, []);
+  
 
   const [vennOptions, setVennOptions] = useState(null);
   useEffect(() => {
@@ -1374,8 +1432,22 @@ useEffect(() => {
             
           </div>
           <div className={styles.chartContainer}>
-            <canvas ref={trendChartRef}></canvas>
-          </div>
+            <div className={styles.chartHeader}>
+              <div className={styles.iconContainer}>
+                <FaRobot
+                  className={styles.actionIcon}
+                  title="AI Insights"
+                  onClick={handleAIInsights}
+                />
+                <FaDownload
+                  className={styles.actionIcon}
+                  title="Download Data"
+                  onClick={handleDownloadTrendChart}
+                />
+              </div>
+            </div>
+            <canvas ref={trendChartRef} ></canvas>
+           </div>
           
         </div>
       </div>
@@ -1424,6 +1496,20 @@ useEffect(() => {
       <div className={styles.intentSection}>
         <h3>Keyword by Intent</h3>
         <div className={styles.intentChartContainer}>
+          <div className={styles.chartHeader}>
+            <div className={styles.iconContainer}>
+              <FaRobot
+                className={styles.actionIcon}
+                title="AI Insights"
+                onClick={handleAIInsights}
+              />
+              <FaDownload
+                className={styles.actionIcon}
+                title="Download Data"
+                onClick={handleDownloadIntentChart}
+              />
+            </div>
+          </div>
           <canvas ref={intentChartRef}></canvas>
         </div>
         <table className={styles.intentTable}>
@@ -1483,6 +1569,20 @@ useEffect(() => {
           </div>
           <h3>Distribution of Keyword Rankings</h3>
           <div className={styles.distributionChartContainer}>
+            <div className={styles.chartHeader}>
+              <div className={styles.iconContainer}>
+                <FaRobot
+                  className={styles.actionIcon}
+                  title="AI Insights"
+                  onClick={handleAIInsights}
+                />
+                <FaDownload
+                  className={styles.actionIcon}
+                  title="Download Data"
+                  onClick={handleDownloadRankingChart}
+                />
+              </div>
+            </div>
             <canvas ref={rankingDistributionRef}></canvas>
           </div>
         </div>
@@ -1510,13 +1610,29 @@ useEffect(() => {
         </div>
          {/* <div ref={vennDiagramRef} className={styles.vennDiagram}></div>*/}
          <div className={styles.vennDiagram}>
+          <div className={styles.chartHeader}>
+            <div className={styles.iconContainer}>
+              <FaRobot
+                className={styles.actionIcon}
+                title="AI Insights"
+                onClick={handleAIInsights}
+              />
+              <FaDownload
+                className={styles.actionIcon}
+                title="Download Data"
+                onClick={handleDownloadVennChart}
+              />
+            </div>
+          </div>
           {isHighchartsReady && vennOptions && (
             <HighchartsReact
               highcharts={Highcharts}
               options={vennOptions}
+              ref={vennChartRef}
             />
           )}
         </div>
+
       </div>
       </div>
 
@@ -1542,10 +1658,23 @@ useEffect(() => {
           />
         </div>
         <div className={styles.competitorCharts}>
-          <div
-            className={`${styles.chartItem} ${styles.larger}`}
-            style={{ gridColumn: 'span 4', }}
-          >
+         
+          <div className={`${styles.chartItem} ${styles.larger}`}
+           style={{ gridColumn: 'span 4', }}>
+            <div className={styles.chartHeader}>
+              <div className={styles.iconContainer}>
+                <FaRobot
+                  className={styles.actionIcon}
+                  title="AI Insights"
+                  onClick={handleAIInsights}
+                />
+                <FaDownload
+                  className={styles.actionIcon}
+                  title="Download Data"
+                  onClick={handleDownloadCompetitiveChart}
+                />
+              </div>
+            </div>
             <canvas ref={competitivePositioningChartRef} height="400"></canvas>
           </div>
         </div>

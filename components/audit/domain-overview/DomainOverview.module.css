@@ -21,18 +21,22 @@
   position: relative;
   box-shadow:2px 2px 7px 3px rgb(44 6 252 / 20%)
 }
+
+.chartHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+}
+
 .iconContainer {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   display: flex;
   gap: 10px;
 }
 
 .actionIcon {
   cursor: pointer;
-  font-size: 12px;
-  color:rgb(189, 189, 189);
+  font-size: 18px;
+  color: rgb(189, 189, 189);
 }
 
 .metricBox1 {
@@ -260,7 +264,7 @@
 
 .intentChartContainer {
   height: 200px;
-  margin-bottom: 20px;
+  margin-bottom: 50px;
 
 }
 
@@ -421,4 +425,8 @@
 
 .filterContainer {
   margin-bottom: 20px;
+}
+
+.competitorKeywordsSection div{
+  white-space: normal;
 }
