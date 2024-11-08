@@ -5,15 +5,12 @@ import dynamic from 'next/dynamic';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import styles from './DomainOverview.module.css';
-import {
-  FaInfoCircle,
-  FaArrowUp,
-  FaArrowDown,
-  FaMinus,
-  FaLink,
-  FaStar,
-  FaStarHalfAlt,
-} from 'react-icons/fa';
+import { FaInfoCircle, FaArrowUp, FaArrowDown, FaMinus, FaLink, FaStar, FaRobot, FaDownload } from 'react-icons/fa';
+import axios from 'axios';
+import qs from 'qs';
+
+
+
 import { MdFeaturedPlayList } from 'react-icons/md';
 import { Chart } from 'chart.js';
 import Select from 'react-select';
@@ -50,6 +47,9 @@ const DomainOverview = ({
   const [selectedMetric, setSelectedMetric] = useState('traffic_sum');
   const [dateRange, setDateRange] = useState('12');
   const [keywordTab, setKeywordTab] = useState('all'); // 'all', 'improved', 'decreased', 'new', 'lost'
+
+
+
 
   // Prepare data for the trend chart
   const trendData = overviewData.history || [];
@@ -774,7 +774,6 @@ useEffect(() => {
    buildVennDiagramOptions();
  }, [selectedVennCompetitors, overviewData]);
 
-
    // Competitive Positioning Chart
    const [selectedCompetitorDomains, setSelectedCompetitorDomains] = useState([]);
 
@@ -954,8 +953,172 @@ useEffect(() => {
      renderCompetitivePositioningChart();
    }, [selectedCompetitorDomains, overviewData]);
  
+   const [competitorKeywordsData, setCompetitorKeywordsData] = useState({});
+   useEffect(() => {
+    if (selectedCompetitorDomains.length > 0) {
+      fetchCompetitorKeywordsData();
+    }
+  }, [selectedCompetitorDomains]);
+  const fetchCompetitorKeywordsData = async () => {
+    const ownDomain = overviewData.overview?.organic?.base_domain || 'N/A';
+    const competitors = selectedCompetitorDomains.filter((d) => d !== ownDomain);
   
+    if (!competitors.length) {
+      console.warn('No competitors selected. Skipping API call.');
+      return;
+    }
+  
+    console.log('Fetching competitor keywords data for:', competitors);
+  
+    const fetchData = async (retryCount = 0) => {
+      try {
+        const response = await axios.get('/api/audit/overview/research', {
+          params: {
+            domain: ownDomain,
+            competitors: competitors,
+            type: 'organic',
+          },
+          paramsSerializer: (params) => {
+            return qs.stringify(params, { arrayFormat: 'repeat' });
+          },
+        });
+        setCompetitorKeywordsData(response.data);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            if (error.response.status === 429) {
+              if (retryCount < 3) { // You can adjust the max retry count as needed
+                console.warn(`Received 429 Too Many Requests. Retrying after 5 seconds... (Attempt ${retryCount + 1})`);
+                setTimeout(() => {
+                  fetchData(retryCount + 1);
+                }, 5000);
+              } else {
+                console.error('Max retries reached. Cannot fetch competitor keywords data.');
+              }
+            } else if (error.response.status === 500) {
+              console.error('Server error (500). Ignoring the error.');
+              // You can optionally set an empty state or default data here
+            } else {
+              console.error(`Error fetching competitor keywords data: ${error.message}`);
+            }
+          } else {
+            console.error(`Error fetching competitor keywords data: ${error.message}`);
+          }
+        } else {
+          console.error('Unexpected error:', error);
+        }
+      }
+    };
+  
+    fetchData();
+  };
+  useEffect(() => {
+    if (overviewData && allCompetitors.length > 0) {
+      const ownDomain = overviewData.overview?.organic?.base_domain || 'N/A';
+      const defaultCompetitors = allCompetitors.slice(0, 2).map((comp) => comp.domain);
+      const competitorsWithoutOwnDomain = defaultCompetitors.filter(domain => domain !== ownDomain);
+      setSelectedCompetitorDomains([ownDomain, ...competitorsWithoutOwnDomain]);
+    }
+  }, [overviewData, allCompetitors]);
+  
+  useEffect(() => {
+    const ownDomain = overviewData.overview?.organic?.base_domain || 'N/A';
+    const competitors = selectedCompetitorDomains.filter((d) => d !== ownDomain);
+    
+    if (competitors.length > 0) {
+      fetchCompetitorKeywordsData();
+    } else {
+      console.warn('No valid competitors selected. Skipping fetch.');
+    }
+  }, [selectedCompetitorDomains, overviewData]);
 
+  const prepareTableData = () => {
+    const ownDomain = overviewData.overview?.organic?.base_domain || 'N/A';
+    const combinedData = {};
+  
+    // Fetch own domain's data from the first competitor's compare_* fields
+    const firstCompetitor = selectedCompetitorDomains.find((comp) => comp !== ownDomain);
+    if (!firstCompetitor || !competitorKeywordsData[firstCompetitor]) {
+      console.warn('No competitor data available to extract own domain data');
+      return []; // No data available
+    }
+  
+    competitorKeywordsData[firstCompetitor]?.forEach((item) => {
+      combinedData[item.keyword] = {
+        keyword: item.keyword,
+        volume: item.volume,
+        [ownDomain]: {
+          position: item.compare_position,
+          traffic: item.compare_traffic,
+          price: item.compare_price,
+        },
+        [firstCompetitor]: {
+          position: item.position,
+          traffic: item.traffic,
+          price: item.price,
+        },
+      };
+    });
+  
+    // Include data from other competitors
+    selectedCompetitorDomains.forEach((comp) => {
+      if (comp === ownDomain || comp === firstCompetitor) return;
+  
+      competitorKeywordsData[comp]?.forEach((item) => {
+        if (!combinedData[item.keyword]) {
+          combinedData[item.keyword] = { keyword: item.keyword, volume: item.volume };
+        }
+        combinedData[item.keyword][comp] = {
+          position: item.position,
+          traffic: item.traffic,
+          price: item.price,
+        };
+      });
+    });
+  
+    return Object.values(combinedData);
+  };
+  
+  
+  const tableData = prepareTableData();
+  
+  const columns = [
+    {
+      name: 'Keyword',
+      selector: (row) => row.keyword || '',
+      sortable: true,
+      wrap: true,
+      frozen: true,
+    },
+    {
+      name: 'Volume',
+      selector: (row) => row.volume || 0,
+      sortable: true,
+      format: (row) => row.volume || '-',
+    },
+    ...selectedCompetitorDomains.flatMap((comp) => [
+      {
+        name: `${comp} Position`,
+        selector: (row) => (row[comp] && row[comp].position !== undefined) ? parseFloat(row[comp].position) : null,
+        sortable: true,
+        format: (row) => row[comp]?.position || '-',
+      },
+      {
+        name: `${comp} Traffic`,
+        selector: (row) => (row[comp] && row[comp].traffic !== undefined) ? parseFloat(row[comp].traffic) : null,
+        sortable: true,
+        format: (row) => row[comp]?.traffic || '-',
+      },
+      {
+        name: `${comp} Price`,
+        selector: (row) => (row[comp] && row[comp].price !== undefined) ? parseFloat(row[comp].price) : null,
+        sortable: true,
+        format: (row) => row[comp]?.price || '-',
+      },
+    ]),
+  ];
+  
+  
   return (
     <div className={styles.overview}>
       <h2>
@@ -975,6 +1138,10 @@ useEffect(() => {
                 title="Domain Trust is a metric..."
               />
             </h3>
+            <div className={styles.iconContainer}>
+              <FaRobot className={styles.actionIcon} title="AI Insights" />
+              <FaDownload className={styles.actionIcon} title="Download Data" />
+            </div>
           </div>
           <div className={styles.metricValue}>0</div>
           <hr className={styles.hr} />
@@ -1070,6 +1237,10 @@ useEffect(() => {
               {/* Placeholder for change */}
               <span>N/A</span>
             </div>
+            <div className={styles.iconContainer}>
+              <FaRobot className={styles.actionIcon} title="AI Insights" />
+              <FaDownload className={styles.actionIcon} title="Download Data" />
+            </div>
           </div>
           <div className={styles.metricValue}>
             {overviewData.overview?.adv?.traffic_sum ?? 'N/A'}
@@ -1097,9 +1268,11 @@ useEffect(() => {
                   title="Total Paid Traffic Cost is..."
                 />
               </h4>
+              
               <div className={styles.metricValue}>
                 {overviewData.overview?.adv?.price_sum ?? 'N/A'}
               </div>
+              
             </div>
           </div>
         </div>
@@ -1147,7 +1320,9 @@ useEffect(() => {
             >
               Paid
             </button>
+            
           </div>
+          
           <h3>Traffic Distribution by Country</h3>
           <table className={styles.countryTable}>
             <thead>
@@ -1196,10 +1371,12 @@ useEffect(() => {
                 </button>
               ))}
             </div>
+            
           </div>
           <div className={styles.chartContainer}>
             <canvas ref={trendChartRef}></canvas>
           </div>
+          
         </div>
       </div>
 
@@ -1373,6 +1550,40 @@ useEffect(() => {
           </div>
         </div>
       </div>
+
+
+      {/* Competitive Keywords Table */}
+
+      <div className={styles.competitorKeywordsSection}>
+        <h3>Keywords Breakdown by Competitor</h3>
+        <div className={styles.filterContainer}>
+          <label>Select Competitors:</label>
+          <Select
+            isMulti
+            options={allCompetitors.map((comp) => ({ value: comp.domain, label: comp.domain }))}
+            value={selectedCompetitorDomains.map((domain) => ({ value: domain, label: domain }))}
+            onChange={(selectedOptions) => {
+              const selectedValues = selectedOptions.map((option) => option.value);
+              setSelectedCompetitorDomains(selectedValues);
+            }}
+            styles={{
+              container: (provided) => ({
+                ...provided,
+                minWidth: '250px',
+              }),
+            }}
+          />
+        </div>
+        <DataTable
+          columns={columns}
+          data={tableData}
+          pagination
+          paginationPerPage={10}
+          highlightOnHover
+          striped
+        />
+      </div>
+
     </div>
   );
 };

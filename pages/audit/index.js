@@ -215,48 +215,32 @@ export default function AuditHome() {
 
   const fetchDomainOverview = async (domain) => {
     setLoadingOverview(true);
-    setOverviewData(null);
-
-    try {
-      domain = domain.replace(/^www\./, '');
-
-      const endpoints = [
-        { name: 'overview', url: `/api/audit/overview/overview?domain=${encodeURIComponent(domain)}` },
-        { name: 'history', url: `/api/audit/overview/history?domain=${encodeURIComponent(domain)}&type=organic` },
-        { name: 'organicKeywords', url: `/api/audit/overview/organicKeywords?domain=${encodeURIComponent(domain)}` },
-        { name: 'paidKeywords', url: `/api/audit/overview/paidKeywords?domain=${encodeURIComponent(domain)}` },
-        { name: 'advertising', url: `/api/audit/overview/advertising?domain=${encodeURIComponent(domain)}` },
-        { name: 'competitors', url: `/api/audit/overview/competitors?domain=${encodeURIComponent(domain)}&type=organic` },
-      ];
-
-      const data = {};
-
-      for (const endpoint of endpoints) {
-        try {
-          const response = await axios.get(endpoint.url);
-          data[endpoint.name] = response.data;
-        } catch (error) {
-          if (error.response?.status === 429) {
-            alert('Rate limit exceeded. Please try again later.');
-            break;
-          } else if (error.response?.status === 404) {
-            console.warn(`Data for ${endpoint.name} not found.`);
-            data[endpoint.name] = {}; // Assign empty object or default as needed
-          } else {
-            console.error(`Error fetching ${endpoint.name}:`, error);
-            data[endpoint.name] = {}; // Assign empty object to prevent undefined
-          }
-        }
-        await wait(500); // Adjust the delay as needed
+    domain = domain.replace(/^www\./, '');
+    setOverviewData({}); // Clear the overview data
+    const endpoints = [
+      { name: 'overview', url: `/api/audit/overview/overview?domain=${encodeURIComponent(domain)}` },
+      { name: 'history', url: `/api/audit/overview/history?domain=${encodeURIComponent(domain)}&type=organic` },
+      { name: 'organicKeywords', url: `/api/audit/overview/organicKeywords?domain=${encodeURIComponent(domain)}` },
+      { name: 'paidKeywords', url: `/api/audit/overview/paidKeywords?domain=${encodeURIComponent(domain)}` },
+      { name: 'advertising', url: `/api/audit/overview/advertising?domain=${encodeURIComponent(domain)}` },
+      { name: 'competitors', url: `/api/audit/overview/competitors?domain=${encodeURIComponent(domain)}&type=organic` },
+    ];
+  
+    // Fetch endpoints sequentially
+    for (const endpoint of endpoints) {
+      try {
+        const response = await axios.get(endpoint.url);
+        setOverviewData((prevData) => ({ ...prevData, [endpoint.name]: response.data }));
+      } catch (error) {
+        console.error(`Error fetching ${endpoint.name}:`, error);
+        setOverviewData((prevData) => ({ ...prevData, [endpoint.name]: {} }));
       }
-
-      setOverviewData(data);
-      setLoadingOverview(false);
-    } catch (error) {
-      console.error('Error fetching domain overview:', error);
-      setLoadingOverview(false);
+      await wait(300); // Wait for 500ms between requests to avoid rate limits
     }
+  
+    setLoadingOverview(false);
   };
+  
 
   const handleKeywordResearch = async (keyword) => {
     setLoadingOverview(true);
@@ -297,17 +281,21 @@ export default function AuditHome() {
   useEffect(() => {
     if (overviewData) {
       // Sort Organic Keywords
-      const sortedOrganic = [...overviewData.organicKeywords].sort((a, b) => b.traffic_percent - a.traffic_percent);
-      setSortedOrganicKeywords(sortedOrganic);
-
+      if (overviewData.organicKeywords && Array.isArray(overviewData.organicKeywords)) {
+        const sortedOrganic = [...overviewData.organicKeywords].sort((a, b) => b.traffic_percent - a.traffic_percent);
+        setSortedOrganicKeywords(sortedOrganic);
+      }
+  
       // Sort Paid Keywords
-      const sortedPaid = [...overviewData.paidKeywords].sort((a, b) => b.traffic_percent - a.traffic_percent);
-      setSortedPaidKeywords(sortedPaid);
-
+      if (overviewData.paidKeywords && Array.isArray(overviewData.paidKeywords)) {
+        const sortedPaid = [...overviewData.paidKeywords].sort((a, b) => b.traffic_percent - a.traffic_percent);
+        setSortedPaidKeywords(sortedPaid);
+      }
+  
       // Fetch and Preselect Competitors
       if (overviewData.competitors && overviewData.competitors.length > 0) {
         setAllCompetitors(overviewData.competitors);
-
+  
         // Preselect first 4 competitors
         const defaultCompetitors = overviewData.competitors.slice(0, 4);
         setSelectedCompetitors(defaultCompetitors);
@@ -315,6 +303,7 @@ export default function AuditHome() {
       }
     }
   }, [overviewData]);
+  
 
   useEffect(() => {
     if (selectedCompetitors.length > 0) {
