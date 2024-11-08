@@ -363,6 +363,15 @@
   box-shadow:2px 2px 7px 3px rgb(44 6 252 / 20%)
 
 }
+.competitorKeywordsSection{
+  grid-column: span 4;
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow:2px 2px 7px 3px rgb(44 6 252 / 20%)
+
+}
 
 .chartItem {
   background-color: #fff;
