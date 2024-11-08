@@ -2,6 +2,8 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 import styles from './DomainOverview.module.css';
 import {
   FaInfoCircle,
@@ -16,12 +18,10 @@ import { MdFeaturedPlayList } from 'react-icons/md';
 import { Chart } from 'chart.js';
 import Select from 'react-select';
 
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
-import vennModule from 'highcharts/modules/venn';
 
-// Initialize the module
-vennModule(Highcharts);
+//const VennModule = dynamic(() => import('highcharts/modules/venn'), { ssr: false });
+
+
 
 // Dynamically import DataTable
 const DataTable = dynamic(() => import('react-data-table-component'), {
@@ -41,6 +41,7 @@ const DomainOverview = ({
   const trendChartRef = useRef(null);
   const intentChartRef = useRef(null);
   const rankingDistributionRef = useRef(null);
+  //const vennDiagramRef = useRef(null);
   const competitivePositioningChartRef = useRef(null);
 
   // State for tabs and data
@@ -61,6 +62,9 @@ const DomainOverview = ({
 
   // Data for Organic Keywords
   const [filteredOrganicKeywords, setFilteredOrganicKeywords] = useState([]);
+
+
+
   // Calculate Improved, Decreased, New, Lost keywords
   useEffect(() => {
     let filteredKeywords = [...sortedOrganicKeywords];
@@ -104,6 +108,11 @@ const DomainOverview = ({
     {
       name: 'Search Vol.',
       selector: (row) => row.volume,
+      sortable: true,
+    },
+    {
+      name: 'Traffic.',
+      selector: (row) => row.traffic,
       sortable: true,
     },
     {
@@ -176,6 +185,12 @@ const DomainOverview = ({
       selector: (row) => row.dt,
       sortable: true,
     },
+    {
+      name: 'Traffic',
+      selector: (row) => row.traffic_sum,
+      sortable: true,
+    },
+    
     {
       name: 'Keywords Total',
       selector: (row) => row.total_keywords,
@@ -493,7 +508,6 @@ useEffect(() => {
 
   // Organic Competitor Semantics Comparison (Venn Diagram)
   const [selectedVennCompetitors, setSelectedVennCompetitors] = useState([]);
-  const [vennOptions, setVennOptions] = useState(null);
 
   useEffect(() => {
     const ownDomain = overviewData.overview?.organic?.base_domain || 'N/A';
@@ -518,10 +532,13 @@ useEffect(() => {
     setSelectedVennCompetitors(selectedOptions.map((option) => option.value));
   };
 
-  const buildVennDiagramOptions = () => {
-    if (selectedVennCompetitors.length >= 2 && overviewData && overviewData.overview && overviewData.overview.organic) {
-      const ownDomain = overviewData.overview.organic.base_domain || 'N/A';
-      const ownTotalKeywords = overviewData.overview.organic.keywords_count || 0;
+  {/*const renderVennDiagram = () => {
+    if (vennDiagramRef.current && selectedVennCompetitors.length >= 2) {
+      const container = select(vennDiagramRef.current);
+      container.selectAll('*').remove(); // Clear previous diagram
+
+      const ownDomain = overviewData.overview?.organic?.base_domain || 'N/A';
+      const ownTotalKeywords = overviewData.overview?.organic?.keywords_count || 0;
 
       // Prepare domain data
       const domainData = {};
@@ -542,15 +559,15 @@ useEffect(() => {
       });
 
       const selectedDomains = selectedVennCompetitors;
-      const data = [];
+
+      const sets = [];
 
       // Add sets for each domain
       selectedDomains.forEach((domain) => {
-        const dataItem = domainData[domain];
-        data.push({
+        const data = domainData[domain];
+        sets.push({
           sets: [domain],
-          value: dataItem.total_keywords,
-          name: domain,
+          size: data.total_keywords,
         });
       });
 
@@ -574,10 +591,9 @@ useEffect(() => {
             overlapSize = Math.min(competitorDataA.total_keywords, competitorDataB.total_keywords) * 0.1; // Assume 10% overlap
           }
 
-          data.push({
+          sets.push({
             sets: [domainA, domainB],
-            value: overlapSize,
-            name: `Overlap between ${domainA} and ${domainB}`,
+            size: overlapSize,
           });
         }
       }
@@ -599,48 +615,165 @@ useEffect(() => {
 
         const tripleOverlapSize = minTotalKeywords * 0.05; // Assume 5% overlap
 
-        data.push({
+        sets.push({
           sets: [domainA, domainB, domainC],
-          value: tripleOverlapSize,
-          name: `Overlap among ${domainA}, ${domainB}, and ${domainC}`,
-
+          size: tripleOverlapSize,
         });
       }
 
-      const options = {
-        series: [{
-          type: 'venn',
-          data: data,
-          name: 'Domain Overlaps',
-          dataLabels: {
-            style: {
-              fontSize: '15px',
-              textOutline: 'none'
-            }
-          }
-        }],
-        title: {
-          text: 'Organic Competitor Semantics Comparison'
-        },
-        tooltip: {
-          headerFormat: '',
-          pointFormatter: function () {
-            if (this.sets.length === 1) {
-              return `<b>${this.name}</b><br>Keywords: ${this.value}`;
-            } else {
-              return `<b>${this.name}</b><br>Overlap Keywords: ${this.value}`;
-            }
-          }
-        },
-      };
+      // Now render the Venn diagram
+      venn.VennDiagram()(container.datum(sets));
 
-      setVennOptions(options);
+      // Add tooltip or labels
+      container.selectAll('text')
+        .style('fill', 'black')
+        .style('font-size', '12px');
     }
   };
 
   useEffect(() => {
-    buildVennDiagramOptions();
-  }, [selectedVennCompetitors, overviewData]);
+    renderVennDiagram();
+  }, [selectedVennCompetitors, overviewData]);*/}
+  const [isHighchartsReady, setIsHighchartsReady] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined' && typeof Highcharts === 'object') {
+      const HighchartsVenn = require('highcharts/modules/venn');
+      HighchartsVenn(Highcharts);
+      setIsHighchartsReady(true);
+    }
+  }, []);
+
+  const [vennOptions, setVennOptions] = useState(null);
+  useEffect(() => {
+    if (isHighchartsReady) {
+      buildVennDiagramOptions();
+    }
+  }, [isHighchartsReady, selectedVennCompetitors, overviewData]);
+
+  const buildVennDiagramOptions = () => {
+    if (
+      selectedVennCompetitors.length >= 2 &&
+      overviewData &&
+      overviewData.overview &&
+      overviewData.overview.organic
+    ) {
+     const ownDomain = overviewData.overview.organic.base_domain || 'N/A';
+     const ownTotalKeywords = overviewData.overview.organic.keywords_count || 0;
+
+     // Prepare domain data
+     const domainData = {};
+     domainData[ownDomain] = {
+       domain: ownDomain,
+       total_keywords: ownTotalKeywords,
+       common_keywords: {},
+     };
+
+     allCompetitors.forEach((comp) => {
+       domainData[comp.domain] = {
+         domain: comp.domain,
+         total_keywords: comp.total_keywords || 0,
+         common_keywords: {
+           [ownDomain]: comp.common_keywords || 0,
+         },
+       };
+     });
+
+     const selectedDomains = selectedVennCompetitors;
+     const data = [];
+
+     // Add sets for each domain
+     selectedDomains.forEach((domain) => {
+       const dataItem = domainData[domain];
+       data.push({
+         sets: [domain],
+         value: dataItem.total_keywords,
+         name: domain,
+       });
+     });
+
+     // Add overlaps
+     for (let i = 0; i < selectedDomains.length; i++) {
+       for (let j = i + 1; j < selectedDomains.length; j++) {
+         const domainA = selectedDomains[i];
+         const domainB = selectedDomains[j];
+
+         let overlapSize = 0;
+
+         if (domainA === ownDomain || domainB === ownDomain) {
+           const competitorDomain = domainA === ownDomain ? domainB : domainA;
+           const competitorData = domainData[competitorDomain];
+           overlapSize = competitorData.common_keywords[ownDomain] || 0;
+         } else {
+           const competitorDataA = domainData[domainA];
+           const competitorDataB = domainData[domainB];
+           overlapSize = Math.min(competitorDataA.total_keywords, competitorDataB.total_keywords) * 0.1;
+         }
+
+         data.push({
+           sets: [domainA, domainB],
+           value: overlapSize,
+           name: `Overlap between ${domainA} and ${domainB}`,
+         });
+       }
+     }
+
+     // Add triple overlap if 3 domains selected
+     if (selectedDomains.length === 3) {
+       const [domainA, domainB, domainC] = selectedDomains;
+       const competitorDataA = domainData[domainA];
+       const competitorDataB = domainData[domainB];
+       const competitorDataC = domainData[domainC];
+
+       const minTotalKeywords = Math.min(
+         competitorDataA.total_keywords,
+         competitorDataB.total_keywords,
+         competitorDataC.total_keywords
+       );
+
+       const tripleOverlapSize = minTotalKeywords * 0.05;
+
+       data.push({
+         sets: [domainA, domainB, domainC],
+         value: tripleOverlapSize,
+         name: `Overlap among ${domainA}, ${domainB}, and ${domainC}`,
+       });
+     }
+
+     const options = {
+       series: [{
+         type: 'venn',
+         data: data,
+         name: 'Domain Overlaps',
+         dataLabels: {
+           style: {
+             fontSize: '15px',
+             textOutline: 'none'
+           }
+         }
+       }],
+       title: {
+         text: 'Organic Competitor Semantics Comparison'
+       },
+       tooltip: {
+         headerFormat: '',
+         pointFormatter: function () {
+           if (this.sets.length === 1) {
+             return `<b>${this.name}</b><br>Keywords: ${this.value}`;
+           } else {
+             return `<b>${this.name}</b><br>Overlap Keywords: ${this.value}`;
+           }
+         }
+       },
+     };
+
+     setVennOptions(options);
+  }
+ };
+
+ useEffect(() => {
+   buildVennDiagramOptions();
+ }, [selectedVennCompetitors, overviewData]);
+
 
    // Competitive Positioning Chart
    const [selectedCompetitorDomains, setSelectedCompetitorDomains] = useState([]);
@@ -652,13 +785,13 @@ useEffect(() => {
      ].slice(0, 5); // Limit default to 5 domains
      setSelectedCompetitorDomains(defaultCompetitors);
    }, [overviewData, allCompetitors]);
-
+ 
    // Prepare options for react-select
    const competitorOptions = [
      { value: overviewData.overview?.organic?.base_domain || 'N/A', label: overviewData.overview?.organic?.base_domain || 'N/A' },
      ...allCompetitors.map(c => ({ value: c.domain, label: c.domain })),
    ];
-
+ 
    const renderCompetitivePositioningChart = () => {
      if (
        competitivePositioningChartRef.current &&
@@ -670,24 +803,24 @@ useEffect(() => {
        if (chartInstances.current['competitivePositioningChart']) {
          chartInstances.current['competitivePositioningChart'].destroy();
        }
-
+ 
        const userDomain = overviewData.overview.organic.base_domain || 'Your Domain';
        const userTotalKeywords = overviewData.overview.organic.keywords_count || 0;
        const ownOrganicTrafficSum = overviewData.overview.organic.traffic_sum || 1; // Prevent division by zero
-
+ 
        // Filter competitors based on selectedCompetitorDomains
        const selectedCompData = allCompetitors.filter((c) =>
          selectedCompetitorDomains.includes(c.domain)
        );
-
+ 
        // Calculate total organic traffic including selected competitors
        const totalOrganicTraffic =
          ownOrganicTrafficSum +
          selectedCompData.reduce((acc, c) => acc + (c.traffic_sum || 0), 0);
-
+ 
        // Prepare data points
        const allDataPoints = [];
-
+ 
        // Generate unique colors for each competitor and your domain
        const colorPalette = [
          'rgba(255, 99, 132, 0.7)', // Red
@@ -701,49 +834,49 @@ useEffect(() => {
          'rgba(102, 102, 255, 0.7)', // Indigo
          'rgba(255, 102, 255, 0.7)', // Pink
        ];
-
+ 
        // Include own domain if selected
        if (selectedCompetitorDomains.includes(userDomain)) {
          const ownTrafficPercentage =
            Number(((ownOrganicTrafficSum / totalOrganicTraffic) * 100).toFixed(2)) || 0;
-
+ 
          const ownDataPoint = {
            label: userDomain,
            x: userTotalKeywords,
            y: ownTrafficPercentage,
            trafficPercentage: ownTrafficPercentage,
          };
-
+ 
          allDataPoints.push(ownDataPoint);
        }
-
+ 
        // Create data points for each selected competitor
        selectedCompData.forEach((c) => {
          const x = c.total_keywords || 0;
          const y =
            Number(((c.traffic_sum / totalOrganicTraffic) * 100).toFixed(2)) || 0;
-
+ 
          const dataPoint = {
            label: c.domain,
            x,
            y,
            trafficPercentage: y,
          };
-
+ 
          allDataPoints.push(dataPoint);
        });
-
+ 
        // Determine min and max traffic percentages for scaling radius
        const minRadius = 10; // Adjust minimum radius as desired
        const maxRadius = 40; // Adjust maximum radius as desired
-
+ 
        // Now, create datasets with radius based on traffic percentage
        const datasets = allDataPoints.map((dp, idx) => {
          // Calculate radius based on traffic percentage
          const r = minRadius + (dp.trafficPercentage / 100) * (maxRadius - minRadius);
-
+ 
          const color = colorPalette[idx % colorPalette.length];
-
+ 
          return {
            label: dp.label,
            data: [{ x: dp.x, y: dp.y, r }],
@@ -754,7 +887,7 @@ useEffect(() => {
            hoverBorderColor: color.replace('0.7', '1'),
          };
        });
-
+ 
        chartInstances.current['competitivePositioningChart'] = new Chart(ctx, {
          type: 'bubble',
          data: {
@@ -816,11 +949,11 @@ useEffect(() => {
        });
      }
    };
-
+ 
    useEffect(() => {
      renderCompetitivePositioningChart();
    }, [selectedCompetitorDomains, overviewData]);
-
+ 
   
 
   return (
@@ -1181,30 +1314,33 @@ useEffect(() => {
         <div className={styles.vennSection}>
           <h3>Organic Competitor Semantics Comparison</h3>
           <div className={styles.vennSelect}>
-            <label>Select up to 3 Competitors:</label>
-            <Select
-              isMulti
-              options={vennCompetitorOptions}
-              value={vennCompetitorOptions.filter((option) => selectedVennCompetitors.includes(option.value))}
-              onChange={handleVennCompetitorChange}
-              maxMenuHeight={150}
-              styles={{
-                container: (provided) => ({
-                  ...provided,
-                  minWidth: '250px',
-                }),
-              }}
-            />
-          </div>
-          <div className={styles.vennDiagram}>
-            {vennOptions && (
-              <HighchartsReact
-                highcharts={Highcharts}
-                options={vennOptions}
-              />
+          <label>Select up to 3 Competitors:</label>
+          <Select
+            isMulti
+            options={vennCompetitorOptions}
+            value={vennCompetitorOptions.filter((option) =>
+              selectedVennCompetitors.includes(option.value)
             )}
-          </div>
+            onChange={handleVennCompetitorChange}
+            maxMenuHeight={150}
+            styles={{
+              container: (provided) => ({
+                ...provided,
+                minWidth: '250px',
+              }),
+            }}
+          />
         </div>
+         {/* <div ref={vennDiagramRef} className={styles.vennDiagram}></div>*/}
+         <div className={styles.vennDiagram}>
+          {isHighchartsReady && vennOptions && (
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={vennOptions}
+            />
+          )}
+        </div>
+      </div>
       </div>
 
       {/* Competitive Positioning Chart */}

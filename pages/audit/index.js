@@ -20,6 +20,7 @@ Chart.register(...registerables);
 // Import an icon for the sidebar toggle (using react-icons)
 import { FaBars } from 'react-icons/fa';
 
+
 export default function AuditHome() {
   const [audits, setAudits] = useState([]);
   const [inputValue, setInputValue] = useState('');
