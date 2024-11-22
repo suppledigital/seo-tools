@@ -37,6 +37,9 @@ export default function Home() {
           <Link href="/audit" className={styles.link}>Site Audit</Link>
         </li>
         <li className={styles.listItem}>
+          <Link href="/trello-audit" className={styles.link}>Trello Audit</Link>
+        </li>
+        <li className={styles.listItem}>
           <Link href="/keywords" className={styles.link}>Keywords Tool</Link>
         </li>
         <li className={styles.listItem}>

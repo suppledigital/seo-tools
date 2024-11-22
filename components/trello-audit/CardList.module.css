@@ -1,0 +1,69 @@
+/* components/trello-audit/CardList.module.css */
+.cardContainer {
+    width: 20%;
+    overflow-y: auto;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .autoSyncLabel {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+  }
+  
+  .autoSyncCheckbox {
+    margin-right: 5px;
+  }
+  
+  .cardList {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+  }
+  
+  .cardItem {
+    cursor: pointer;
+    padding: 8px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .cardItem:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .cardContent {
+    display: flex;
+    align-items: center;
+  }
+  
+  .authorIcon {
+    background-color: #0070f3;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  .activeCardItem {
+    background-color: #0070f3;
+    color: #fff;
+  }
+  .activeCardItem .authorIcon{
+    color: #0070f3;
+    background-color: #fff;
+  }
+  .activeCardItem:hover{
+    background-color: #0158bb;
+    color: #fff;
+  }

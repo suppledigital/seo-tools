@@ -1,0 +1,42 @@
+
+.mainContainer::-webkit-scrollbar {
+    width: 10px;
+}
+
+.mainContainer::-webkit-scrollbar-thumb {
+    background: #444; 
+    border-radius: 5px;
+}
+
+.mainContainer::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+.mainContainer::-webkit-scrollbar-track {
+    background: #2d2d2d; 
+}
+  
+
+/* pages/trello-audit/TrelloAudit.module.css */
+.mainContainer {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .content {
+    display: flex;
+    width: 100%;
+  }
+  
+  .container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .title {
+    display: none; /* Hide the title for minimal UI */
+  }
+  
+  .button {
+    display: none; /* Hide the sign-in button for minimal UI */
+  }
+  
