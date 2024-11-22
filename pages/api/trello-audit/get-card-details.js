@@ -6,22 +6,41 @@ export default async function handler(req, res) {
   const { TRELLO_API_KEY, TRELLO_TOKEN } = process.env;
 
   try {
-    const response = await axios.get(`https://api.trello.com/1/cards/${cardId}`, {
+    // Fetch card details including idList
+    const cardResponse = await axios.get(`https://api.trello.com/1/cards/${cardId}`, {
       params: {
         key: TRELLO_API_KEY,
         token: TRELLO_TOKEN,
-        fields: 'name,shortLink',
+        fields: 'name,shortLink,idList',
         board: true,
         board_fields: 'name',
       },
     });
 
-    const card = response.data;
+    const card = cardResponse.data;
+
+    // Fetch list details using idList
+    const listResponse = await axios.get(`https://api.trello.com/1/lists/${card.idList}`, {
+      params: {
+        key: TRELLO_API_KEY,
+        token: TRELLO_TOKEN,
+        fields: 'name',
+      },
+    });
+
+    const list = listResponse.data;
 
     res.status(200).json({
       name: card.name,
-      board: card.board,
+      board: {
+        id: card.board.id,
+        name: card.board.name,
+      },
       shortLink: card.shortLink,
+      list: {
+        id: list.id,
+        name: list.name,
+      },
     });
   } catch (error) {
     console.error('Error fetching card details:', error.response?.data || error.message);
