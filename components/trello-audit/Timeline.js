@@ -25,6 +25,7 @@ export default function TimelineComponent({ card }) {
   const userColors = {};
   const boardColors = {};
 
+  // Helper to assign colors to users
   function getUserColor(userId) {
     if (!userColors[userId]) {
       const index = Object.keys(userColors).length % colors.length;
@@ -33,6 +34,7 @@ export default function TimelineComponent({ card }) {
     return userColors[userId];
   }
 
+  // Helper to assign colors to boards
   function getBoardColor(boardName) {
     if (!boardColors[boardName]) {
       const index = Object.keys(boardColors).length % colors.length;
@@ -41,6 +43,7 @@ export default function TimelineComponent({ card }) {
     return boardColors[boardName];
   }
 
+  // Fetch activities when card changes
   useEffect(() => {
     if (card) {
       // Reset states
@@ -59,12 +62,14 @@ export default function TimelineComponent({ card }) {
     }
   }, [card]);
 
+  // Automatically select the first activity card option when available
   useEffect(() => {
     if (activityCardOptions.length > 0 && !selectedActivityCard) {
       setSelectedActivityCard(activityCardOptions[0]);
     }
   }, [activityCardOptions]);
 
+  // Debugging logs
   useEffect(() => {
     console.log('Extracted Members:', members);
   }, [members]);
@@ -77,6 +82,7 @@ export default function TimelineComponent({ card }) {
     console.log('Details Data updated:', detailsData);
   }, [detailsData]);
 
+  // Toggle group expansion
   const toggleGroup = (group) => {
     setExpandedGroups((prev) => ({
       ...prev,
@@ -84,10 +90,12 @@ export default function TimelineComponent({ card }) {
     }));
   };
 
+  // Grouping functions
   const classifyTask = (type) => {
     return type;
   };
 
+  // Fetch card activities and associated member activities
   const fetchCardActivities = async (cardId) => {
     try {
       // Reset relevant states
@@ -99,30 +107,30 @@ export default function TimelineComponent({ card }) {
       setSelectedActivityCard(null);
       setSelectedMember(null);
       setAllLinkedCards([]); // Reset before fetching
-
-      // Collect all linked card IDs
+  
+      // Step 1: Collect all linked card IDs
       const allCardIds = await collectLinkedCardIds(cardId);
-      allCardIds.push(cardId);
+      allCardIds.push(cardId); // Include the main card
       const uniqueCardIds = Array.from(new Set(allCardIds));
-
-      // Fetch card activities
-      const res = await fetch(`/api/trello-audit/card-activities?cardId=${cardId}`);
-      const data = await res.json();
-
-      // Extract members from activities
-      const allMembers = extractMembersFromActions(data.activities);
-      setMembers(allMembers);
-
-      // Process activities for the timeline
-      await processActivities(data.activities); // Ensure activities are processed before proceeding
-
-      // Fetch card details in parallel using Promise.all
+  
+      // Step 2: Fetch card details for all unique card IDs
       const cardDetailsPromises = uniqueCardIds.map((id) => fetchCardName(id));
       const linkedCardsDetails = await Promise.all(cardDetailsPromises);
-
       setAllLinkedCards(linkedCardsDetails);
       setActivityCardOptions(linkedCardsDetails);
-
+  
+      // Step 3: Fetch activities for all cards concurrently
+      const cardActivitiesPromises = uniqueCardIds.map((id) => fetchCardActivitiesForCard(id));
+      const cardActivitiesArrays = await Promise.all(cardActivitiesPromises);
+      const aggregatedCardActivities = cardActivitiesArrays.flat();
+  
+      // Step 4: Extract unique members from aggregated activities
+      const allMembers = extractMembersFromActions(aggregatedCardActivities);
+      setMembers(allMembers);
+  
+      // Step 5: Set aggregated activities to state
+      setActivities(aggregatedCardActivities);
+  
       setIsLoadingMembers(false);
       setIsLoadingActivities(false);
     } catch (error) {
@@ -131,7 +139,22 @@ export default function TimelineComponent({ card }) {
       setIsLoadingActivities(false);
     }
   };
+  
 
+  const fetchCardActivitiesForCard = async (cardId) => {
+    try {
+      const res = await fetch(`/api/trello-audit/card-activities?cardId=${cardId}`);
+      const data = await res.json();
+      return data.activities || [];
+    } catch (error) {
+      console.error(`Error fetching activities for card ${cardId}:`, error);
+      return [];
+    }
+  };
+  
+  
+
+  // Group activities by month
   const groupActivitiesByMonth = (activities) => {
     const grouped = {};
     activities.forEach((activity) => {
@@ -145,6 +168,7 @@ export default function TimelineComponent({ card }) {
     return grouped;
   };
 
+  // Group activities by type
   const groupActivitiesByType = (activities) => {
     const grouped = {};
     activities.forEach((activity) => {
@@ -157,6 +181,7 @@ export default function TimelineComponent({ card }) {
     return grouped;
   };
 
+  // Render member activities based on grouping
   const renderMemberActivities = () => {
     let groupedActivities;
 
@@ -200,6 +225,7 @@ export default function TimelineComponent({ card }) {
     ));
   };
 
+  // Extract unique members from actions
   const extractMembersFromActions = (actions) => {
     const membersMap = {};
     actions.forEach((action) => {
@@ -224,6 +250,7 @@ export default function TimelineComponent({ card }) {
     return initials;
   };
 
+  // Recursively collect linked card IDs
   const collectLinkedCardIds = async (cardId, processedCardIds = new Set()) => {
     if (processedCardIds.has(cardId)) {
       return [];
@@ -259,6 +286,7 @@ export default function TimelineComponent({ card }) {
     }
   };
 
+  // Fetch member activities from attached cards
   const fetchAttachedCardsMembers = async (cardId) => {
     try {
       const res = await fetch(`/api/trello-audit/card-attachments?cardId=${cardId}`);
@@ -276,7 +304,7 @@ export default function TimelineComponent({ card }) {
         if (attachedCardId) {
           const res = await fetch(`/api/trello-audit/card-activities?cardId=${attachedCardId}`);
           const data = await res.json();
-          const members = extractMembersFromActions(data.actions);
+          const members = extractMembersFromActions(data.activities);
           attachedCardMembers.push(...members);
         }
       }
@@ -288,6 +316,7 @@ export default function TimelineComponent({ card }) {
     }
   };
 
+  // Extract card ID from Trello URL
   const extractCardIdFromUrl = async (url) => {
     const regex = /https:\/\/trello\.com\/c\/([a-zA-Z0-9]+)/;
     const match = url.match(regex);
@@ -308,17 +337,29 @@ export default function TimelineComponent({ card }) {
     }
   };
 
+  // Fetch card name and details
   const fetchCardName = async (cardId) => {
-    const res = await fetch(`/api/trello-audit/get-card-details?cardId=${cardId}`);
-    const data = await res.json();
-    return {
-      id: cardId,
-      name: data.name,
-      boardName: data.board.name,
-      shortLink: data.shortLink,
-    };
+    try {
+      const res = await fetch(`/api/trello-audit/get-card-details?cardId=${cardId}`);
+      const data = await res.json();
+      return {
+        id: cardId,
+        name: data.name,
+        boardName: data.board.name,
+        shortLink: data.shortLink,
+      };
+    } catch (error) {
+      console.error(`Error fetching card details for card ${cardId}:`, error);
+      return {
+        id: cardId,
+        name: 'Unknown',
+        boardName: 'Unknown',
+        shortLink: '',
+      };
+    }
   };
 
+  // Remove duplicate members (if necessary)
   const removeDuplicateMembers = (members) => {
     const membersMap = {};
     members.forEach((member) => {
@@ -329,6 +370,7 @@ export default function TimelineComponent({ card }) {
     return Object.values(membersMap);
   };
 
+  // Process and aggregate activities
   const processActivities = async (actions) => {
     console.log('Processing activities:', actions);
 
@@ -402,6 +444,7 @@ export default function TimelineComponent({ card }) {
     setActivities(processedActivities);
   };
 
+  // Fetch current list name
   const fetchCurrentListName = async (cardId) => {
     try {
       const res = await fetch(`/api/trello-audit/get-card-details?cardId=${cardId}`);
@@ -420,6 +463,7 @@ export default function TimelineComponent({ card }) {
     }
   };
 
+  // Handle activity click to show details
   const handleActivityClick = async (activity) => {
     setSelectedActivity(activity);
     await fetchStepDetails(activity);
@@ -430,70 +474,71 @@ export default function TimelineComponent({ card }) {
     setLoadingMemberId(member.id);
     setSelectedMember(member);
     setIsLoadingActivities(true);
-
-    // Filter cards where the member has activities
-    const cardsWithMemberActivities = [];
-    for (const card of allLinkedCards) {
-      const memberActions = await fetchMemberActionsForCard(member.id, card.id);
-      if (memberActions.length > 0) {
-        cardsWithMemberActivities.push(card);
-      }
-    }
-
-    setActivityCardOptions(cardsWithMemberActivities);
-
-    // Automatically select the first card and fetch activities
-    if (cardsWithMemberActivities.length > 0) {
-      const firstCardOption = cardsWithMemberActivities[0];
-      setSelectedActivityCard(firstCardOption);
-      await handleCardFilterClick(firstCardOption);
-    } else {
-      // No cards with actions by this member
-      setMemberActivities([]);
+  
+    try {
+      // Fetch member activities across all linked cards concurrently
+      const memberActivitiesPromises = allLinkedCards.map((linkedCard) =>
+        fetchMemberActivitiesForCard(member.id, linkedCard.id)
+      );
+      const memberActivitiesArrays = await Promise.all(memberActivitiesPromises);
+      const aggregatedMemberActivities = memberActivitiesArrays.flat();
+  
+      setMemberActivities(aggregatedMemberActivities);
+      setIsLoadingActivities(false);
+    } catch (error) {
+      console.error('Error handling member click:', error);
       setIsLoadingActivities(false);
     }
-
+  
     setLoadingMemberId(null);
   };
+  
 
-  const fetchMemberActionsForCard = async (memberId, cardId) => {
-    const url = new URL(`/api/trello-audit/get-member-actions`, window.location.origin);
-    url.searchParams.append('memberId', memberId);
-    url.searchParams.append('cardIds', cardId);
-
+  const fetchMemberActivitiesForCard = async (memberId, cardId) => {
+    if (!memberId || !cardId) return [];
+  
     try {
+      const url = new URL(`/api/trello-audit/member-activities`, window.location.origin);
+      url.searchParams.append('memberId', memberId);
+      url.searchParams.append('cardId', cardId);
+  
       const res = await fetch(url.toString());
       const data = await res.json();
-      return data.actions;
+  
+      return data.activities || [];
     } catch (error) {
-      console.error('Error fetching member actions for card:', error);
+      console.error(`Error fetching member activities for member ${memberId} on card ${cardId}:`, error);
       return [];
     }
   };
+  
+  
 
+  // Handle card filter click to display activities for a selected card
   const handleCardFilterClick = async (option) => {
     setSelectedActivityCard(option);
     setIsLoadingActivities(true);
     setMemberActivities([]);
 
     try {
-      const url = new URL(`/api/trello-audit/get-member-actions`, window.location.origin);
+      const url = new URL(`/api/trello-audit/member-activities`, window.location.origin);
       if (selectedMember) {
         url.searchParams.append('memberId', selectedMember.id);
       }
-      url.searchParams.append('cardIds', option.id);
+      url.searchParams.append('cardId', option.id);
 
       const res = await fetch(url.toString());
       const data = await res.json();
 
-      setMemberActivities(data.actions);
+      setMemberActivities(data.activities || []);
       setIsLoadingActivities(false);
     } catch (error) {
-      console.error('Error fetching member activities:', error);
+      console.error('Error fetching member activities for selected card:', error);
       setIsLoadingActivities(false);
     }
   };
 
+  // Fetch step details for a selected activity
   const fetchStepDetails = async (activity) => {
     try {
       const res = await fetch(
@@ -510,12 +555,14 @@ export default function TimelineComponent({ card }) {
     }
   };
 
+  // Hide details modal
   const handleHideDetails = () => {
     setShowDetails(false);
     setDetailsData(null);
     setSelectedActivity(null);
   };
 
+  // Calculate days spent in a list
   const calculateDaysInList = (currentActivity, nextActivity) => {
     const currentDate = new Date(currentActivity.date);
     const nextDate = nextActivity ? new Date(nextActivity.date) : new Date();
@@ -599,7 +646,14 @@ export default function TimelineComponent({ card }) {
               <h4>
                 Cards {selectedMember ? `for ${selectedMember.fullName}` : 'for All Members'}
               </h4>
-              
+
+              {isLoadingActivities && (
+                <div className={styles.loadingContainer}>
+                  <div className={styles.loadingSpinner}></div>
+                  <p>Loading Activities...</p>
+                </div>
+              )}
+
               {activityCardOptions.map((option) => {
                 const boardColor = getBoardColor(option.boardName);
                 const isActive = selectedActivityCard && selectedActivityCard.id === option.id;
@@ -635,12 +689,7 @@ export default function TimelineComponent({ card }) {
                   <option value="type">Activity Type</option>
                 </select>
               </div>
-              {isLoadingActivities && (
-                <div className={styles.loadingContainer}>
-                  <div className={styles.loadingSpinner}></div>
-                  <p>Loading Activities...</p>
-                </div>
-              )}
+
               {/* Render Member Activities */}
               {renderMemberActivities()}
             </div>

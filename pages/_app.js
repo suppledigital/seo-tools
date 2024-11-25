@@ -1,18 +1,39 @@
+// pages/_app.js
+import React from 'react';
 import { SessionProvider } from 'next-auth/react';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-
-import '../styles/global.css'; // Import the global CSS
-//import '../styles/style.css'; // Import the global CSS
-//import '../styles/projects.css'; // Import the global CSS
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import '@fortawesome/fontawesome-free/css/all.min.css'; // Font Awesome CSS
+import '../styles/global.css'; // Your global CSS
+// import '../styles/style.css'; // Uncomment if needed
+// import '../styles/projects.css'; // Uncomment if needed
 import { config } from '@fortawesome/fontawesome-svg-core';
-import '@fortawesome/fontawesome-svg-core/styles.css'; // Import the CSS manually
+import '@fortawesome/fontawesome-svg-core/styles.css'; // Font Awesome CSS manually
 config.autoAddCss = false; // Disable the automatic adding of CSS
 
+// Define your MUI theme (optional)
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2', // Customize the primary color
+    },
+    secondary: {
+      main: '#dc004e', // Customize the secondary color
+    },
+  },
+  typography: {
+    fontSize: 16, // Set global font size
+  },
+});
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <ThemeProvider theme={theme}>
+        {/* CssBaseline kickstarts an elegant, consistent, and simple baseline to build upon. */}
+        <CssBaseline />
+        <Component {...pageProps} />
+      </ThemeProvider>
     </SessionProvider>
   );
 }

@@ -5,41 +5,45 @@ export default async function handler(req, res) {
   const { cardId } = req.query;
   const { TRELLO_API_KEY, TRELLO_TOKEN } = process.env;
 
+  if (!cardId) {
+    return res.status(400).json({ error: 'cardId is required' });
+  }
+
   try {
-    // Fetch card details including idList
-    const cardResponse = await axios.get(`https://api.trello.com/1/cards/${cardId}`, {
-      params: {
-        key: TRELLO_API_KEY,
-        token: TRELLO_TOKEN,
-        fields: 'name,shortLink,idList',
-        board: true,
-        board_fields: 'name',
-      },
+    const params = {
+      key: TRELLO_API_KEY,
+      token: TRELLO_TOKEN,
+      fields: 'name,shortLink,idBoard,idList',
+      board_fields: 'name',
+      list_fields: 'name',
+    };
+
+    const response = await axios.get(`https://api.trello.com/1/cards/${cardId}`, {
+      params,
     });
 
-    const card = cardResponse.data;
+    const cardDetails = response.data;
 
-    // Fetch list details using idList
-    const listResponse = await axios.get(`https://api.trello.com/1/lists/${card.idList}`, {
-      params: {
-        key: TRELLO_API_KEY,
-        token: TRELLO_TOKEN,
-        fields: 'name',
-      },
+    // Fetch list details
+    const listRes = await axios.get(`https://api.trello.com/1/lists/${cardDetails.idList}`, {
+      params,
     });
+    const listDetails = listRes.data;
 
-    const list = listResponse.data;
+    // Fetch board details
+    const boardRes = await axios.get(`https://api.trello.com/1/boards/${cardDetails.idBoard}`, {
+      params,
+    });
+    const boardDetails = boardRes.data;
 
     res.status(200).json({
-      name: card.name,
+      name: cardDetails.name,
+      shortLink: cardDetails.shortLink,
       board: {
-        id: card.board.id,
-        name: card.board.name,
+        name: boardDetails.name,
       },
-      shortLink: card.shortLink,
       list: {
-        id: list.id,
-        name: list.name,
+        name: listDetails.name,
       },
     });
   } catch (error) {
