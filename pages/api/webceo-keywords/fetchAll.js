@@ -24,7 +24,7 @@ export default async function handler(req, res) {
             try {
               const [landingPagesData, rankingsData] = await Promise.all([
                 fetchLandingPages(projectId),
-                fetchRankings(projectId, { history_depth: 5 }), // Adjust history_depth as needed
+                fetchRankings(projectId, { history_depth: 1000 }), // Adjust history_depth as needed
               ]);
 
               // Log fetched data counts
