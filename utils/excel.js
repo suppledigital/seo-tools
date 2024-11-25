@@ -64,7 +64,6 @@ export const createExcelFile = async (data, filePath) => {
                 scan_date: scan.date || '',
                 search_type: scan.type || 'organic',
               });
-              console.log("Scan Date: ", scan.date);
             });
           }
         });
