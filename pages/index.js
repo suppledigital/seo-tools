@@ -43,6 +43,9 @@ export default function Home() {
           <Link href="/keywords" className={styles.link}>Keywords Tool</Link>
         </li>
         <li className={styles.listItem}>
+          <Link href="/webceo-keywords" className={styles.link}>Keywords Exporter</Link>
+        </li>
+        <li className={styles.listItem}>
           <Link href="/chat" className={styles.link}>Chat</Link>
         </li>
         
