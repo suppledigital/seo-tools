@@ -125,6 +125,8 @@ flex-wrap: wrap;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     max-height: -webkit-fill-available;
     overflow:auto;
+    scrollbar-color:#091e4224 #091e420f;
+    scrollbar-width: thin;
   }
   .MembersHeading{
     display:inline-flex;
@@ -145,10 +147,17 @@ flex-wrap: wrap;
     border-left: 4px solid transparent;
     border-radius: 4px;
     transition: background-color 0.3s, border-color 0.3s;
+    border:1px solid #fff;
+
+  }
+  .cardFilterItem a{
+    text-decoration:none;
+    color:unset;
   }
   
   .cardFilterItem:hover {
-    background-color: #e6f7ff;
+    background-color: #e1e1e1;
+    border:1px solid blue;
   }
   
   .activeCardFilterItem {
@@ -165,6 +174,8 @@ flex-wrap: wrap;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     max-height: -webkit-fill-available;
     overflow:auto;
+    scrollbar-color:#091e4224 #091e420f;
+    scrollbar-width: thin;
   }
   
   .groupByContainer {
@@ -282,6 +293,8 @@ flex-wrap: wrap;
     overflow-x: auto;
     overflow-y: hidden;
     flex: 1;
+    scrollbar-color:#091e4224 #091e420f;
+    scrollbar-width: thin;
   }
   
   .timeline {
