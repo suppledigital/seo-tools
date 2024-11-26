@@ -4,6 +4,8 @@
     overflow-y: auto;
     border-right: 1px solid #ccc;
     padding: 10px;
+    box-sizing: border-box;
+    background-color: #f5f5f5;
   }
   
   .header {
@@ -20,6 +22,7 @@
   
   .autoSyncCheckbox {
     margin-right: 5px;
+    cursor: pointer;
   }
   
   .cardList {
@@ -32,10 +35,12 @@
     cursor: pointer;
     padding: 8px;
     border-bottom: 1px solid #eaeaea;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
   }
   
   .cardItem:hover {
-    background-color: #f9f9f9;
+    background-color: #e1e1e1;
   }
   
   .cardContent {
@@ -54,16 +59,21 @@
     justify-content: center;
     margin-right: 10px;
     font-weight: bold;
+    flex-shrink: 0;
   }
+  
   .activeCardItem {
     background-color: #0070f3;
     color: #fff;
   }
-  .activeCardItem .authorIcon{
+  
+  .activeCardItem .authorIcon {
     color: #0070f3;
     background-color: #fff;
   }
-  .activeCardItem:hover{
-    background-color: #0158bb;
+  
+  .activeCardItem:hover {
+    background-color: #005bb5;
     color: #fff;
   }
+  

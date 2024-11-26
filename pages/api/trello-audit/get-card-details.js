@@ -37,6 +37,7 @@ export default async function handler(req, res) {
     const boardDetails = boardRes.data;
 
     res.status(200).json({
+        id: cardId,
       name: cardDetails.name,
       shortLink: cardDetails.shortLink,
       board: {

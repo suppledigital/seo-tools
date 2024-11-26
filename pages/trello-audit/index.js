@@ -28,14 +28,32 @@ export default function TrelloAudit() {
   const fetchCardsFromDatabase = () => {
     axios
       .get('/api/trello-audit/get-cards')
-      .then((response) => setCards(response.data.cards))
+      .then((response) => {
+        const fetchedCards = response.data.cards;
+        setCards(fetchedCards);
+
+        // Optionally, set a default selected card based on BOARD_ID
+     //   const defaultCard = fetchedCards.find(card => card.board_id === process.env.NEXT_PUBLIC_BOARD_ID);
+       // if (defaultCard) {
+        //  setSelectedCard(defaultCard);
+      //  }
+      })
       .catch((error) => console.error('Error fetching cards:', error));
   };
 
   const fetchCardsFromTrello = () => {
     axios
       .get('/api/trello-audit/fetch-cards')
-      .then((response) => setCards(response.data.cards))
+      .then((response) => {
+        const fetchedCards = response.data.cards;
+        setCards(fetchedCards);
+
+        // Optionally, set a default selected card based on BOARD_ID
+        const defaultCard = fetchedCards.find(card => card.board_id === process.env.NEXT_PUBLIC_BOARD_ID);
+        if (defaultCard) {
+          setSelectedCard(defaultCard);
+        }
+      })
       .catch((error) => console.error('Error fetching cards from Trello:', error));
   };
 
@@ -51,6 +69,7 @@ export default function TrelloAudit() {
   }, [autoSync]);
 
   const handleSelectCard = (card) => {
+    console.log('Selected Card:', card); // Debugging
     setSelectedCard(card);
   };
 
@@ -75,20 +94,20 @@ export default function TrelloAudit() {
 
   return (
     <div className="trelloAuditContainer">
-    <div className={styles.mainContainer}>
-      <div className={styles.content}>
-      <CardList
-        cards={cards}
-        onSelectCard={handleSelectCard}
-        selectedCard={selectedCard} // Pass selectedCard
-        loading={loading}
-        autoSync={autoSync}
-        toggleAutoSync={toggleAutoSync}
-        />
-        <Timeline card={selectedCard} />
+      <div className={styles.mainContainer}>
+        <div className={styles.content}>
+          <CardList
+            cards={cards}
+            onSelectCard={handleSelectCard}
+            selectedCard={selectedCard} // Pass selectedCard
+            loading={loading}
+            autoSync={autoSync}
+            toggleAutoSync={toggleAutoSync}
+          />
+          <Timeline card={selectedCard} onSelectCard={handleSelectCard} /> {/* Pass onSelectCard */}
+        </div>
       </div>
-    </div>
-    <style jsx global>{`
+      <style jsx global>{`
         /* Your global styles */
         body {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

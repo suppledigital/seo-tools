@@ -1,19 +1,287 @@
+/* Timeline.module.css */
 
-  
-  
-/* components/trello-audit/Timeline.module.css */
+/* Overall Timeline Container */
 .timelineContainer {
     width: 80%;
-    padding: 10px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     position: relative;
+    box-sizing: border-box;
   }
   
+  .detailsContainer {
+    margin-top: 20px;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    flex: 5 1;
+    display: flex;
+flex-wrap: wrap;
+  }
+  /* Members Container */
+  .membersContainer,.filteredMembersContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    flex: 0 0 100%;
+  }
+  .filteredMembers{
+    display:flex;
+  }
+  .projectCardMembers{
+    margin-top: 5px;
+    padding: 5px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    flex: 3 1;
+    display:inline-flex;
+  }
+  .projectCardMembersContainer {
+    margin-bottom: 20px;
+  }
+  
+  
+  /* Member Icon Styling */
+  .memberIcon {
+    background-color: #ccc; /* Default background */
+    color: #fff;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, border 0.3s;
+    font-size: 12px;
+    margin-right:2px;
+  }
+  
+  .activeMemberIcon {
+    border: 3px solid #ffc400; /* Highlight active member */
+    background-color:#0070f3!important
+  }
+  
+  .memberIcon:hover {
+    background-color: #005bb5;
+  }
+  
+  /* Member Activities Container */
+  .memberActivitiesContainer {
+    display: flex;
+    /*flex-direction: column;*/
+    width: 100%;
+    margin-top: 20px;
+    flex-wrap: wrap; /* Allows items to wrap to the next line if necessary */
+
+  }
+  
+  /* Member's Cards Container */
+  .memberCardsContainer {
+    flex: 0 0 100%;
+    background-color: #f1f1f1;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .memberCardsContainer h4 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  /* Member Card Item */
+  .memberCardItem {
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-left: 4px solid #0070f3;
+    border-radius: 4px;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  
+  .memberCardItem:hover {
+    background-color: #e6f7ff;
+    border-color: #005bb5;
+  }
+  
+  /* Card Filter Container */
+  .cardFilterContainer {
+    flex: 0 0 30%;
+    background-color: #fafafa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-height: -webkit-fill-available;
+    overflow:auto;
+  }
+  .MembersHeading{
+    display:inline-flex;
+    margin-right:5px;
+  }
+  
+  .cardFilterContainer h4 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  /* Card Filter Item */
+  .cardFilterItem {
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-left: 4px solid transparent;
+    border-radius: 4px;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  
+  .cardFilterItem:hover {
+    background-color: #e6f7ff;
+  }
+  
+  .activeCardFilterItem {
+    border-left: 4px solid #0070f3;
+    background-color: #cce5ff;
+  }
+  
+  /* Activity Data Container */
+  .activityDataContainer {
+    flex: 0 0 70%;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-height: -webkit-fill-available;
+    overflow:auto;
+  }
+  
+  .groupByContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .groupByContainer label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .groupByContainer select {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  
+  
+  /* All Activities Container */
+  .allActivitiesContainer {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .allActivitiesContainer h4 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .allActivityItem {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border-left: 4px solid #28a745;
+    border-radius: 4px;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  
+  .allActivityItem:hover {
+    background-color: #d4edda;
+    border-color: #218838;
+  }
+  
+  /* Activity Details */
+  .activityDetails {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border-left: 4px solid #0070f3;
+    border-radius: 4px;
+  }
+  
+  .closeButton {
+    background-color: #f44336;
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  .closeButton:hover {
+    background-color: #d32f2f;
+  }
+  
+  /* Author Icon */
+  .authorIcon {
+    background-color: #0070f3;
+    color: #fff;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+    font-weight: bold;
+  }
+  
+  /* Loading Spinner */
+  .loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .loadingSpinner, .memberLoadingSpinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0070f3;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+  }
+  
+  .memberLoadingSpinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #fff;
+    border-top: 2px solid #888;
+  }
+  
+  /* Timeline Styling */
   .timelineWrapper {
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 20px;
+    flex: 1;
   }
   
   .timeline {
@@ -21,6 +289,17 @@
     align-items: center;
     position: relative;
     animation: slideIn 1s ease-out;
+    min-width: 600px; /* Ensures horizontal scroll if timeline is wide */
+  }
+  
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: #0070f3;
   }
   
   .timelineItem {
@@ -31,17 +310,8 @@
     min-width: 100px;
     cursor: pointer;
     animation: fadeInUp 0.5s ease-out;
+    flex-shrink: 0;
   }
-  .checklistItem {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-  }
-  
-  .checklistItem input[type='checkbox'] {
-    margin-right: 5px;
-  }
-  
   
   .timelineItem:not(:last-child) .line {
     position: absolute;
@@ -57,124 +327,138 @@
     width: 20px;
     height: 20px;
     background-color: white;
-    border:1px solid #0070f3;
+    border: 2px solid #0070f3;
     border-radius: 50%;
     margin-bottom: 5px;
+    transition: background-color 0.3s, border-color 0.3s;
   }
+  
   .activeTimelineItem .circle {
     background-color: #0070f3;
-    border:1px solid #0070f3;
+    border-color: #0070f3;
   }
-  
-  
   
   .stepName {
-    font-size: 12px;
+    font-size: 14px;
     text-align: center;
-    padding: 5px 5px;
+    padding: 5px;
     white-space: nowrap;
-  }
-  /* In components/trello-audit/Timeline.module.css */
-
-.filterContainer {
-    margin-bottom: 10px;
-  }
-  .cardTabs {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .cardTab {
-    padding: 5px 10px;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    background-color: #f1f1f1;
-    border-radius: 4px;
-    cursor: pointer;
+    color: #333;
   }
   
-  .cardTab:hover {
-    background-color: #e1e1e1;
-  }
-  
-  .activeTab {
-    background-color: #0070f3;
-    color: #fff;
-  }
-  
-  .cardLink {
-    text-decoration: none;
-    color: inherit;
-  }
-  .filterContainer label {
-    margin-right: 5px;
-  }
-  
-  .membersContainer {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    overflow-x: auto;
-    box-shadow: 0px 2px 3px 1px #cfcfcf;
-    padding: 5px 5px;
-    min-height: 50px;
-  }
-  
-  .memberIcon {
-    background-color: #ccc; /* Default background */
-    color: #fff;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 5px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  .activeMemberIcon {
-    /* No need to change background color since it's based on user color */
-    border: 2px solid #000; /* Add border to indicate active state */
-  }
-  
-  .memberIcon:hover {
-    background-color: #005bb5;
-  }
-  
-  .detailsContainer {
-    margin-top: 20px;
-    padding: 20px;
-    flex: 1;
-    overflow-y: auto;
-    background-color: #f9f9f9;
-    border: 1px solid #eaeaea;
-    border-radius: 4px;
-  }
-  
-  .closeButton {
-    background-color: #f44336;
-    color: #fff;
-    padding: 6px 12px;
-    border: none;
-    cursor: pointer;
+  .daysInList {
     font-size: 12px;
+    color: #666;
+  }
+  
+  .line {
+    position: absolute;
+    left: 0;
+    top: 24px;
+    width: 4px;
+    height: 100%;
+    background-color: #0070f3;
+  }
+  
+  /* Group Headers */
+  .groupHeader {
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    color: #0070f3;
+  }
+  
+  .groupHeader:hover {
+    text-decoration: underline;
+  }
+  
+  /* Activity Item */
+  .activityItem {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s;
+  }
+  
+  .activityItem:hover {
+    background-color: #e6f7ff;
+  }
+  
+  /* All Activities Container */
+  .allActivitiesContainer {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .allActivitiesContainer h4 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .allActivityItem {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border-left: 4px solid #28a745;
+    border-radius: 4px;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  
+  .allActivityItem:hover {
+    background-color: #d4edda;
+    border-color: #218838;
+  }
+  
+  /* Activity Details Modal */
+  .detailsModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    border: 2px solid #0070f3;
+    border-radius: 8px;
+    padding: 20px;
+    z-index: 1000;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .detailsModal ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .detailsModal li {
     margin-bottom: 10px;
   }
   
-  .authorIcon {
-    background-color: #0070f3;
-    color: #fff;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: inline-grid;
-    align-items: center;
-    justify-content: center;
-    margin-right: 5px;
-    font-weight: bold;
+  /* Overlay to darken the background when modal is open */
+  .detailsModal::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
   }
   
-  /* Animations */
+  /* Loading Spinner Animation */
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
   @keyframes fadeInUp {
     from {
       opacity: 0;
@@ -194,120 +478,38 @@
       transform: translateX(0);
     }
   }
-  .monthHeader {
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-  }
   
-  .activityItem {
-    padding: 10px;
-    margin-bottom: 10px;
-    border-bottom: 3px solid #eaeaea;
-    border-left: 3px solid black;
-    padding: 10px;
-  }
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .timelineContainer {
+      width: 8%;
+    }
   
-  .loadMoreButton {
-    background-color: #0070f3;
-    color: #fff;
-    padding: 6px 12px;
-    border: none;
-    cursor: pointer;
-    font-size: 12px;
-    margin-top: 10px;
-  }
-  .members{
-    margin-right:10px;
-  }
-  /* Add to Timeline.module.css */
-
-  .loadingContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 10px;
-  }
+    .detailsContainer {
+      flex-direction: column;
+    }
   
+    .memberActivitiesContainer, .cardFilterContainer, .activityDataContainer, .allActivitiesContainer {
+      width: 100%;
+      margin-bottom: 20px;
+    }
   
-  .loadingSpinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #0070f3;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
+    .timeline {
+      min-width: 300px;
     }
   }
-  /* Timeline.module.css */
-.cardFilterItem {
-    padding: 10px;
-     margin-bottom: 5px;
-    cursor: pointer;
-    background-color: #f9f9f9;
-  }
   
-  .cardFilterItem:hover {
-    background-color: #e1e1e1;
-  }
+  @media (max-width: 768px) {
+    .timelineItem {
+      min-width: 80px;
+    }
   
-  .activeCardFilterItem {
-    background-color: #0070f3;
-    color: #fff;
-  }
-  /* Timeline.module.css */
-/* Timeline.module.css */
-.memberActivitiesContainer {
-    display: flex;
-    flex-wrap: wrap;
-    height: 100%;
-    
-  }
+    .stepName {
+      font-size: 12px;
+    }
   
-  .cardFilterContainer, .activityDataContainer {
-    box-sizing: border-box;
-  }
-  
-  
-  .cardFilterContainer {
-    width: 25%;
-    border-right: 1px solid #ccc;
-    padding-right: 10px;
-    height: -webkit-fill-available;
-    overflow:auto;
-  }
-  
-  .activityDataContainer {
-    width: 75%;
-    padding-left: 10px;
-    height: -webkit-fill-available;
-    overflow:auto;
-  }
-  
-
-  
-  .closeButton:hover {
-    background-color: #d32f2f;
-  }
-    /* Spinner inside member icon */
-.memberLoadingSpinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #fff;
-    border-top: 2px solid #888;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
+    .daysInList {
+      font-size: 10px;
     }
   }
   
