@@ -1,18 +1,17 @@
-// pages/api/semrush/keyword-data.js
+// pages/api/semrush/lsi-suggestions.js
+
 import axios from 'axios';
 
 export default async function handler(req, res) {
   const { keyword, country } = req.body;
 
-  // Your SEMRush API key (store this securely)
   const apiKey = process.env.SEMRUSH_API_KEY;
 
-  // Map country codes to SEMRush database codes
   const databases = {
-    'AU': 'au',
-    'US': 'us',
-    'UK': 'uk',
-    'NZ': 'nz',
+    AU: 'au',
+    US: 'us',
+    UK: 'uk',
+    NZ: 'nz',
     // Add more as needed
   };
 
@@ -20,37 +19,7 @@ export default async function handler(req, res) {
 
   try {
     const baseUrl = 'https://api.semrush.com/';
-    const exportColumns = 'Ph,Nq,Cp,Co,Kd'; // Adjust columns as needed
-
-   
-    // Related Keywords
-    const relatedResponse = await axios.get(baseUrl, {
-      params: {
-        type: 'phrase_related',
-        key: apiKey,
-        phrase: keyword,
-        database: database,
-        export_columns: exportColumns,
-        display_limit: 20,
-      },
-    });
-    const relatedKeywords = parseSemrushResponse(relatedResponse.data);
-
-  
-    // Broad Match Keywords
-    const broadResponse = await axios.get(baseUrl, {
-      params: {
-        type: 'phrase_fullsearch',
-        key: apiKey,
-        phrase: keyword,
-        database: database,
-        export_columns: exportColumns,
-        display_limit: 20,
-      },
-    });
-    const broadMatchKeywords = parseSemrushResponse(broadResponse.data);
-
-    
+    const exportColumns = 'Ph,Nq,Cp,Co,Kd';
 
     // Phrase Questions
     const questionsResponse = await axios.get(baseUrl, {
@@ -66,27 +35,11 @@ export default async function handler(req, res) {
     const phraseQuestions = parseSemrushResponse(questionsResponse.data);
 
     res.status(200).json({
-      relatedKeywords,
-      broadMatchKeywords,
       phraseQuestions,
     });
   } catch (error) {
-    if (error.response) {
-      // Log the error response from SEMRush
-      console.error('Error response from SEMRush API:', error.response.data);
-      res.status(500).json({
-        message: 'Error fetching SEMRush data from SEMRush API.',
-        error: error.response.data,
-      });
-    } else if (error.request) {
-      // No response received
-      console.error('No response received from SEMRush API:', error.request);
-      res.status(500).json({ message: 'No response from SEMRush API.' });
-    } else {
-      // Error setting up the request
-      console.error('Error setting up SEMRush API request:', error.message);
-      res.status(500).json({ message: 'Error setting up SEMRush API request.' });
-    }
+    console.error('Error fetching LSI suggestions:', error);
+    res.status(500).json({ error: 'Error fetching LSI suggestions' });
   }
 }
 

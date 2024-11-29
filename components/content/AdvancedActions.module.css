@@ -1,0 +1,241 @@
+/* components/content/AdvancedActions.module.css */
+
+.advancedActions {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .expandButton {
+    padding: 5px 10px;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .expandButton:hover {
+    background-color: #005bb5;
+  }
+  
+  .actionsContainer {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .selectionActions {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .bulkActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .bulkActions button {
+    padding: 10px 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .bulkActions button:hover {
+    background-color: #218838;
+  }
+  
+  .individualSelectContainer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .individualSelectContainer span {
+    font-weight: bold;
+  }
+  
+  .individualSelectContainer select {
+    padding: 5px;
+    border-radius: 5px;
+    min-width: 180px;
+  }
+  
+  .selectAllContainer {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .selectAllContainer a {
+    color: #0070f3;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .selectAllContainer a:hover {
+    text-decoration: underline;
+  }
+  
+  .bulkActionOptions {
+    padding-top: 20px;
+    padding-left: 20px;
+    flex: 2 1;
+    border-left:1px solid #ddd
+  }
+  
+  .bulkActionOptions h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+  
+  .bulkActionOptions > div {
+    margin-bottom: 15px;
+  }
+  
+  .bulkActionOptions label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .bulkActionOptions select,
+  .bulkActionOptions input[type='text'],
+  .bulkActionOptions input[type='number'],
+  .bulkActionOptions textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  
+  .bulkActionOptions input[type='range'] {
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  .bulkActionButtons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .bulkActionButtons button {
+    padding: 10px 16px;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .bulkActionButtons button:hover {
+    background-color: #005bb5;
+  }
+  
+  .generateButton {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .generateButton:hover {
+    background-color: #e68a00;
+  }
+  
+  .generateIdeasSection {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #eef6ff;
+    border: 1px solid #bcd0e4;
+    border-radius: 5px;
+  }
+  
+  .generateIdeasSection label {
+    font-weight: bold;
+  }
+  
+  .generateIdeasSection input[type='text'] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .generateIdeasSection button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .resetBtn{
+    background-color:#dc3545!important;
+  }
+  
+  .generateIdeasSection button:hover {
+    background-color: #43a047;
+  }
+  
+  .suggestionsList {
+    margin-top: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+  }
+  
+  .suggestionsList h4 {
+    margin-top: 0;
+  }
+  
+  .suggestionsList label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .suggestionsList input[type='checkbox'] {
+    margin-right: 10px;
+  }
+  
+  .overrideOptions {
+    margin-top: 15px;
+  }
+  
+  .overrideOptions label {
+    margin-right: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .actionsContainer {
+      flex-direction: column;
+    }
+  }
+  

@@ -1,0 +1,40 @@
+/* ContentModal.module.css */
+
+/* Modal Styling */
+.modal {
+  display: block;
+  position: fixed;
+  z-index: 2000;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modalContent {
+  background-color: #fff;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 600px;
+}
+
+.modalContent h2 {
+  margin-top: 0;
+}
+
+.modalContent .close {
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modalTextContent {
+  max-height: 400px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}

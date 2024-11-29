@@ -1,792 +1,195 @@
+/* projectId.module.css */
+
 /* Container Styling */
 .projects {
-    padding: 20px;
-}
-.projects h1.title {
-    text-align: center;
-}
-/* Table Styles */
-.projects table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    font-size: 14px; /* Reduced font size */
-
-}
-.projects thead th {
-    background-color: #f2f2f2;
-    padding: 10px;
-    text-align: left;
-}
-.projects thead{
-    position: sticky;
-    top: 0;
-    display: table-header-group;
-    z-index: 1000;
+  padding: 10px;
 }
 
-.projects tbody td {
-    border-bottom: 1px solid #ddd;
-    padding: 10px;
+.title {
+  text-align: center;
+  font-size:20px;
 }
-.projects thead th,
-.projects tbody td {
-  padding: 8px; /* Reduced padding */
+.entriesTitle{
+  font-size:15px;
+  margin-bottom:5px;
 }
-
-.projects tr:nth-child(even) {
-    background-color: #fafafa;
-}
-.projects tbody tr:hover {
-    background-color: #f9f9f9;
-  }
-  
-/* Set Column Widths */
-.projects th:nth-child(1),
-.projects td:nth-child(1) {
-  width: 20%; /* URL */
-}
-
-.projects th:nth-child(2),
-.projects td:nth-child(2) {
-  width: 15%; /* Keywords */
-}
-
-.projects th:nth-child(3),
-.projects td:nth-child(3) {
-  width: 25%; /* Additional Info */
-}
-
-.projects th:nth-child(4),
-.projects td:nth-child(4) {
-  width: 25%; /* Generated Content */
-}
-
-.projects th:nth-child(5),
-.projects td:nth-child(5) {
-  width: 15%; /* Actions */
-}
-
-/* URL Cell Styling */
-.urlCell {
-    position: relative;
-}
-/* Select Input Styles */
-.urlCell select {
-    padding: 3px 8px;
-    margin: 2px;
-    font-size: 12px;
-    border-radius: 12px;
-  }
 
 /* Button Styling */
-.saveButton, .startButton {
-    padding: 10px 20px;
-    background-color: #0070f3;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-.saveButton:hover, .startButton:hover {
-    background-color: #005bb5;
-}
-/* Badge Styles */
-.badge {
-    display: inline-block;
-    padding: 3px 8px;
-    margin: 2px;
-     font-size: 12px;
-    border-radius: 12px;
-   
-    cursor: pointer;
-}
-.pageTypeBadge {
-    background-color: #cce5ff;
-    color: #004085;
+.saveButton,
+.startButton {
+  padding: 10px 20px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.contentTypeBadge {
-    background-color: #f8d7da;
-    color: #721c24;
+.saveButton:hover,
+.startButton:hover {
+  background-color: #005bb5;
 }
 
-.badgeSet {
-    background-color: #d4edda; /* Light green */
-    color: #155724;
-}  
-.badgeNotSet {
-    background-color: #f8d7da; /* Light red */
-    color: #721c24;
-}
-/* Remove background color from generateCell */
-.generateCell {
-    text-align: center;
-    padding: 10px;
-    border-radius: 5px;
-  }
-  /* Styles for action buttons */
-.actionButton {
-    padding: 8px 12px;
-    margin: 5px 5px 0 0;
-    background-color: #0070f3;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .actionButton:hover {
-    background-color: #005bb5;
-  }
-  
-  /* Lookup icon styles */
-  .lookupIcon {
-    margin-left: 5px;
-    cursor: pointer;
-    color: #0070f3;
-  }
-  
-  .lookupIcon:hover {
-    color: #005bb5;
-  }
-  
-  /* Styles for the generated content cell */
-  .generatedContentCell {
-    max-width: 300px;
-    height:10px;
-    overflow-y:hidden;
-    
-  }
-  .generatedContent{
-    display: block;
-    overflow-y:scroll;
-    height: 100px;
-  }
-  /* Content Action Icons */
-.contentActions {
-    margin-top: 5px;
-  }
-  
-  .contentActionIcon {
-    margin-right: 10px;
-    cursor: pointer;
-    color: #0070f3;
-  }
-  
-  .contentActionIcon:hover {
-    color: #005bb5;
-  }
-  
-  /* Modal Text Content */
-  .modalTextContent {
-    max-height: 400px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-  }
-  .deleteButton {
-    padding: 8px 12px;
-    margin: 5px 0 0 0;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .deleteButton:hover {
-    background-color: #c82333;
-  }
-  
- 
-    
-.contentTypeSelected {
-background-color: #d4edda;
-color: #155724;
+/* Excel Input Styling */
+.excelInput {
+  margin-bottom: 20px;
 }
 
-.contentTypeNotSelected {
-background-color: #f8d7da;
-color: #721c24;
-}
-/* Additional Info Styling */
+/* Additional Info Cell */
 .additionalInfoCell {
-    /*display: flex;
-    flex-wrap: wrap;*/
-    position: relative;
+  position: relative;
 }
 
 .infoBlock {
-    padding: 5px;
-    margin: 3px;
-    background-color: #f0f0f0;
-    border-radius: 5px;
-    cursor: pointer;
-    display:inline-block;
+  padding: 5px;
+  margin: 3px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
 }
-  
+
 .set {
-    background-color: #a5d6a7; /* Green when set */
-    color: #155724;
+  background-color: #a5d6a7; /* Green when set */
+  color: #155724;
 }
+
 .required {
-    background-color: #f8d7da; /* Red when required but not set */
-    color: #721c24;
+  background-color: #f8d7da; /* Red when required but not set */
+  color: #721c24;
 }
 
 .addBlock {
-    background-color: #42a5f5;
-    color: white;
-    padding: 5px;
-    border-radius: 50%;
-    cursor: pointer;
+  background-color: #42a5f5;
+  color: white;
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .additionalInfoDropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: white;
-    border: 1px solid #ccc;
-    z-index: 100;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 100;
 }
+
 .dropdownItem {
-    padding: 5px 10px;
-    cursor: pointer;
+  padding: 5px 10px;
+  cursor: pointer;
 }
 
 .dropdownItem:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
-/* Modal Styling */
+/* Generated Content Cell */
+.generatedContentCell {
+  max-width: 300px;
+  height: 10px;
+  overflow-y: hidden;
+}
+
+.generatedContent {
+  display: block;
+  overflow-y: scroll;
+  height: 100px;
+}
+
+/* Global Actions Container */
+.globalActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.selectionInfo {
+  font-size: 16px;
+}
+
+.selectionActions,
+.bulkActions {
+  display: flex;
+  gap: 10px;
+}
+
+.selectionActions button,
+.bulkActions button {
+  padding: 8px 12px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.selectionActions button:hover,
+.bulkActions button:hover {
+  background-color: #005bb5;
+}
+
+/* Modal Styles */
 .modal {
-    display: block;
-    position: fixed;
-    z-index: 2000;
-    padding-top: 100px;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+  display: block;
+  position: fixed;
+  z-index: 2000;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modalContent {
-    background-color: #fff;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 400px;
+  background-color: #fff;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 400px;
 }
 
 .modalContent h2 {
-    margin-top: 0;
-}
-
-.modalContent textarea {
-    width: 100%;
-    height: 150px;
-    margin-bottom: 10px;
+  margin-top: 0;
 }
 
 .modalContent .close {
-    float: right;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-}
-/* Additional Styles */
-.pageTypeSelect, .contentTypeSelect {
-    padding: 5px;
-    margin: 3px 2px;
-    font-size: 12px;
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-
-  
-/* Menu Bar Styles */
-.menu-bar {
-    background-color: #57d6ed;
-    overflow: hidden;
-    margin-top: 20px;
-    margin-bottom: 20px;
+.modalContent label {
+  display: block;
+  margin-top: 10px;
 }
 
-.menu-bar ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
+.modalContent input,
+.modalContent select {
+  width: 100%;
+  padding: 5px;
+  margin-top: 5px;
 }
 
-.menu-bar li {
-    float: left;
-}
-
-.menu-bar li a {
-    display: block;
-    color: black;
-    text-align: center;
-    padding: 14px 20px;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.menu-bar li a:hover {
-    background-color: #ddd;
-    color: #000;
-}
-
-.sticky {
-    position: fixed;
-    top: 0;
-    width: calc(100% - 40px); /* Adjust for body margin */
-    z-index: 1000;
-    margin-top:0px;
-}
-
-
-
-
-/* Keywords Styling */
-.projects td.keywords-cell div {
-    display: flex;
-    flex-direction: column;
-}
-
-.projects td.keywords-cell div span {
-    margin-bottom: 5px;
-}
-.keywordsCell {
-    font-size: 14px;
-  }
-  
-  .keywordsCell span {
-    display: block;
-    margin-bottom: 3px;
-  }
-  
-
-
-
-
-/* Generate Content Button */
-.projects .generate-content-btn {
-    padding: 8px 15px;
-    background-color: #66bb6a;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.projects .generate-content-btn:hover {
-    background-color: #57a05f;
-}
-
-
-
-/* Page Type Specific Colors */
-.projects .page-type-badge.homepage {
-    background-color: #cce5ff;
-    color: #004085;
-}
-
-.page-type-badge.service-page {
-    background-color: #e2e3e5;
-    color: #383d41;
-}
-
-.projects .page-type-badge.location-page {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-/* Spinner Styles */
-.fa-spinner {
-    margin-right: 5px;
-  }
-  
-  .contentSpinner {
-    font-size: 24px;
-    color: #0070f3;
-  }
-  
-/* Sidebar Styles */
-.sidebar {
-    position: fixed;
-    right: 0;
-    top: 0;
-   /* width: 300px;*/
-    width: 30vw; /*Set width to 40vw */
-
-    height: 100%;
-    background-color: #ededed;
-    border-left: 1px solid #ddd;
-    overflow-y: auto;
-    transition: width 0.3s;
-    z-index: 1000;
-  }
-  
-  .sidebarExpanded {
-    width: 80%; /* Expand to 90% of the screen */
-  }
-  
-  .sidebarHeader {
-    display: flex;
-    align-items: center;
-    padding:0px 20px;
-
-  }
-  
-  .sidebarHeader select {
-    margin-left: 10px;
-
-  }
-  
-  .sidebarToggleIcon {
-    margin-left: auto;
-    cursor: pointer;
-    padding:20px;
-
-  }
-  
-  .sidebarContent {
-    padding: 10px;
-  }
-  /* Adjustments for Sidebar Expansion */
-.sidebarContent {
-    transition: all 0.3s ease;
-  }
-  
- 
-  .keywordAnalysis,
-  .serpResults {
-    margin-bottom: 20px;
-  }
-  .keywordAnalysis {
-    padding: 10px;
-    margin-bottom: 20px;
-  }
-  /* Keyword Analysis Grid */
-.analysisGrid {
-    display: grid;
-    grid-template-columns: 1fr; /* Default to single column */
-    gap: 10px;
-  }
-/* Keyword Analysis Grid */
-.analysisGrid {
-    display: grid;
-    grid-template-columns: 1fr; /* Single column */
-    gap: 10px;
-  }
-  .sidebarExpanded .analysisGrid {
-    grid-template-columns: repeat(3, 1fr) 1fr; /* 3 columns of equal size + 1 last column */
-    grid-template-rows: auto auto; /* Two rows */
-
-}
-  
-  .difficultyBlock,
-.trendBlock,
-.volumeBlock,
-.cpcBlock,
-.competitionBlock {
-  background-color: #fff;
-  padding: 10px;
+.saveButton {
+  margin-top: 20px;
+  padding: 8px 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
   border-radius: 5px;
-}
-.sidebarExpanded .difficultyBlock
-{
-    grid-row: 1 / 3; /* Spans across both rows */
-    grid-column: span 1; /* Each occupies a column */
-
-}
-.sidebarExpanded .trendBlock{
-    grid-column: 2;
-    grid-row: 1 / 3; /* Spans across both rows */
-}
-.sidebarExpanded .volumeBlock{
-    grid-column: 3;
-    grid-row: 1 / 3; /* Spans across both rows */
-}
-.sidebarExpanded .cpcBlock{
-    grid-column: 4;
-    grid-row: 1; /* First row of the last column */
+  cursor: pointer;
 }
 
-.sidebarExpanded .competitionBlock{
-    grid-column: 4;
-    grid-row: 2; /* Second row of the last column */
+.saveButton:hover {
+  background-color: #218838;
 }
-
-.blockHeader {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .blockContent {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;  /* Take full width of the container */
-    height: 100%; /* Adjust to fit the container height */
-    overflow: hidden; /* Prevent overflow */
-  }
-  /* Ensure charts take full width */
-.blockContent canvas {
-    width: 100% !important;
-    height: auto !important;
-  }
-  .blockContent svg{
-    max-width: 100%;  /* Ensure the SVG scales within the container */
-    max-height: 100%;
-    height: auto;    /* Maintain aspect ratio */
-    width: auto;
-  }
-  
-  
-  /* Expanded sidebar size */
-.sidebarExpanded .difficultyBlock .blockContent {
-    height: 150px; /* Adjust as needed */
-  }
-  
-  .trendBlock .blockContent {
-    height: 150px; /* Adjust as needed */
-  }
-  
-  .volumeValue,
-  .cpcValue,
-  .competitionValue {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  /* Second Row: CPC and Competition */
-  .cpcBlock,
-  .competitionBlock {
-    grid-column: span 1;
-  }
-  
-  .cpcBlock,
-.competitionBlock {
-  grid-column: 1 / -1; /* Span all columns in default view */
-}
-.sidebarExpanded .cpcBlock,
-.sidebarExpanded .competitionBlock {
-  grid-column: auto; /* Each takes up one column when expanded */
-}
-  /* SERP Results Container */
-.serpResultsContainer {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    background-color: #fff; /* Add background color */
-    padding: 10px;
-    border-radius: 5px;
-  }
-  
-
-/* SERP Results Table */
-.serpResults {
-    width: 100%;
-  }
-  .serpResultsExpanded {
-    max-height: 400px; /* Adjust the height as needed */
-    overflow-y: auto;
-  }
-  .sidebarExpanded .serpResults {
-    width: 50%;
-  }
-  /* Optional: Placeholder for future content */
-.futureContent {
-    width: 50%;
-  }
-  .sidebarExpanded .futureContent {
-    display: block; /* Show when sidebar is expanded */
-  }
-  
-  .serpTable tbody tr {
-    border-bottom: 1px solid #ccc;
-  }
-  
-  .positionCell {
-    width: 40px;
-    text-align: center;
-    font-weight: bold;
-  }
-  
-  .resultInfoCell {
-    padding: 5px;
-  }
-  .urlRow {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .urlRow i {
-    cursor: pointer;
-  }
-  
-  .resultUrl {
-    word-break: break-all;
-  }
-  
-  .titleRow {
-    margin-top: 5px;
-  }
-  
-  .snippetRow {
-    margin-top: 5px;
-  }
-  
-  .statsCell {
-    width: 50px;
-    text-align: center;
-  }
-  
-  .statsCell i {
-    cursor: pointer;
-  }
-  
-
-  .serpResults {
-    display: flex;
-  }
-  
-  
-  .difficultyChart {
-    width: 100px;
-    margin-bottom: 10px;
-  }
-  
- /* Add to your CSS file or style section */
-.historyTrendChart {
-    width: 100%;
-    height: 300px; /* Adjust height as needed */
-    position: relative;
-  }
-  
-  
-  .serpTable {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .serpTable th,
-  .serpTable td {
-    border: 1px solid #ddd;
-    padding: 5px;
-  }
-  
-  .serpTable th {
-    background-color: #f2f2f2;
-  }
-  
-  /* Container for the keyword tables */
-.keywordTablesContainer {
-    margin-top: 20px;
-  }
-  
-  /* Grid layout for tables */
-  .keywordTablesGrid {
-    display: grid;
-    gap: 10px;
-  }
-  
-  /* Default: single column */
-  .keywordTablesGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  /* Expanded: multiple columns */
-  .sidebarExpanded .keywordTablesGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  /* Styles for each table */
-  .keywordTable {
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-  }
-  
-  .keywordTable table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .keywordTable th,
-  .keywordTable td {
-    border: 1px solid #ddd;
-    padding: 5px;
-  }
-  
-  .keywordTable th {
-    background-color: #f2f2f2;
-  }
-  
-  /* Optional: Adjust table height and make scrollable if needed */
-  .keywordTable .scrollable {
-    max-height: 300px; /* Adjust as needed */
-    overflow-y: auto;
-    height:300px;
-    margin-bottom:10px;
-  }
-
-  .keywordTable .scrollable td,.keywordTable .scrollable thead{
-    font-size:10px;
-    padding:5px;
-  }
-  /* Container for the keyword input and icon */
-.keywordInputContainer {
-    display: flex;
-    align-items: center;
-  }
-  
-  .keywordInputContainer input {
-    flex: 1;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .keywordInputContainer i {
-    margin-left: 8px;
-    cursor: pointer;
-    color: #0070f3;
-  }
-  
-  .keywordInputContainer i:hover {
-    color: #005bb5;
-  }
-  
-  
-
-/* Responsive Table */
-@media screen and (max-width: 768px) {
-    .projects table, .projects thead, .projects tbody, .projects th, .projects td, .projects tr {
-        display: block;
-      }
-    
-      .projects th, .projects td {
-        text-align: right;
-        padding-left: 50%;
-        position: relative;
-      }
-    
-      .projects th::before, .projects td::before {
-        position: absolute;
-        left: 10px;
-        text-align: left;
-        font-weight: bold;
-      }
-    
-      .projects th::before {
-        content: attr(data-label);
-      }
-    
-      .projects td::before {
-        content: attr(data-label);
-      }
+.selectionActions select {
+  padding: 5px;
+  border-radius: 5px;
 }

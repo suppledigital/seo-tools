@@ -1,0 +1,144 @@
+/* KeywordAnalysis.module.css */
+
+/* Keyword Analysis Container */
+.keywordAnalysis {
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+/* Grid Layout */
+.analysisGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.analysisGrid {
+  grid-template-columns: repeat(3, 1fr) 1fr;
+  grid-template-rows: auto auto;
+}
+
+/* Blocks */
+.difficultyBlock,
+.trendBlock,
+.volumeBlock,
+.cpcBlock,
+.competitionBlock {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Difficulty Block */
+.difficultyBlock {
+  grid-row: 1 / 3;
+  grid-column: span 1;
+}
+
+/* Trend Block */
+.trendBlock {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+
+/* Volume Block */
+.volumeBlock {
+  grid-column: 3;
+  grid-row: 1 / 3;
+}
+
+/* CPC and Competition Blocks */
+.cpcBlock,
+.competitionBlock {
+  grid-column: 1 / -1;
+}
+
+.cpcBlock,
+.competitionBlock {
+  grid-column: auto;
+}
+
+/* Block Header */
+.blockHeader {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Block Content */
+.blockContent {
+  display: block;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+}
+
+/* Ensure charts take full width */
+.blockContent canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.blockContent svg {
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+  width: auto;
+}
+
+/* Expanded Sidebar Adjustments */
+.difficultyBlock .blockContent {
+  height: 150px;
+}
+
+.trendBlock .blockContent {
+  height: 150px;
+}
+
+/* Values */
+.volumeValue,
+.cpcValue,
+.competitionValue {
+  font-size: 24px;
+  font-weight: bold;
+}
+.analysisGrid {
+  grid-template-columns: repeat(3, 1fr) 1fr; /* 3 columns of equal size + 1 last column */
+  grid-template-rows: auto auto; /* Two rows */
+
+}
+
+.difficultyBlock,
+.trendBlock,
+.volumeBlock,
+.cpcBlock,
+.competitionBlock {
+background-color: #fff;
+padding: 10px;
+border-radius: 5px;
+}
+.difficultyBlock
+{
+  grid-row: 1 / 3; /* Spans across both rows */
+  grid-column: span 1; /* Each occupies a column */
+
+}
+.trendBlock{
+  grid-column: 2;
+  grid-row: 1 / 3; /* Spans across both rows */
+}
+.volumeBlock{
+  grid-column: 3;
+  grid-row: 1 / 3; /* Spans across both rows */
+}
+.cpcBlock{
+  grid-column: 4;
+  grid-row: 1; /* First row of the last column */
+}
+
+.competitionBlock{
+  grid-column: 4;
+  grid-row: 2; /* Second row of the last column */
+}

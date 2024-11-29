@@ -1,0 +1,186 @@
+/* EntryRow.module.css */
+
+/* URL Cell Styling */
+.urlCell {
+  position: relative;
+}
+
+/* Badge Styles */
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  margin: 2px;
+  font-size: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.pageTypeBadge {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+.contentTypeBadge {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.badgeSet {
+  background-color: #d4edda; /* Light green */
+  color: #155724;
+}
+
+.badgeNotSet {
+  background-color: #f8d7da; /* Light red */
+  color: #721c24;
+}
+
+/* Select Input Styles */
+.urlCell select {
+  padding: 3px 8px;
+  margin: 2px;
+  font-size: 12px;
+  border-radius: 12px;
+}
+
+/* Lookup Icon Styles */
+.lookupIcon {
+  margin-left: 5px;
+  cursor: pointer;
+  color: #0070f3;
+}
+
+.lookupIcon:hover {
+  color: #005bb5;
+}
+
+/* Keywords Cell */
+.keywordsCell {
+  font-size: 14px;
+}
+
+.keywordsCell span {
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* Additional Info Cell */
+.additionalInfoCell {
+  position: relative;
+}
+
+.infoBlock {
+  padding: 5px;
+  margin: 3px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.set {
+  background-color: #a5d6a7; /* Green when set */
+  color: #155724;
+}
+
+.required {
+  background-color: #f8d7da; /* Red when required but not set */
+  color: #721c24;
+}
+
+.addBlock {
+  background-color: #42a5f5;
+  color: white;
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.additionalInfoDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 100;
+}
+
+.dropdownItem {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.dropdownItem:hover {
+  background-color: #f0f0f0;
+}
+
+/* Generated Content Cell */
+.generatedContentCell {
+  max-width: 300px;
+  height: 10px;
+  overflow-y: hidden;
+}
+
+.generatedContent {
+  display: block;
+  overflow-y: scroll;
+  height: 100px;
+}
+
+/* Content Action Icons */
+.contentActions {
+  margin-top: 5px;
+}
+
+.contentActionIcon {
+  margin-right: 10px;
+  cursor: pointer;
+  color: #0070f3;
+}
+
+.contentActionIcon:hover {
+  color: #005bb5;
+}
+
+.contentSpinner {
+  font-size: 24px;
+  color: #0070f3;
+}
+
+/* Actions Cell */
+.actionsCell {
+  text-align: center;
+}
+
+/* Action Buttons */
+.actionButton {
+  padding: 8px 12px;
+  margin: 5px 5px 0 0;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.actionButton:hover {
+  background-color: #005bb5;
+}
+
+.deleteButton {
+  padding: 8px 12px;
+  margin: 5px 0 0 0;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.deleteButton:hover {
+  background-color: #c82333;
+}
+/* Highlight selected row */
+.selectedRow {
+  background-color: #e0f7fa; /* Light cyan color */
+}

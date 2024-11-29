@@ -1,45 +1,20 @@
 // pages/projects/[projectId].js
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { useRef } from 'react';
 
+import { useRouter } from 'next/router';
+import { useEffect, useState, useRef } from 'react';
 import styles from './[projectId].module.css';
 import axios from 'axios';
 import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.full.css';
 import { getSession } from 'next-auth/react';
-import { Line } from 'react-chartjs-2';
-import { Bar } from 'react-chartjs-2';
-import SmartAnalysisSidebar from '../../../components/SmartAnalysisSidebar/SmartAnalysisSidebar';
 
+// Import custom components
+import EntriesTable from '../../../components/content/EntriesTable';
+import InfoModal from '../../../components/content/InfoModal';
+import ContentModal from '../../../components/content/ContentModal';
+import Sidebar from '../../../components/content/Sidebar';
+import AdvancedActions from '../../../components/content/AdvancedActions';
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,      // Added
-  BarController,   // Added
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { CircularProgressbar } from 'react-circular-progressbar';
-
-import 'react-circular-progressbar/dist/styles.css';
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,      // Registered
-  BarController,   // Registered
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
 
 export default function ProjectPage({ initialData }) {
   const router = useRouter();
@@ -47,7 +22,6 @@ export default function ProjectPage({ initialData }) {
   const [project, setProject] = useState(initialData.project);
   const [entries, setEntries] = useState(initialData.entries || []);
   const [hotInstance, setHotInstance] = useState(null);
-  const [showProjectInfoModal, setShowProjectInfoModal] = useState(false);
   const [currentEntryId, setCurrentEntryId] = useState(null);
   const [currentInfoType, setCurrentInfoType] = useState('');
   const [infoModalVisible, setInfoModalVisible] = useState(false);
@@ -63,7 +37,7 @@ export default function ProjectPage({ initialData }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [sidebarContent, setSidebarContent] = useState(null);
   const [selectedKeyword, setSelectedKeyword] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState('AU'); // Default to 'AU'
+  const [selectedCountry, setSelectedCountry] = useState('AU');
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [loadingAnalyzeKeyword, setLoadingAnalyzeKeyword] = useState(false);
   const [loadingSerpResults, setLoadingSerpResults] = useState(false);
@@ -74,21 +48,23 @@ export default function ProjectPage({ initialData }) {
   const [selectedBroadMatchKeywords, setSelectedBroadMatchKeywords] = useState([]);
   const [selectedPhraseQuestions, setSelectedPhraseQuestions] = useState([]);
   const [keywordInput, setKeywordInput] = useState('');
-  const [sidebarType, setSidebarType] = useState(null); // 'keyword' or 'smartAnalysis'
+  const [sidebarType, setSidebarType] = useState(null);
   const [loadingAnalysisResults, setLoadingAnalysisResults] = useState(false);
+  const [classificationLoading, setClassificationLoading] = useState(false);
+  const [selectedEntries, setSelectedEntries] = useState([]);
+  const [lastSelectedEntryId, setLastSelectedEntryId] = useState(null);
 
-  
+// Add state for the bulk action modal
+const [bulkActionModalVisible, setBulkActionModalVisible] = useState(false);
+const [bulkActionType, setBulkActionType] = useState('');
+const [bulkActionField, setBulkActionField] = useState('');
+const [bulkActionValue, setBulkActionValue] = useState('');
+
 
   const sidebarRef = useRef(null);
-  const chartInstanceRef = useRef(null);
-
-
-
-
 
   useEffect(() => {
     if (project && !project.initialised) {
-      // Initialize Handsontable if project is not initialized
       const container = document.getElementById('excelInput');
       const hot = new Handsontable(container, {
         data: [['URL', 'Keywords', 'Meta Title', 'Meta Description']],
@@ -104,36 +80,27 @@ export default function ProjectPage({ initialData }) {
     }
   }, [project]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
         setIsSidebarOpen(false);
       }
     };
-  
+
     if (isSidebarOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
     }
-  
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isSidebarOpen]);
-
-  useEffect(() => {
-    // Trigger a resize of the chart when the sidebar width changes
-    if (chartInstanceRef.current) {
-      chartInstanceRef.current.resize();
-    }
-  }, [sidebarExpanded]);
+  }, [isSidebarOpen]);*/
 
   useEffect(() => {
     setKeywordInput(selectedKeyword);
   }, [selectedKeyword]);
-  
-  
 
   const saveData = async () => {
     if (hotInstance) {
@@ -164,33 +131,34 @@ export default function ProjectPage({ initialData }) {
       alert('Error saving project information.');
     }
   };
+
+
   const handleKeywordSearch = () => {
     if (!keywordInput.trim()) {
       alert('Please enter a keyword.');
       return;
     }
-  
+
     setSelectedKeyword(keywordInput.trim());
     setLoadingAnalyzeKeyword(true);
     setLoadingSerpResults(true);
     setLoadingSemrushData(true);
-  
+
     // Reset selected keywords
     setSelectedRelatedKeywords([]);
     setSelectedBroadMatchKeywords([]);
     setSelectedPhraseQuestions([]);
-  
+
     // Fetch data functions
     fetchKeywordAnalysis(keywordInput.trim(), selectedCountry);
     fetchSerpResults(keywordInput.trim(), selectedCountry);
     fetchSemrushData(keywordInput.trim(), selectedCountry);
   };
-  
-  
+
   const handleCheckboxChange = (tableType, keyword, isChecked) => {
     let setterFunction;
     let selectedKeywords;
-  
+
     if (tableType === 'related') {
       setterFunction = setSelectedRelatedKeywords;
       selectedKeywords = selectedRelatedKeywords;
@@ -201,30 +169,50 @@ export default function ProjectPage({ initialData }) {
       setterFunction = setSelectedPhraseQuestions;
       selectedKeywords = selectedPhraseQuestions;
     }
-  
+
     if (isChecked) {
       setterFunction([...selectedKeywords, keyword]);
     } else {
       setterFunction(selectedKeywords.filter((k) => k !== keyword));
     }
   };
+  const handleShiftClickSelection = (currentEntryId, isChecked) => {
+    const currentIndex = entries.findIndex((entry) => entry.entry_id === currentEntryId);
+    const lastIndex = entries.findIndex((entry) => entry.entry_id === lastSelectedEntryId);
+  
+    if (currentIndex > -1 && lastIndex > -1) {
+      const [start, end] = currentIndex > lastIndex ? [lastIndex, currentIndex] : [currentIndex, lastIndex];
+      const entriesInRange = entries.slice(start, end + 1).map((entry) => entry.entry_id);
+  
+      let newSelectedEntries;
+      if (isChecked) {
+        newSelectedEntries = Array.from(new Set([...selectedEntries, ...entriesInRange]));
+      } else {
+        newSelectedEntries = selectedEntries.filter((id) => !entriesInRange.includes(id));
+      }
+      setSelectedEntries(newSelectedEntries);
+    }
+    setLastSelectedEntryId(currentEntryId);
+  };
+  
+
   const handleSetAs = async (tableType, infoType, selectedKeywords) => {
     if (selectedKeywords.length === 0) {
       alert('No keywords selected.');
       return;
     }
-  
+
     try {
       // Build the info value
       const infoValue = selectedKeywords.join(', ');
-  
+
       // Call the API to save the info
       await axios.post('/api/content/entries/save-info', {
         entry_id: currentEntryId,
         info_type: infoType === 'PAA' ? 'paa_terms' : 'lsi_terms',
         info_value: infoValue,
       });
-  
+
       // Update the entries state
       setEntries((prevEntries) =>
         prevEntries.map((entry) =>
@@ -236,9 +224,9 @@ export default function ProjectPage({ initialData }) {
             : entry
         )
       );
-  
+
       alert(`${infoType} terms saved successfully!`);
-  
+
       // Clear selected keywords
       if (tableType === 'related') {
         setSelectedRelatedKeywords([]);
@@ -252,10 +240,10 @@ export default function ProjectPage({ initialData }) {
       alert(`Error saving ${infoType} terms.`);
     }
   };
-  
+
   const handleSetAllAs = (tableType, infoType) => {
     let allKeywords;
-  
+
     if (tableType === 'related') {
       allKeywords = sidebarContent.semrushData.relatedKeywords.map((item) => item.keyword);
     } else if (tableType === 'broad') {
@@ -263,12 +251,10 @@ export default function ProjectPage({ initialData }) {
     } else if (tableType === 'phrase') {
       allKeywords = sidebarContent.semrushData.phraseQuestions.map((item) => item.keyword);
     }
-  
+
     handleSetAs(tableType, infoType, allKeywords);
   };
-  
-  
-  
+
   const handleDeleteEntry = async (entryId) => {
     if (confirm('Are you sure you want to delete this entry?')) {
       try {
@@ -285,46 +271,44 @@ export default function ProjectPage({ initialData }) {
       }
     }
   };
-  
+
   const handleCopyContent = (content) => {
     navigator.clipboard.writeText(content);
     alert('Content copied to clipboard!');
   };
-  
-  
+
   const handleEditContent = (entryId) => {
     // Implement edit functionality (e.g., open a modal for editing)
     console.log('Edit content for entry:', entryId);
   };
-  
+
   const handleViewContent = (content) => {
     setModalContent(content);
     setIsModalOpen(true);
   };
-  
-  
+
   const handleUrlLookup = (url) => {
     // Placeholder for future functionality
     console.log('Lookup URL:', url);
   };
-  
+
   const handleKeywordLookup = (e, keyword, entryId) => {
     e.stopPropagation();
     setCurrentEntryId(entryId);
     setSelectedKeyword(keyword);
     setIsSidebarOpen(true);
-    //setSidebarContent(null); // Reset previous content
     setSidebarType('keyword'); // Set sidebar type
 
     setLoadingAnalyzeKeyword(true);
-    //setLoadingSerpResults(true);
+    setLoadingSerpResults(true);
     setLoadingSemrushData(true);
-  
+
     // Fetch data functions
     fetchKeywordAnalysis(keyword, selectedCountry);
-    //fetchSerpResults(keyword, selectedCountry);
+    fetchSerpResults(keyword, selectedCountry);
     fetchSemrushData(keyword, selectedCountry);
   };
+
   const fetchSemrushData = async (keyword, country) => {
     try {
       const response = await axios.post('/api/content/semrush/keyword-data', {
@@ -337,51 +321,68 @@ export default function ProjectPage({ initialData }) {
       }));
     } catch (error) {
       console.error('Error fetching SEMRush data:', error);
-      alert('Error fetching SEMRush data.');
+      alert(
+        `Error fetching SEMRush data: ${
+          error.response?.data?.error?.message ||
+          error.response?.data?.message ||
+          error.message ||
+          'Unknown error'
+        }`
+      );
     } finally {
       setLoadingSemrushData(false);
     }
   };
   
+
   const fetchKeywordAnalysis = async (keyword, country) => {
-  try {
-    const response = await axios.post('/api/content/seranking/analyze-keywords', {
-      keyword,
-      country,
-    });
-
-    const keywordData = response.data && response.data[0] ? response.data[0] : {};
-
-    setSidebarContent((prevContent) => ({
-      ...prevContent,
-      keywordData,
-    }));
-  } catch (error) {
-    console.error('Error fetching keyword analysis:', error);
-    alert('Error fetching keyword analysis.');
-  } finally {
-    setLoadingAnalyzeKeyword(false);
-  }
-};
-
-  
-  const fetchSerpResults = async (keyword, country) => {
     try {
-      const response = await axios.post('/api/content/seranking/serp-results', {
+      const response = await axios.post('/api/content/seranking/analyze-keywords', {
         keyword,
         country,
       });
+
+      const keywordData = response.data && response.data[0] ? response.data[0] : {};
+
       setSidebarContent((prevContent) => ({
         ...prevContent,
-        serpResults: response.data, // Assuming response is an array
+        keywordData,
       }));
     } catch (error) {
-      console.error('Error fetching SERP results:', error);
-      alert('Error fetching SERP results.');
+      console.error('Error fetching keyword analysis:', error);
+      alert('Error fetching keyword analysis.');
     } finally {
-      setLoadingSerpResults(false);
+      setLoadingAnalyzeKeyword(false);
     }
   };
+
+  // pages/projects/[projectId].js
+
+const fetchSerpResults = async (keyword, country, yearMonth = '') => {
+  setLoadingSerpResults(true); // Move this here if not already set in SerpResults
+  try {
+    const response = await axios.post('/api/content/semrush/organic-results', {
+      keyword,
+      country,
+      yearMonth, // Include yearMonth parameter
+    });
+    setSidebarContent((prevContent) => ({
+      ...prevContent,
+      serpResults: response.data,
+    }));
+  } catch (error) {
+    console.error('Error fetching SERP results:', error);
+    alert(
+      `Error fetching SERP results: ${
+        error.response?.data?.message || error.message || 'Unknown error'
+      }`
+    );
+  } finally {
+    setLoadingSerpResults(false);
+  }
+};
+
+
   const handleSmartAnalysis = async (e, keyword, entryId) => {
     e.stopPropagation();
     setCurrentEntryId(entryId);
@@ -390,8 +391,7 @@ export default function ProjectPage({ initialData }) {
     setIsSidebarOpen(true);
     setSidebarContent(null); // Clear previous content
     setSidebarType('smartAnalysis'); // Set sidebar type
-    setLoadingAnalysisResults(true); // Optional: to show a loading state
-  
+
     try {
       const response = await axios.post('/api/content/frase/process', {
         query: keyword,
@@ -409,42 +409,7 @@ export default function ProjectPage({ initialData }) {
     }
   };
 
-  
-  
-  
-  const loadPrompt = async (entryId) => {
-    const entry = entries.find((e) => e.entry_id === entryId);
-  
-    if (!entry.page_type || !entry.content_type) {
-      alert('Please select both Page Type and Content Type for this entry.');
-      return;
-    }
-  
-    try {
-      const response = await axios.get('/api/content/prompts', {
-        params: {
-          page_type: entry.page_type,
-          content_type: entry.content_type,
-        },
-        withCredentials: true,
-      });
-  
-      const promptTemplate = response.data.prompt_text;
-  
-      // Update the entry with the prompt text
-      setEntries((prevEntries) =>
-        prevEntries.map((e) =>
-          e.entry_id === entryId ? { ...e, prompt_text: promptTemplate } : e
-        )
-      );
-    } catch (error) {
-      console.error('Error loading prompt:', error);
-      alert('Error loading prompt.');
-    }
-  };
-  
   const handleGenerateContent = async (entryId) => {
-
     // Set loading state to true
     setLoadingEntries((prevState) => ({
       ...prevState,
@@ -452,8 +417,8 @@ export default function ProjectPage({ initialData }) {
     }));
 
     const entry = entries.find((e) => e.entry_id === entryId);
-  
-     // Ensure that both page_type and content_type are set
+
+    // Ensure that both page_type and content_type are set
     if (!entry.page_type || !entry.content_type) {
       alert('Please select both Page Type and Content Type for this entry.');
       // Reset loading state
@@ -463,7 +428,7 @@ export default function ProjectPage({ initialData }) {
       }));
       return;
     }
-  
+
     try {
       // Fetch the prompt from the database
       const response = await axios.get('/api/content/prompts', {
@@ -473,27 +438,25 @@ export default function ProjectPage({ initialData }) {
         },
         withCredentials: true,
       });
-  
+
       const promptTemplate = response.data.prompt_text;
-  
+
       if (!promptTemplate) {
         alert('No prompt found for this Page Type and Content Type combination.');
-         // Reset loading state
+        // Reset loading state
         setLoadingEntries((prevState) => ({
           ...prevState,
           [entryId]: false,
         }));
         return;
-          return;
-        }
-  
+      }
+
       // Replace placeholders in the prompt with actual data
       const prompt = promptTemplate
         .replace('{url}', entry.url)
-        .replace('{keywords}', entry.primary_keyword || entry.secondary_keyword || '')
-        // Add more replacements as needed
-        ;
-  
+        .replace('{keywords}', entry.primary_keyword || entry.secondary_keyword || '');
+      // Add more replacements as needed
+
       // Call the API to run the prompt
       const runPromptResponse = await axios.post(
         `/api/content/projects/${projectId}/run-prompt`,
@@ -505,28 +468,27 @@ export default function ProjectPage({ initialData }) {
           withCredentials: true,
         }
       );
-  
+
       const responseData = runPromptResponse.data.data;
-  
+
       // Update the entry with the generated content
       setEntries((prevEntries) =>
         prevEntries.map((e) =>
           e.entry_id === entryId ? { ...e, generated_content: responseData } : e
         )
       );
-  
+
       // Save the generated content to the database
       await axios.post('/api/content/entries/save-generated-content', {
         entry_id: entryId,
         generated_content: responseData,
       });
-  
+
       alert('Content generated successfully!');
     } catch (error) {
       console.error('Error generating content:', error);
       alert('Error generating content.');
-    }
-    finally {
+    } finally {
       // Reset loading state
       setLoadingEntries((prevState) => ({
         ...prevState,
@@ -534,8 +496,6 @@ export default function ProjectPage({ initialData }) {
       }));
     }
   };
-  
-  
 
   const handleBadgeClick = (entryId, field, currentValue) => {
     // Set the editing field to show the dropdown
@@ -609,11 +569,10 @@ export default function ProjectPage({ initialData }) {
     }
   };
 
-   // Helper function to check if a value is not empty
-   const hasValue = (value) => value !== undefined && value !== null; //&& value.trim() !== '';
+  // Helper function to check if a value is not empty
+  const hasValue = (value) => value !== undefined && value !== null;
 
-
-   const handleAddBlockClick = (entryId) => {
+  const handleAddBlockClick = (entryId) => {
     const entry = entries.find((e) => e.entry_id === entryId);
 
     const existingInfoKeys = [
@@ -646,15 +605,16 @@ export default function ProjectPage({ initialData }) {
   };
 
   const handleStartClassifications = async () => {
+    setClassificationLoading(true); // Start loading
     try {
       // Prepare data
       const urls = entries.map((entry) => entry.url);
   
       // Call the server API route
       const response = await axios.post(
-        `/api/projects/${projectId}/run-prompt`,
+        `/api/content/projects/${projectId}/run-prompt`,
         {
-          promptId: 1, // Use prompt ID 1 as per your instruction
+          promptId: 1, // Use the appropriate prompt ID
           urls,
         },
         {
@@ -663,12 +623,10 @@ export default function ProjectPage({ initialData }) {
       );
   
       const responseData = response.data.data;
-  
+
       // Parse the response and update entries
-      // Assuming the assistantReply is a JSON string with 'pages' array
       const content = responseData.replace(/```json\n?|```/g, '');
       let parsedData;
-      console.log(parsedData);
 
       try {
         parsedData = JSON.parse(content);
@@ -677,14 +635,10 @@ export default function ProjectPage({ initialData }) {
         alert('An error occurred while processing the data.');
         return;
       }
-      console.log(parsedData);
 
-  
       if (parsedData.pages && Array.isArray(parsedData.pages)) {
         const updatedEntries = entries.map((entry) => {
-          const pageData = parsedData.pages.find(
-            (page) => page.url === entry.url
-          );
+          const pageData = parsedData.pages.find((page) => page.url === entry.url);
           if (pageData) {
             return {
               ...entry,
@@ -693,9 +647,9 @@ export default function ProjectPage({ initialData }) {
           }
           return entry;
         });
-  
+
         setEntries(updatedEntries);
-  
+
         // Update the database with new classifications
         for (const entry of updatedEntries) {
           await axios.post(
@@ -717,8 +671,11 @@ export default function ProjectPage({ initialData }) {
       console.error('Error starting classifications:', error);
       alert('Error starting classifications.');
     }
-  };
+    finally{
+      setClassificationLoading(false); // Stop loading
 
+    }
+  };
 
   const getCompulsoryInfoItems = (entry) => {
     const compulsoryItems = ['word_count'];
@@ -736,6 +693,115 @@ export default function ProjectPage({ initialData }) {
     }
     return compulsoryItems;
   };
+
+  // Handler for Bulk Modify
+const handleBulkModify = () => {
+  if (selectedEntries.length === 0) {
+    alert('Please select entries to modify.');
+    return;
+  }
+  setBulkActionType('modify');
+  setBulkActionModalVisible(true);
+};
+
+// Handler for Bulk Reset
+const handleBulkReset = () => {
+  if (selectedEntries.length === 0) {
+    alert('Please select entries to reset.');
+    return;
+  }
+  setBulkActionType('reset');
+  setBulkActionModalVisible(true);
+};
+
+
+// Complete applyBulkAction function
+ // Complete applyBulkAction function
+ const applyBulkAction = async (actionType, actionField, actionValue) => {
+  try {
+    const payload = {
+      entry_ids: selectedEntries,
+      field: actionField,
+      value: actionValue,
+    };
+
+    // Handle overrideExisting and suggestions for certain additional info types
+    if (
+      actionField === 'additional_info' &&
+      ['lsi_terms', 'paa_terms', 'topic_cluster'].includes(
+        Object.keys(actionValue)[0]
+      )
+    ) {
+      const additionalInfoKey = Object.keys(actionValue)[0];
+      const additionalInfoData = actionValue[additionalInfoKey];
+
+      payload.overrideExisting = additionalInfoData.overrideExisting;
+      payload.suggestions = additionalInfoData.suggestions;
+      payload.additionalInfoKey = additionalInfoKey;
+    }
+
+    if (actionType === 'modify') {
+      await axios.post('/api/content/entries/bulk-modify', payload);
+    } else if (actionType === 'reset') {
+      await axios.post('/api/content/entries/bulk-reset', payload);
+    }
+
+    // Update entries state accordingly
+    setEntries((prevEntries) =>
+      prevEntries.map((entry) => {
+        if (selectedEntries.includes(entry.entry_id)) {
+          let updatedEntry = { ...entry };
+
+          if (actionField === 'additional_info') {
+            const additionalInfoKey = Object.keys(actionValue)[0];
+            const additionalInfoData = actionValue[additionalInfoKey];
+
+            if (
+              ['lsi_terms', 'paa_terms', 'topic_cluster'].includes(
+                additionalInfoKey
+              )
+            ) {
+              // Ensure additionalInfoData is an object with suggestions array
+              if (
+                additionalInfoData &&
+                Array.isArray(additionalInfoData.suggestions)
+              ) {
+                const existingItems = additionalInfoData.overrideExisting
+                  ? []
+                  : entry[additionalInfoKey] || [];
+                updatedEntry[additionalInfoKey] = [
+                  ...existingItems,
+                  ...additionalInfoData.suggestions,
+                ];
+              } else {
+                // Handle cases where suggestions are missing or not an array
+                console.error(
+                  `Invalid additionalInfoData for ${additionalInfoKey}:`,
+                  additionalInfoData
+                );
+                // You can choose to handle this case differently if needed
+              }
+            } else {
+              // For other additional info types
+              updatedEntry[additionalInfoKey] = additionalInfoData;
+            }
+          } else {
+            // For page_type and content_type
+            updatedEntry[actionField] = actionValue;
+          }
+          return updatedEntry;
+        }
+        return entry;
+      })
+    );
+
+    alert('Bulk action applied successfully!');
+  } catch (error) {
+    console.error('Error applying bulk action:', error);
+    alert('Error applying bulk action.');
+  }
+};
+
 
   const renderAdditionalInfoBlocks = (entry) => {
     const compulsoryItems = getCompulsoryInfoItems(entry);
@@ -758,7 +824,6 @@ export default function ProjectPage({ initialData }) {
         hasValue(entry[item.key])
     );
 
-
     return (
       <>
         {infoItemsToDisplay.map((item) => (
@@ -780,10 +845,7 @@ export default function ProjectPage({ initialData }) {
           </span>
         ))}
         {/* Add info block */}
-        <span
-          className={styles.addBlock}
-          onClick={() => handleAddBlockClick(entry.entry_id)}
-        >
+        <span className={styles.addBlock} onClick={() => handleAddBlockClick(entry.entry_id)}>
           +
         </span>
         {showAdditionalInfoDropdown && selectedEntryId === entry.entry_id && (
@@ -801,6 +863,36 @@ export default function ProjectPage({ initialData }) {
         )}
       </>
     );
+  };
+
+  // Collect all handlers to pass to EntriesTable and Sidebar
+  const handlers = {
+    handleBadgeClick,
+    handleBadgeChange,
+    renderAdditionalInfoBlocks,
+    handleUrlLookup,
+    handleKeywordLookup,
+    handleSmartAnalysis,
+    handleGenerateContent,
+    handleDeleteEntry,
+    handleCopyContent,
+    handleEditContent,
+    handleViewContent,
+    handleKeywordSearch,
+    handleCheckboxChange,
+    handleSetAs,
+    handleSetAllAs,
+    fetchKeywordAnalysis,
+    fetchSemrushData,
+    fetchSerpResults,
+    setLoadingAnalyzeKeyword,
+    setLoadingSerpResults,
+    setLoadingSemrushData,
+    setSidebarType,
+    setSidebarContent,
+    handleSmartAnalysis,
+    setLoadingAnalysisResults,
+    handleShiftClickSelection
   };
 
   if (!project) {
@@ -821,662 +913,138 @@ export default function ProjectPage({ initialData }) {
       ) : (
         <div className={styles.projectDetails}>
           <h2 className={styles.entriesTitle}>Project Entries</h2>
+          <AdvancedActions
+            entries={entries}
+            selectedEntries={selectedEntries}
+            setSelectedEntries={setSelectedEntries}
+            applyBulkAction={applyBulkAction}
+          />
+          
           <button className={styles.startButton} onClick={handleStartClassifications}>
             Start Classifications
           </button>
-          <table className={styles.projectTable}>
-            <thead>
-              <tr>
-                <th>URL</th>
-                <th>Keywords</th>
-                <th>Additional Info</th>
-                <th>Prompt</th> 
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {entries.map((entry) => (
-                <tr key={entry.entry_id} data-entry-id={entry.entry_id}>
-                  
-                  <td className={styles.urlCell}>
-                    {entry.url}
-                    <i
-                      className={`fas fa-search ${styles.lookupIcon}`}
-                      onClick={() => handleUrlLookup(entry.url)}
-                    ></i>
-                    <br />
-                    {entry.editingField === 'page_type' ? (
-                      <select
-                        value={entry.page_type || ''}
-                        onChange={(e) =>
-                          handleBadgeChange(entry.entry_id, 'page_type', e.target.value)
-                        }
-                        onBlur={() =>
-                          setEntries((prevEntries) =>
-                            prevEntries.map((e) =>
-                              e.entry_id === entry.entry_id
-                                ? { ...e, editingField: null }
-                                : e
-                            )
-                          )
-                        }
-                      >
-                        <option value="">Select Page Type</option>
-                        {[
-                          'Homepage',
-                          'Service Page',
-                          'Location Page',
-                          'Product Page',
-                          'Product Category Page',
-                        ].map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <span
-                        className={`${styles.badge} ${styles.pageTypeBadge} ${
-                          entry.page_type ? styles.badgeSet : styles.badgeNotSet
-                        }`}
-                        onClick={() => handleBadgeClick(entry.entry_id, 'page_type', entry.page_type)}
-                      >
-                        {entry.page_type || 'Select Page Type'}{' '}
-                        <i className="fas fa-caret-down"></i>
-                      </span>
-                    )}
-                    {entry.editingField === 'content_type' ? (
-                      <select
-                        value={entry.content_type || ''}
-                        onChange={(e) =>
-                          handleBadgeChange(entry.entry_id, 'content_type', e.target.value)
-                        }
-                        onBlur={() =>
-                          setEntries((prevEntries) =>
-                            prevEntries.map((e) =>
-                              e.entry_id === entry.entry_id
-                                ? { ...e, editingField: null }
-                                : e
-                            )
-                          )
-                        }
-                      >
-                        <option value="">Select Content Type</option>
-                        {['New Content', 'Additional Content', 'Rewrite Content'].map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <span
-                        className={`${styles.badge} ${styles.contentTypeBadge} ${
-                          entry.content_type ? styles.badgeSet : styles.badgeNotSet
-                        }`}
-                        onClick={() =>
-                          handleBadgeClick(entry.entry_id, 'content_type', entry.content_type)
-                        }
-                      >
-                        {entry.content_type || 'Select Content Type'}{' '}
-                        <i className="fas fa-caret-down"></i>
-                      </span>
-                    )}
-                  </td>
-                  <td className={styles.keywordsCell}>
-                    Primary: {entry.primary_keyword}
-                    <i
-                      className={`fas fa-search ${styles.lookupIcon}`}
-                      onClick={(e) => handleKeywordLookup(e, entry.primary_keyword, entry.entry_id)}
-                      ></i>
-                      <i
-                        className="fas fa-brain" // Smart analysis icon
-                        onClick={(e) => handleSmartAnalysis(e, entry.primary_keyword, entry.entry_id)}
-                        style={{ marginLeft: '8px', cursor: 'pointer' }} // Optional styling
-                        title="Smart Analysis"
-                      ></i>
-
-                    <br />
-                    Secondary: {entry.secondary_keyword}
-                    <i
-                      className={`fas fa-search ${styles.lookupIcon}`}
-                      onClick={(e) => handleKeywordLookup(e, entry.primary_keyword, entry.entry_id)}
-                      ></i>
-                  </td>
-                  <td className={styles.additionalInfoCell}>
-                    {renderAdditionalInfoBlocks(entry)}
-                  </td>
-                  <td className={styles.generatedContentCell}>
-                    {loadingEntries[entry.entry_id] ? (
-                      <i className={`fas fa-spinner fa-spin ${styles.contentSpinner}`}></i>
-                    ) : entry.generated_content ? (
-                      <>
-                        <span className={styles.generatedContent}>
-                          {entry.generated_content}
-                        </span>
-                        <div className={styles.contentActions}>
-                          <i
-                            className={`fas fa-copy ${styles.contentActionIcon}`}
-                            title="Copy to Clipboard"
-                            onClick={() => handleCopyContent(entry.generated_content)}
-                          ></i>
-                          <i
-                            className={`fas fa-redo ${styles.contentActionIcon}`}
-                            title="Regenerate"
-                            onClick={() => handleGenerateContent(entry.entry_id)}
-                          ></i>
-                          <i
-                            className={`fas fa-edit ${styles.contentActionIcon}`}
-                            title="Edit"
-                            onClick={() => handleEditContent(entry.entry_id)}
-                          ></i>
-                          <i
-                            className={`fas fa-eye ${styles.contentActionIcon}`}
-                            title="View"
-                            onClick={() => handleViewContent(entry.generated_content)}
-                          ></i>
-                        </div>
-                      </>
-                    ) : (
-                      'No content generated yet.'
-                    )}
-                  </td>
-
-
-                  <td className={styles.actionsCell}>
-                    <button
-                      className={styles.actionButton}
-                      onClick={() => handleGenerateContent(entry.entry_id)}
-                      disabled={loadingEntries[entry.entry_id]}
-                    >
-                      {loadingEntries[entry.entry_id] ? (
-                        <>
-                          <i className="fas fa-spinner fa-spin"></i> Generating...
-                        </>
-                      ) : entry.generated_content ? (
-                        'Regenerate'
-                      ) : (
-                        'Generate'
-                      )}
-                    </button>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={() => handleDeleteEntry(entry.entry_id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-
-
-
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <EntriesTable
+            entries={entries}
+            handlers={handlers}
+            loadingEntries={loadingEntries}
+            classificationLoading={classificationLoading}
+            selectedEntries={selectedEntries}
+            setSelectedEntries={setSelectedEntries}
+            lastSelectedEntryId={lastSelectedEntryId}
+            setLastSelectedEntryId={setLastSelectedEntryId}
+          />
         </div>
       )}
-      {infoModalVisible && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <span
-              className={styles.close}
-              onClick={() => setInfoModalVisible(false)}
-            >
-              &times;
-            </span>
-            <h2>{infoModalTitle}</h2>
-            <textarea
-              value={infoModalValue}
-              onChange={(e) => setInfoModalValue(e.target.value)}
-            ></textarea>
-            <button className={styles.saveButton} onClick={handleSaveInfo}>
-              Save
-            </button>
-          </div>
-        </div>
-      )}
-       {/* New Modal for Viewing Generated Content */}
-      {isModalOpen && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <span
-              className={styles.close}
-              onClick={() => setIsModalOpen(false)}
-            >
-              &times;
-            </span>
-            <h2>Generated Content</h2>
-            <div className={styles.modalTextContent}>{modalContent}</div>
-          </div>
-        </div>
-      )}
+      {/* Modals */}
+      <InfoModal
+        isVisible={infoModalVisible}
+        onClose={() => setInfoModalVisible(false)}
+        title={infoModalTitle}
+        value={infoModalValue}
+        onChange={setInfoModalValue}
+        onSave={handleSaveInfo}
+      />
+      <ContentModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        content={modalContent}
+      />
+      {/* Sidebar */}
       {isSidebarOpen && (
-        <div
-          ref={sidebarRef}
-          className={`${styles.sidebar} ${sidebarExpanded ? styles.sidebarExpanded : ''}`}
+        <Sidebar
+          sidebarRef={sidebarRef}
+          sidebarExpanded={sidebarExpanded}
+          setSidebarExpanded={setSidebarExpanded}
+          keywordInput={keywordInput}
+          setKeywordInput={setKeywordInput}
+          selectedCountry={selectedCountry}
+          setSelectedCountry={setSelectedCountry}
+          sidebarType={sidebarType}
+          sidebarContent={sidebarContent}
+          loadingAnalyzeKeyword={loadingAnalyzeKeyword}
+          loadingSemrushData={loadingSemrushData}
+          loadingSerpResults={loadingSerpResults}
+          selectedRelatedKeywords={selectedRelatedKeywords}
+          setSelectedRelatedKeywords={setSelectedRelatedKeywords}
+          selectedBroadMatchKeywords={selectedBroadMatchKeywords}
+          setSelectedBroadMatchKeywords={setSelectedBroadMatchKeywords}
+          selectedPhraseQuestions={selectedPhraseQuestions}
+          setSelectedPhraseQuestions={setSelectedPhraseQuestions}
+          serpResultsLimit={serpResultsLimit}
+          setSerpResultsLimit={setSerpResultsLimit}
+          serpResultsExpanded={serpResultsExpanded}
+          setSerpResultsExpanded={setSerpResultsExpanded}
+          loadingAnalysisResults={loadingAnalysisResults}
+          currentEntryId={currentEntryId}
+          selectedKeyword={selectedKeyword}
+          handlers={handlers}
+        />
+      )}
+      {/* Bulk Action Modal */}
+{bulkActionModalVisible && (
+  <div className={styles.modal}>
+    <div className={styles.modalContent}>
+      <span
+        className={styles.close}
+        onClick={() => setBulkActionModalVisible(false)}
+      >
+        &times;
+      </span>
+      <h2>{bulkActionType === 'modify' ? 'Bulk Modify' : 'Bulk Reset'}</h2>
+      <div>
+        <label>Field:</label>
+        <select
+          value={bulkActionField}
+          onChange={(e) => setBulkActionField(e.target.value)}
         >
-          <i
-            className={`fas ${
-              sidebarExpanded ? 'fa-arrow-right' : 'fa-arrow-left'
-            } ${styles.sidebarToggleIcon}`}
-            onClick={() => setSidebarExpanded(!sidebarExpanded)}
-          ></i>
-          <div className={styles.sidebarHeader}>
-            {/* Existing Keyword Input and Controls */}
-            <div className={styles.keywordInputContainer}>
-              <input
-                type="text"
-                value={keywordInput}
-                onChange={(e) => setKeywordInput(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    handleKeywordSearch();
-                  }
-                }}
-                placeholder="Enter keyword"
-              />
-              <i className="fas fa-paper-plane" onClick={handleKeywordSearch}></i>
-            </div>
-            <br />
-            <select
-              value={selectedCountry}
-              onChange={(e) => {
-                setSelectedCountry(e.target.value);
-                // Re-fetch data with the new country
-                setLoadingAnalyzeKeyword(true);
-                setLoadingSerpResults(true);
-                setLoadingSemrushData(true);
-                if (sidebarType === 'keyword') {
-                  fetchKeywordAnalysis(selectedKeyword, e.target.value);
-                  fetchSerpResults(selectedKeyword, e.target.value);
-                  fetchSemrushData(selectedKeyword, e.target.value);
-                } else if (sidebarType === 'smartAnalysis') {
-                  handleSmartAnalysis(null, selectedKeyword, currentEntryId);
-                }
-              }}
-            >
-              <option value="AU">Australia</option>
-              <option value="US">United States</option>
-              <option value="UK">United Kingdom</option>
-              <option value="NZ">New Zealand</option>
-              {/* Add more countries as needed */}
-            </select>
-          </div>
-          <div className={styles.sidebarContent}>
-          {sidebarType === 'keyword' && sidebarContent && (
-            <>
-            {loadingAnalyzeKeyword ? (
-              <div>Loading keyword analysis...</div>
-            ) : (
-              sidebarContent && sidebarContent.keywordData && (
-                <div className={styles.keywordAnalysis}>
-                  <h3>Keyword Analysis</h3>
-                  <div className={styles.analysisGrid}>
-                    {/* Row 1: Difficulty Chart, Trend Chart, Volume */}
-                    <div className={styles.difficultyBlock}>
-                      <div className={styles.blockHeader} style={{ display:'flex' }}><span>Difficulty</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
-
-                      <div className={styles.blockContent}>
-                        <CircularProgressbar
-                          value={sidebarContent.keywordData.difficulty}
-                          text={`${sidebarContent.keywordData.difficulty}%`}
-                          styles={{
-                            path: { stroke: '#0070f3' },
-                            text: { fill: '#000' },
-                            trail: { stroke: '#d6d6d6' },
-                            background: { fill: '#fff' },
-                          }}
-                        />
-                      </div>
-                    </div>
-                    {sidebarContent.keywordData.history_trend ? (
-                      <div className={styles.trendBlock}>
-                      <div className={styles.blockHeader} style={{ display:'flex' }}><span>Trend</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
-                      <div className={styles.blockContent}>
-                        <Bar
-                          ref={(chart) => {
-                            if (chart) {
-                              chartInstanceRef.current = chart;
-                            }
-                          }}
-                          data={{
-                            labels: Object.keys(sidebarContent.keywordData.history_trend),
-                            datasets: [
-                              {
-                                label: 'Search Volume',
-                                data: Object.values(sidebarContent.keywordData.history_trend),
-                                backgroundColor: '#0070f3',
-                              },
-                            ],
-                          }}
-                          options={{
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                              legend: {
-                                display: false,
-                              },
-                            },
-                            scales: {
-                              x: {
-                                ticks: {
-                                  display: false, // Hide x-axis labels if desired
-                                },
-                                grid: {
-                                  display: false,
-                                },
-                              },
-                              y: {
-                                ticks: {
-                                  display: false, // Hide y-axis labels if desired
-                                },
-                                grid: {
-                                  display: false,
-                                },
-                              },
-                            },
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className={styles.trendBlock}>
-                      <div className={styles.blockHeader} style={{ display:'flex' }}><span>Trend</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
-                      <div className={styles.blockContent}>
-                        <div>No trend data available.</div>
-                      </div>
-                    </div>
-                  )}
-                    <div className={styles.volumeBlock}>
-                     <div className={styles.blockHeader} style={{ display:'flex' }}><span>Volume</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
-                      <div className={styles.blockContent}>
-                        <span className={styles.volumeValue}>
-                          {sidebarContent.keywordData.volume}
-                        </span>
-                      </div>
-                    </div>
-                    {/* Row 2: CPC and Competition */}
-                    <div className={styles.cpcBlock}>
-                      <div className={styles.blockHeader} style={{ display:'flex' }}><span>CPC</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
-                      <div className={styles.blockContent}>
-                        <span className={styles.cpcValue}>
-                          ${sidebarContent.keywordData.cpc}
-                        </span>
-                      </div>
-                    </div>
-                    <div className={styles.competitionBlock}>
-                     <div className={styles.blockHeader} style={{ display:'flex' }}><span>Competition</span>  <img src="/assets/seranking.svg" alt="SE Ranking Logo" style={{ width: '60px', height: 'auto', marginLeft:'5px'}} /> </div> 
-                      <div className={styles.blockContent}>
-                        <span className={styles.competitionValue}>
-                          {sidebarContent.keywordData.competition}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            )}
-            {loadingSemrushData ? (
-              <div>Loading Keywords data...</div>
-            ) : (
-            !loadingSemrushData && sidebarContent && sidebarContent.semrushData && (
-              <div className={styles.keywordTablesContainer}>
-                <div className={styles.keywordTablesGrid}>
-                  {/* Related Keywords */}
-                  <div className={styles.keywordTable}>
-                    <h3 style={{ display: 'flex' }}><span>Related Keywords</span> <img src="/assets/semrush_rect.png" alt="SEMrush Logo" style={{ width: '100px', height: 'auto' }} /></h3> 
-                    {sidebarContent.semrushData.relatedKeywords.length === 0 ? (
-                      <div>No Data Found</div>
-                    ) : (
-                      <>
-                        
-                        <div class={styles.scrollable}>
-
-                          <table>
-                            <thead>
-                              <tr>
-                                <th></th> {/* For checkbox */}
-                                <th>Keyword</th>
-                                <th>Volume</th>
-                                <th>CPC</th>
-                                <th>Competition</th>
-                                <th>KD%</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {sidebarContent.semrushData.relatedKeywords.map((item, index) => (
-                                <tr key={index}>
-                                  <td>
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedRelatedKeywords.includes(item.keyword)}
-                                      onChange={(e) => handleCheckboxChange('related', item.keyword, e.target.checked)}
-                                    />
-                                  </td>
-                                  <td>{item.keyword}</td>
-                                  <td>{item.volume}</td>
-                                  <td>{item.cpc}</td>
-                                  <td>{item.competition}</td>
-                                  <td>{item.kd}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                        <div className={styles.buttonContainer}>
-                          <button onClick={() => handleSetAs('related', 'LSI', selectedRelatedKeywords)}>
-                            Set Selected as LSI
-                          </button>
-                          <button onClick={() => handleSetAllAs('related', 'LSI')}>
-                            Set All as LSI
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  <div className={styles.keywordTable}>
-                  <h3 style={{ display: 'flex' }}><span>Broad Match Keywords</span> <img src="/assets/semrush_rect.png" alt="SEMrush Logo" style={{ width: '100px', height: 'auto' }} /></h3> 
-                  {sidebarContent.semrushData.broadMatchKeywords.length === 0 ? (
-                      <div>No Data Found</div>
-                    ) : (
-                      <>
-                       <div class={styles.scrollable}>
-                          <table>
-                            <thead>
-                              <tr>
-                                <th></th> {/* For checkbox */}
-                                <th>Keyword</th>
-                                <th>Volume</th>
-                                <th>CPC</th>
-                                <th>Competition</th>
-                                <th>KD%</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {sidebarContent.semrushData.broadMatchKeywords.map((item, index) => (
-                                <tr key={index}>
-                                  <td>
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedBroadMatchKeywords.includes(item.keyword)}
-                                      onChange={(e) => handleCheckboxChange('broad', item.keyword, e.target.checked)}
-                                    />
-                                  </td>
-                                  <td>{item.keyword}</td>
-                                  <td>{item.volume}</td>
-                                  <td>{item.cpc}</td>
-                                  <td>{item.competition}</td>
-                                  <td>{item.kd}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                        <div className={styles.buttonContainer}>
-                          <button onClick={() => handleSetAs('broad', 'LSI', selectedBroadMatchKeywords)}>
-                            Set Selected as LSI
-                          </button>
-                          <button onClick={() => handleSetAllAs('broad', 'LSI')}>
-                            Set All as LSI
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  <div className={styles.keywordTable}>
-                  <h3 style={{ display: 'flex' }}><span>Phrase Questions</span> <img src="/assets/semrush_rect.png" alt="SEMrush Logo" style={{ width: '100px', height: 'auto' }} /></h3> 
-                   {sidebarContent.semrushData.phraseQuestions.length === 0 ? (
-                      <div>No Data Found</div>
-                    ) : (
-                      <>
-                        
-                        <div class={styles.scrollable}>
-                          <table>
-                            <thead>
-                              <tr>
-                                <th></th> {/* For checkbox */}
-                                <th>Keyword</th>
-                                <th>Volume</th>
-                                <th>CPC</th>
-                                <th>Competition</th>
-                                <th>KD%</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {sidebarContent.semrushData.phraseQuestions.map((item, index) => (
-                                <tr key={index}>
-                                  <td>
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedPhraseQuestions.includes(item.keyword)}
-                                      onChange={(e) => handleCheckboxChange('phrase', item.keyword, e.target.checked)}
-                                    />
-                                  </td>
-                                  <td>{item.keyword}</td>
-                                  <td>{item.volume}</td>
-                                  <td>{item.cpc}</td>
-                                  <td>{item.competition}</td>
-                                  <td>{item.kd}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                        <div className={styles.buttonContainer}>
-                          <button onClick={() => handleSetAs('phrase', 'PAA', selectedPhraseQuestions)}>
-                            Set Selected as PAA
-                          </button>
-                          <button onClick={() => handleSetAllAs('phrase', 'PAA')}>
-                            Set All as PAA
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-
-
-
-
-            
-
-                
-                </div>
-              </div>
-            )
-            )}
-
-      
-            {loadingSerpResults ? (
-              <div>Loading SERP results...</div>
-            ) : (
-              !loadingSerpResults && sidebarContent && sidebarContent.serpResults && (
-                <div className={styles.serpResultsContainer}>
-                  <h3>SERP Results</h3>
-                  <div className={`${styles.serpResults} ${serpResultsExpanded ? styles.serpResultsExpanded : ''}`}>
-                    <table className={styles.serpTable}>
-                      <tbody>
-                        {sidebarContent.serpResults.slice(0, serpResultsLimit).map((result, index) => (
-                          <tr key={index}>
-                            {/* Position Column */}
-                            <td className={styles.positionCell}>{result.position}</td>
-
-                            {/* Result Information Column */}
-                            <td className={styles.resultInfoCell}>
-                              {/* URL Row */}
-                              <div className={styles.urlRow}>
-                                <a href={result.url} target="_blank" rel="noopener noreferrer">
-                                  <i className="fas fa-external-link-alt"></i>
-                                </a>
-                                {/* Future implementation icon */}
-                                <i className="fas fa-search" onClick={() => {/* Implement later */}}></i>
-                                <span className={styles.resultUrl}>{result.url}</span>
-                              </div>
-                              {/* Title Row */}
-                              <div className={styles.titleRow}>
-                                <strong>{result.title}</strong>
-                              </div>
-                              {/* Snippet Row */}
-                              <div className={styles.snippetRow}>
-                                <em>{result.snippet}</em>
-                              </div>
-                            </td>
-
-                            {/* Stats Column */}
-                            <td className={styles.statsCell}>
-                              {index < 10 && (
-                                <i className="fas fa-sync-alt" onClick={() => {/* Refresh action */}}></i>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  {sidebarContent.serpResults.length > 10 && !serpResultsExpanded && (
-                    <button
-                    className={styles.showMoreButton}
-                    onClick={() => {
-                      setSerpResultsLimit(sidebarContent.serpResults.length);
-                      setSerpResultsExpanded(true);
-                    }}
-                    >
-                    Show More
-                    </button>
-                    )}
-                  {sidebarExpanded && (
-                    <div className={styles.futureContent}>
-                      {/* Future content will go here */}
-                    </div>
-                  )}
-                </div>
-              )
-            )}
-          
-          </>
-      )}
-{loadingAnalysisResults ? (
-              <div>Loading SERP Analysis...</div>
-            ) : (
-              !loadingAnalysisResults && sidebarType === 'smartAnalysis' && sidebarContent && (
-            <SmartAnalysisSidebar smartAnalysisData={sidebarContent.smartAnalysisData} />
-          )
-        )}
-        </div>
+          <option value="">Select Field</option>
+          <option value="page_type">Page Type</option>
+          <option value="content_type">Content Type</option>
+          <option value="additional_info">Additional Info</option>
+          {/* Add more fields as needed */}
+        </select>
+      </div>
+      {bulkActionType === 'modify' && bulkActionField && bulkActionField !== 'additional_info' && (
+        <div>
+          <label>New Value:</label>
+          <input
+            type="text"
+            value={bulkActionValue}
+            onChange={(e) => setBulkActionValue(e.target.value)}
+          />
         </div>
       )}
-      
-
-
-  
+      {/* For Additional Info, allow selecting which info to update */}
+      {bulkActionType === 'modify' && bulkActionField === 'additional_info' && (
+        <div>
+          <label>Additional Info Type:</label>
+          <select
+            value={bulkActionValue}
+            onChange={(e) => setBulkActionValue(e.target.value)}
+          >
+            <option value="">Select Info Type</option>
+            <option value="word_count">Word Count</option>
+            <option value="lsi_terms">LSI Terms</option>
+            {/* Add more options as needed */}
+          </select>
+        </div>
+      )}
+      <button className={styles.saveButton} onClick={applyBulkAction}>
+        Apply
+      </button>
     </div>
+  </div>
+)}
+
+    </div>
+
+    
+
+
   );
 }
 
-
 // Fetch data on the server side
-// pages/projects/[projectId].js
-
 export async function getServerSideProps(context) {
   const { projectId } = context.params;
 
@@ -1494,13 +1062,11 @@ export async function getServerSideProps(context) {
   }
   const pool = (await import('../../../lib/db')).default;
 
-
   // Query the database directly
   try {
-    const [projectRows] = await pool.query(
-      'SELECT * FROM projects WHERE project_id = ?',
-      [projectId]
-    );
+    const [projectRows] = await pool.query('SELECT * FROM projects WHERE project_id = ?', [
+      projectId,
+    ]);
     const project = projectRows[0];
 
     if (!project) {
@@ -1519,10 +1085,9 @@ export async function getServerSideProps(context) {
 
     let entries = [];
     if (project.initialised) {
-      const [entryRows] = await pool.query(
-        'SELECT * FROM entries WHERE project_id = ?',
-        [projectId]
-      );
+      const [entryRows] = await pool.query('SELECT * FROM entries WHERE project_id = ?', [
+        projectId,
+      ]);
       entries = entryRows.map((entry) => {
         if (entry.created_at instanceof Date) {
           entry.created_at = entry.created_at.toISOString();

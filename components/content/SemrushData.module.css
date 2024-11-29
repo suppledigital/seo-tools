@@ -1,0 +1,80 @@
+/* SemrushData.module.css */
+
+/* Keyword Tables Container */
+.keywordTablesContainer {
+    margin-top: 20px;
+  }
+  
+
+  .sidebarExpanded .keywordTablesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .keywordTablesGrid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr;
+  }
+  
+  .expandedGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  /* Keyword Table */
+  .keywordTable {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .keywordTable h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .keywordTable table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .keywordTable th,
+  .keywordTable td {
+    border: 1px solid #ddd;
+    padding: 5px;
+  }
+  
+  .keywordTable th {
+    background-color: #f2f2f2;
+  }
+  
+  /* Scrollable Table */
+  .scrollable {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+  
+  .scrollable td,
+  .scrollable thead {
+    font-size: 10px;
+    padding: 5px;
+  }
+  
+  /* Button Container */
+  .buttonContainer {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .buttonContainer button {
+    padding: 8px 12px;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .buttonContainer button:hover {
+    background-color: #005bb5;
+  }
+  
