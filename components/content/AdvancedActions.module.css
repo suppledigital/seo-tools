@@ -43,6 +43,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-top:20px;
   }
   
   .bulkActions button {
@@ -63,6 +64,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 10px;
+    margin-top:5px;
   }
   
   .individualSelectContainer span {
@@ -237,5 +239,24 @@
     .actionsContainer {
       flex-direction: column;
     }
+  }
+  .operatorLabel {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .operatorLinks {
+    margin-left: 10px;
+  }
+  
+  .operatorLinks a {
+    color: #0070f3;
+    text-decoration: none;
+    cursor: pointer;
+    margin-right: 5px;
+  }
+  
+  .operatorLinks a:hover {
+    text-decoration: underline;
   }
   

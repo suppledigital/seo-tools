@@ -11,26 +11,58 @@ export default async function handler(req, res) {
     }
 
     try {
-      let sql = '';
-      let params = [];
-
-      // Prepare placeholders for entry_ids
-      const entryIdsPlaceholders = entry_ids.map(() => '?').join(', ');
-
       if (field === 'additional_info') {
         // Handle additional info updates
-        // 'value' is an object like { word_count: '500' }
-        const updateFields = Object.keys(value)
-          .map((key) => `${key} = ?`)
-          .join(', ');
-        params = [...Object.values(value), ...entry_ids];
-        sql = `UPDATE entries SET ${updateFields} WHERE entry_id IN (${entryIdsPlaceholders})`;
-      } else {
-        sql = `UPDATE entries SET ${field} = ? WHERE entry_id IN (${entryIdsPlaceholders})`;
-        params = [value, ...entry_ids];
-      }
+        // 'value' is an object like { lsi_terms: { suggestions: [...], overrideExisting: true } }
 
-      await pool.query(sql, params);
+        const additionalInfoKey = Object.keys(value)[0];
+        const additionalInfoData = value[additionalInfoKey];
+        const { suggestions, overrideExisting } = additionalInfoData;
+
+        // For each entry_id, update the field accordingly
+        for (const entry_id of entry_ids) {
+          // Fetch existing value
+          const [rows] = await pool.query(
+            'SELECT ?? FROM entries WHERE entry_id = ?',
+            [additionalInfoKey, entry_id]
+          );
+
+          let existingValue = rows[0] ? rows[0][additionalInfoKey] : '';
+          let existingKeywords = existingValue ? existingValue.split(', ') : [];
+          let newKeywords = suggestions.map((sugg) => sugg.keyword);
+
+          let updatedKeywords;
+
+          if (!overrideExisting && existingValue) {
+            // Append to existing value
+            updatedKeywords = [...existingKeywords, ...newKeywords];
+          } else {
+            // Override existing value
+            updatedKeywords = newKeywords;
+          }
+
+          // Remove duplicates
+          updatedKeywords = Array.from(new Set(updatedKeywords));
+
+          // Join keywords into a comma-separated string
+          let newValue = updatedKeywords.join(', ');
+
+          // Update the entry
+          await pool.query(
+            'UPDATE entries SET ?? = ? WHERE entry_id = ?',
+            [additionalInfoKey, newValue, entry_id]
+          );
+        }
+      } else {
+        // For other fields, we can update directly
+        // Prepare placeholders for entry_ids
+        const entryIdsPlaceholders = entry_ids.map(() => '?').join(', ');
+
+        let sql = `UPDATE entries SET ${field} = ? WHERE entry_id IN (${entryIdsPlaceholders})`;
+        let params = [value, ...entry_ids];
+
+        await pool.query(sql, params);
+      }
 
       res.status(200).json({ message: 'Entries updated successfully' });
     } catch (error) {

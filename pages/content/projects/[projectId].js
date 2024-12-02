@@ -715,9 +715,7 @@ const handleBulkReset = () => {
 };
 
 
-// Complete applyBulkAction function
- // Complete applyBulkAction function
- const applyBulkAction = async (actionType, actionField, actionValue) => {
+const applyBulkAction = async (actionType, actionField, actionValue) => {
   try {
     const payload = {
       entry_ids: selectedEntries,
@@ -725,20 +723,8 @@ const handleBulkReset = () => {
       value: actionValue,
     };
 
-    // Handle overrideExisting and suggestions for certain additional info types
-    if (
-      actionField === 'additional_info' &&
-      ['lsi_terms', 'paa_terms', 'topic_cluster'].includes(
-        Object.keys(actionValue)[0]
-      )
-    ) {
-      const additionalInfoKey = Object.keys(actionValue)[0];
-      const additionalInfoData = actionValue[additionalInfoKey];
-
-      payload.overrideExisting = additionalInfoData.overrideExisting;
-      payload.suggestions = additionalInfoData.suggestions;
-      payload.additionalInfoKey = additionalInfoKey;
-    }
+    // No need to add overrideExisting, suggestions, or additionalInfoKey separately
+    // The backend will extract these from 'value'
 
     if (actionType === 'modify') {
       await axios.post('/api/content/entries/bulk-modify', payload);

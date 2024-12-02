@@ -1,6 +1,6 @@
 // components/content/AdvancedActions.js
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './AdvancedActions.module.css';
 import axios from 'axios';
 
@@ -20,11 +20,15 @@ export default function AdvancedActions({
   const [showBulkActionOptions, setShowBulkActionOptions] = useState(false);
 
   // Additional state variables
+  const [selectionCriteriaList, setSelectionCriteriaList] = useState([
+    { criteria: '', value: '', operator: null },
+  ]);
   const [showGenerateIdeas, setShowGenerateIdeas] = useState(false);
   const [keywordForIdeas, setKeywordForIdeas] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [selectedSuggestions, setSelectedSuggestions] = useState([]);
   const [overrideExisting, setOverrideExisting] = useState(true);
+
   const allInfoItems = [
     { key: 'word_count', label: 'Word Count' },
     { key: 'lsi_terms', label: 'LSI Terms' },
@@ -34,6 +38,20 @@ export default function AdvancedActions({
     { key: 'existing_product_info', label: 'Existing Product Info' },
     { key: 'brand_terms', label: 'Brand Terms' },
   ];
+
+  // Compute counts for Page Types
+  const pageTypeCounts = {};
+  entries.forEach((entry) => {
+    const type = entry.page_type || 'Unassigned';
+    pageTypeCounts[type] = (pageTypeCounts[type] || 0) + 1;
+  });
+
+  // Compute counts for Content Types
+  const contentTypeCounts = {};
+  entries.forEach((entry) => {
+    const type = entry.content_type || 'Unassigned';
+    contentTypeCounts[type] = (contentTypeCounts[type] || 0) + 1;
+  });
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -47,16 +65,83 @@ export default function AdvancedActions({
     setSelectedEntries([]);
   };
 
-  const handleSelectByPageType = (pageType) => {
-    setSelectedEntries(
-      entries.filter((entry) => entry.page_type === pageType).map((entry) => entry.entry_id)
-    );
+  // Handle changes in criteria and values
+  const handleCriteriaChange = (index, field, value) => {
+    setSelectionCriteriaList((prevList) => {
+      const newList = [...prevList];
+      newList[index][field] = value;
+
+      // If the criteria type changes, reset its value
+      if (field === 'criteria') {
+        newList[index]['value'] = '';
+      }
+
+      // Return the new list to update the state
+      return newList;
+    });
   };
 
-  const handleSelectByContentType = (contentType) => {
-    setSelectedEntries(
-      entries.filter((entry) => entry.content_type === contentType).map((entry) => entry.entry_id)
-    );
+  // Apply selection whenever selectionCriteriaList changes
+  useEffect(() => {
+    applySelection(selectionCriteriaList);
+  }, [selectionCriteriaList]);
+
+  // Modify the selection logic to handle multiple criteria
+  const applySelection = (criteriaList) => {
+    let selected = entries;
+
+    criteriaList.forEach((criteriaObj, idx) => {
+      const { criteria, value, operator } = criteriaObj;
+
+      if (!criteria || !value) return;
+
+      let filteredEntries = [];
+
+      if (criteria === 'page_type') {
+        if (value === 'unassigned') {
+          filteredEntries = entries.filter((entry) => !entry.page_type);
+        } else {
+          filteredEntries = entries.filter((entry) => entry.page_type === value);
+        }
+      } else if (criteria === 'content_type') {
+        if (value === 'unassigned') {
+          filteredEntries = entries.filter((entry) => !entry.content_type);
+        } else {
+          filteredEntries = entries.filter((entry) => entry.content_type === value);
+        }
+      } else if (criteria === 'select_all') {
+        filteredEntries = entries;
+      }
+
+      if (idx === 0) {
+        selected = filteredEntries;
+      } else {
+        if (criteriaObj.operator === 'AND') {
+          // Intersection
+          selected = selected.filter((entry) =>
+            filteredEntries.some((e) => e.entry_id === entry.entry_id)
+          );
+        } else if (criteriaObj.operator === 'OR') {
+          // Union
+          const entryIds = new Set(selected.map((entry) => entry.entry_id));
+          filteredEntries.forEach((entry) => {
+            if (!entryIds.has(entry.entry_id)) {
+              selected.push(entry);
+            }
+          });
+        }
+      }
+    });
+
+    setSelectedEntries(selected.map((entry) => entry.entry_id));
+  };
+
+  // Add a function to handle adding new criteria
+  const addCriteria = (operator) => {
+    setSelectionCriteriaList((prevList) => [
+      ...prevList,
+      { criteria: '', value: '', operator: operator },
+    ]);
   };
 
   const handleBulkModify = () => {
@@ -77,7 +162,6 @@ export default function AdvancedActions({
     setShowBulkActionOptions(true);
   };
 
- 
   const handleGetIdeas = async () => {
     try {
       let response;
@@ -141,7 +225,6 @@ export default function AdvancedActions({
     setKeywordForIdeas('');
   };
 
-
   return (
     <div className={styles.advancedActions}>
       <div className={styles.header}>
@@ -153,46 +236,76 @@ export default function AdvancedActions({
       {expanded && (
         <div className={styles.actionsContainer}>
           <div className={styles.selectionActions}>
-            <div className={styles.individualSelectContainer}>
-              <span>Select by:</span>
-              <select onChange={(e) => handleSelectByPageType(e.target.value)}>
-                <option value="">--Select Page Type--</option>
-                {[
-                  'Home Page',
-                  'Service Page',
-                  'Location Page',
-                  'Product Page',
-                  'Product Category Page',
-                ].map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-              <select onChange={(e) => handleSelectByContentType(e.target.value)}>
-                <option value="">--Select Content Type--</option>
-                {['New Content', 'Additional Content', 'Rewrite Content'].map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {selectionCriteriaList.map((criteriaObj, index) => (
+              <div key={index} className={styles.individualSelectContainer}>
+                {index > 0 && criteriaObj.operator && (
+                  <span className={styles.operatorLabel}>
+                    {criteriaObj.operator}
+                  </span>
+                )}
+                <select
+                  value={criteriaObj.criteria}
+                  onChange={(e) => handleCriteriaChange(index, 'criteria', e.target.value)}
+                >
+                  <option value="">--Select Criteria--</option>
+                  <option value="page_type">Page Type</option>
+                  <option value="content_type">Content Type</option>
+                  <option value="select_all">Select All</option>
+                </select>
+
+                {(criteriaObj.criteria === 'page_type' ||
+                  criteriaObj.criteria === 'content_type') && (
+                  <select
+                    value={criteriaObj.value}
+                    onChange={(e) => handleCriteriaChange(index, 'value', e.target.value)}
+                  >
+                    <option value="">
+                      --Select {criteriaObj.criteria === 'page_type' ? 'Page Type' : 'Content Type'}--
+                    </option>
+                    {criteriaObj.criteria === 'page_type' &&
+                      Object.keys(pageTypeCounts).map((type) => (
+                        <option key={type} value={type === 'Unassigned' ? 'unassigned' : type}>
+                          {type} ({pageTypeCounts[type]})
+                        </option>
+                      ))}
+                    {criteriaObj.criteria === 'content_type' &&
+                      Object.keys(contentTypeCounts).map((type) => (
+                        <option key={type} value={type === 'Unassigned' ? 'unassigned' : type}>
+                          {type} ({contentTypeCounts[type]})
+                        </option>
+                      ))}
+                  </select>
+                )}
+                {index === selectionCriteriaList.length - 1 && (
+                  <div className={styles.operatorLinks}>
+                    <a href="#" onClick={(e) => { e.preventDefault(); addCriteria('AND'); }}>
+                      And
+                    </a>
+                    {' | '}
+                    <a href="#" onClick={(e) => { e.preventDefault(); addCriteria('OR'); }}>
+                      Or
+                    </a>
+                  </div>
+                )}
+              </div>
+            ))}
+
             <div className={styles.selectAllContainer}>
               <span>or you can also</span>
-              <a href="#" onClick={handleSelectAll}>
+              <a href="#" onClick={(e) => { e.preventDefault(); handleSelectAll(); }}>
                 Select All
               </a>
-              <a href="#" onClick={handleDeselectAll}>
+              <a href="#" onClick={(e) => { e.preventDefault(); handleDeselectAll(); }}>
                 Deselect All
               </a>
             </div>
             <div className={styles.bulkActions}>
-                <button onClick={handleBulkModify}>Modify</button>
-                <button className={styles.resetBtn}onClick={handleBulkReset}>Reset</button>
+              <button onClick={handleBulkModify}>Modify Selections</button>
+              <button className={styles.resetBtn} onClick={handleBulkReset}>
+                Reset Values
+              </button>
             </div>
           </div>
-          
 
           {showBulkActionOptions && (
             <div className={styles.bulkActionOptions}>
@@ -314,8 +427,7 @@ export default function AdvancedActions({
                     <div>
                       <label>
                         {
-                          allInfoItems.find((item) => item.key === additionalInfoType)
-                            ?.label
+                          allInfoItems.find((item) => item.key === additionalInfoType)?.label
                         }
                         :
                       </label>
@@ -344,9 +456,7 @@ export default function AdvancedActions({
                               <label>
                                 <input
                                   type="checkbox"
-                                  checked={
-                                    selectedSuggestions.length === suggestions.length
-                                  }
+                                  checked={selectedSuggestions.length === suggestions.length}
                                   onChange={(e) => {
                                     if (e.target.checked) {
                                       setSelectedSuggestions(suggestions);
@@ -370,9 +480,7 @@ export default function AdvancedActions({
                                         ]);
                                       } else {
                                         setSelectedSuggestions(
-                                          selectedSuggestions.filter(
-                                            (s) => s !== suggestion
-                                          )
+                                          selectedSuggestions.filter((s) => s !== suggestion)
                                         );
                                       }
                                     }}
@@ -413,11 +521,7 @@ export default function AdvancedActions({
                     <div>
                       <label>
                         Enter{' '}
-                        {
-                          allInfoItems.find((item) => item.key === additionalInfoType)
-                            ?.label
-                        }
-                        :
+                        {allInfoItems.find((item) => item.key === additionalInfoType)?.label}:
                       </label>
                       <textarea
                         rows="4"
