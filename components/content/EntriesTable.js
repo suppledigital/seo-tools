@@ -2,7 +2,6 @@
 
 import EntryRow from './EntryRow';
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
 import styles from './EntriesTable.module.css';
 import { Button } from '@mui/material';
 
@@ -30,7 +29,13 @@ export default function EntriesTable({
     handleViewContent,
   } = handlers;
 
-  
+  // Sort entries: selected entries first
+  const sortedEntries = [...entries].sort((a, b) => {
+    const aSelected = selectedEntries.includes(a.entry_id) ? 0 : 1;
+    const bSelected = selectedEntries.includes(b.entry_id) ? 0 : 1;
+    return aSelected - bSelected;
+  });
+
   return (
     <table className={styles.projectTable}>
       <thead>
@@ -56,7 +61,7 @@ export default function EntriesTable({
         </tr>
       </thead>
       <tbody>
-        {entries.map((entry) => (
+        {sortedEntries.map((entry) => (
           <EntryRow
             key={entry.entry_id}
             entry={entry}
@@ -73,4 +78,3 @@ export default function EntriesTable({
     </table>
   );
 }
-

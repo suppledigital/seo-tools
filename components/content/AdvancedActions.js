@@ -21,7 +21,7 @@ export default function AdvancedActions({
 
   // Additional state variables
   const [selectionCriteriaList, setSelectionCriteriaList] = useState([
-    { criteria: '', value: '', operator: null },
+    { logicalOperator: null, criteria: '', criteriaOperator: '', value: '' },
   ]);
   const [showGenerateIdeas, setShowGenerateIdeas] = useState(false);
   const [keywordForIdeas, setKeywordForIdeas] = useState('');
@@ -63,6 +63,7 @@ export default function AdvancedActions({
 
   const handleDeselectAll = () => {
     setSelectedEntries([]);
+    setSelectionCriteriaList([{ logicalOperator: null, criteria: '', criteriaOperator: '', value: '' }]); // Reset selection criteria
   };
 
   // Handle changes in criteria and values
@@ -71,12 +72,15 @@ export default function AdvancedActions({
       const newList = [...prevList];
       newList[index][field] = value;
 
-      // If the criteria type changes, reset its value
+      // If the criteria type changes, reset its value and criteriaOperator
       if (field === 'criteria') {
         newList[index]['value'] = '';
+        newList[index]['criteriaOperator'] = '';
+        console.log(`Criteria at index ${index} changed. Value and criteriaOperator reset.`);
+      } else if (field === 'criteriaOperator') {
+        console.log(`Criteria Operator at index ${index} set to: ${value}`);
       }
 
-      // Return the new list to update the state
       return newList;
     });
   };
@@ -84,18 +88,22 @@ export default function AdvancedActions({
   // Apply selection whenever selectionCriteriaList changes
   useEffect(() => {
     applySelection(selectionCriteriaList);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectionCriteriaList]);
 
   const applySelection = (criteriaList) => {
     let selected = []; // Initialize as empty
-  
+
+    console.log('Applying Selection Criteria:', criteriaList);
+
     criteriaList.forEach((criteriaObj, idx) => {
-      const { criteria, value, operator } = criteriaObj;
-  
-      if (!criteria || !value) return;
-  
+      const { criteria, value, operator, criteriaOperator, logicalOperator } = criteriaObj;
+
+      if (!criteria) return;
+
       let filteredEntries = [];
-  
+
+      // Filter based on criteria type and operator
       if (criteria === 'page_type') {
         if (value === 'unassigned') {
           filteredEntries = entries.filter((entry) => !entry.page_type);
@@ -108,40 +116,77 @@ export default function AdvancedActions({
         } else {
           filteredEntries = entries.filter((entry) => entry.content_type === value);
         }
+      } else if (criteria === 'url') {
+        if (criteriaOperator === 'contains') {
+          filteredEntries = entries.filter((entry) =>
+            entry.url.toLowerCase().includes(value.toLowerCase())
+          );
+        } else if (criteriaOperator === 'starts_with') {
+          filteredEntries = entries.filter((entry) =>
+            entry.url.toLowerCase().startsWith(value.toLowerCase())
+          );
+        }
+      } else if (criteria === 'keyword') {
+        if (criteriaOperator === 'contains') {
+          filteredEntries = entries.filter(
+            (entry) =>
+              (entry.primary_keyword &&
+                entry.primary_keyword.toLowerCase().includes(value.toLowerCase())) ||
+              (entry.secondary_keyword &&
+                entry.secondary_keyword.toLowerCase().includes(value.toLowerCase()))
+          );
+        } else if (criteriaOperator === 'starts_with') {
+          filteredEntries = entries.filter(
+            (entry) =>
+              (entry.primary_keyword &&
+                entry.primary_keyword.toLowerCase().startsWith(value.toLowerCase())) ||
+              (entry.secondary_keyword &&
+                entry.secondary_keyword.toLowerCase().startsWith(value.toLowerCase()))
+          );
+        }
       } else if (criteria === 'select_all') {
         filteredEntries = entries;
       }
-  
+
+      console.log(`Criteria ${idx + 1}: ${criteria} ${value} with operator ${criteriaOperator || operator}`);
+      console.log(`Filtered Entries:`, filteredEntries.map((e) => e.entry_id));
+
       if (filteredEntries.length === 0) return; // Skip if no entries match
-  
+
       if (idx === 0) {
+        // First criteria, initialize selected
         selected = filteredEntries;
       } else {
-        if (operator === 'AND') {
+        if (criteriaObj.logicalOperator === 'AND') {
           // Intersection
           selected = selected.filter((entry) =>
             filteredEntries.some((e) => e.entry_id === entry.entry_id)
           );
-        } else if (operator === 'OR') {
+        } else if (criteriaObj.logicalOperator === 'OR') {
           // Union
           const entryIds = new Set(selected.map((entry) => entry.entry_id));
           filteredEntries.forEach((entry) => {
             if (!entryIds.has(entry.entry_id)) {
               selected.push(entry);
+              entryIds.add(entry.entry_id); // Prevent duplicates
             }
           });
         }
       }
+
+      console.log(`Selected after Criteria ${idx + 1}:`, selected.map((e) => e.entry_id));
     });
-  
+
     setSelectedEntries(selected.map((entry) => entry.entry_id));
+    console.log('Final Selected Entries:', selected.map((e) => e.entry_id));
   };
-  
+
   // Add a function to handle adding new criteria
-  const addCriteria = (operator) => {
+  const addCriteria = (logicalOperator) => {
+    console.log(`Adding new criteria with logical operator: ${logicalOperator}`);
     setSelectionCriteriaList((prevList) => [
       ...prevList,
-      { criteria: '', value: '', operator: operator },
+      { logicalOperator: logicalOperator, criteria: '', criteriaOperator: '', value: '' },
     ]);
   };
 
@@ -239,11 +284,14 @@ export default function AdvancedActions({
           <div className={styles.selectionActions}>
             {selectionCriteriaList.map((criteriaObj, index) => (
               <div key={index} className={styles.individualSelectContainer}>
-                {index > 0 && criteriaObj.operator && (
-                  <span className={styles.operatorLabel}>
-                    {criteriaObj.operator}
+                {/* Display Logical Operator for Criteria After the First */}
+                {index > 0 && (
+                  <span className={styles.logicalOperatorLabel}>
+                    {criteriaObj.logicalOperator}
                   </span>
                 )}
+
+                {/* Criteria Type Dropdown */}
                 <select
                   value={criteriaObj.criteria}
                   onChange={(e) => handleCriteriaChange(index, 'criteria', e.target.value)}
@@ -251,11 +299,25 @@ export default function AdvancedActions({
                   <option value="">--Select Criteria--</option>
                   <option value="page_type">Page Type</option>
                   <option value="content_type">Content Type</option>
+                  <option value="url">URL</option>
+                  <option value="keyword">Keywords</option>
                   <option value="select_all">Select All</option>
                 </select>
 
-                {(criteriaObj.criteria === 'page_type' ||
-                  criteriaObj.criteria === 'content_type') && (
+                {/* Criteria-Specific Operator Dropdown */}
+                {(['url', 'keyword'].includes(criteriaObj.criteria)) && (
+                  <select
+                    value={criteriaObj.criteriaOperator}
+                    onChange={(e) => handleCriteriaChange(index, 'criteriaOperator', e.target.value)}
+                  >
+                    <option value="">--Select Operator--</option>
+                    <option value="contains">Contains</option>
+                    <option value="starts_with">Starts with</option>
+                  </select>
+                )}
+
+                {/* Value Input or Selection */}
+                {(['page_type', 'content_type'].includes(criteriaObj.criteria)) && (
                   <select
                     value={criteriaObj.value}
                     onChange={(e) => handleCriteriaChange(index, 'value', e.target.value)}
@@ -277,13 +339,66 @@ export default function AdvancedActions({
                       ))}
                   </select>
                 )}
+
+                {(['url', 'keyword'].includes(criteriaObj.criteria)) && (
+                  <input
+                    type="text"
+                    placeholder="Enter value..."
+                    value={criteriaObj.value}
+                    onChange={(e) => handleCriteriaChange(index, 'value', e.target.value)}
+                  />
+                )}
+
+                {(['select_all'].includes(criteriaObj.criteria)) && (
+                  // No additional fields needed for 'Select All'
+                  null
+                )}
+
+                {/* Operator Links for Adding New Criteria */}
                 {index === selectionCriteriaList.length - 1 && (
                   <div className={styles.operatorLinks}>
-                    <a href="#" onClick={(e) => { e.preventDefault(); addCriteria('AND'); }}>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        // Validate current criterion before adding a new one
+                        const currentCriteria = selectionCriteriaList[index];
+                        const isCriteriaValid =
+                          currentCriteria.criteria &&
+                          (currentCriteria.value || currentCriteria.criteria === 'select_all') &&
+                          (['url', 'keyword'].includes(currentCriteria.criteria)
+                            ? currentCriteria.criteriaOperator
+                            : true);
+
+                        if (isCriteriaValid) {
+                          addCriteria('AND');
+                        } else {
+                          alert('Please complete the current criteria before adding a new one.');
+                        }
+                      }}
+                    >
                       And
                     </a>
                     {' | '}
-                    <a href="#" onClick={(e) => { e.preventDefault(); addCriteria('OR'); }}>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const currentCriteria = selectionCriteriaList[index];
+                        const isCriteriaValid =
+                          currentCriteria.criteria &&
+                          (currentCriteria.value || currentCriteria.criteria === 'select_all') &&
+                          (['url', 'keyword'].includes(currentCriteria.criteria)
+                            ? currentCriteria.criteriaOperator
+                            : true);
+
+                        if (isCriteriaValid) {
+                          addCriteria('OR');
+                        } else {
+                          alert('Please complete the current criteria before adding a new one.');
+                        }
+                      }}
+                    >
                       Or
                     </a>
                   </div>
@@ -302,7 +417,7 @@ export default function AdvancedActions({
             </div>
             <div className={styles.bulkActions}>
               <button onClick={handleBulkModify}>Modify Selections</button>
-              <button className={styles.resetBtn} onClick={handleBulkReset}>
+              <button className={`${styles.resetBtn}`} onClick={handleBulkReset}>
                 Reset Values
               </button>
             </div>
