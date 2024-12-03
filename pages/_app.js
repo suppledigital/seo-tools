@@ -9,6 +9,8 @@ import '../styles/global.css'; // Your global CSS
 // import '../styles/projects.css'; // Uncomment if needed
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css'; // Font Awesome CSS manually
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import CSS
 config.autoAddCss = false; // Disable the automatic adding of CSS
 
 // Define your MUI theme (optional)
@@ -33,6 +35,18 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
         {/* CssBaseline kickstarts an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <Component {...pageProps} />
+        <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       </ThemeProvider>
     </SessionProvider>
   );

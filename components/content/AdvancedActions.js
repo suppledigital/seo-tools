@@ -86,17 +86,16 @@ export default function AdvancedActions({
     applySelection(selectionCriteriaList);
   }, [selectionCriteriaList]);
 
-  // Modify the selection logic to handle multiple criteria
   const applySelection = (criteriaList) => {
-    let selected = entries;
-
+    let selected = []; // Initialize as empty
+  
     criteriaList.forEach((criteriaObj, idx) => {
       const { criteria, value, operator } = criteriaObj;
-
+  
       if (!criteria || !value) return;
-
+  
       let filteredEntries = [];
-
+  
       if (criteria === 'page_type') {
         if (value === 'unassigned') {
           filteredEntries = entries.filter((entry) => !entry.page_type);
@@ -112,16 +111,18 @@ export default function AdvancedActions({
       } else if (criteria === 'select_all') {
         filteredEntries = entries;
       }
-
+  
+      if (filteredEntries.length === 0) return; // Skip if no entries match
+  
       if (idx === 0) {
         selected = filteredEntries;
       } else {
-        if (criteriaObj.operator === 'AND') {
+        if (operator === 'AND') {
           // Intersection
           selected = selected.filter((entry) =>
             filteredEntries.some((e) => e.entry_id === entry.entry_id)
           );
-        } else if (criteriaObj.operator === 'OR') {
+        } else if (operator === 'OR') {
           // Union
           const entryIds = new Set(selected.map((entry) => entry.entry_id));
           filteredEntries.forEach((entry) => {
@@ -132,10 +133,10 @@ export default function AdvancedActions({
         }
       }
     });
-
+  
     setSelectedEntries(selected.map((entry) => entry.entry_id));
   };
-
+  
   // Add a function to handle adding new criteria
   const addCriteria = (operator) => {
     setSelectionCriteriaList((prevList) => [

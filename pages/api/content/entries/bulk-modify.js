@@ -14,44 +14,63 @@ export default async function handler(req, res) {
       if (field === 'additional_info') {
         // Handle additional info updates
         // 'value' is an object like { lsi_terms: { suggestions: [...], overrideExisting: true } }
+        // or { word_count: "750" }
 
         const additionalInfoKey = Object.keys(value)[0];
         const additionalInfoData = value[additionalInfoKey];
-        const { suggestions, overrideExisting } = additionalInfoData;
 
-        // For each entry_id, update the field accordingly
-        for (const entry_id of entry_ids) {
-          // Fetch existing value
-          const [rows] = await pool.query(
-            'SELECT ?? FROM entries WHERE entry_id = ?',
-            [additionalInfoKey, entry_id]
-          );
+        // Define which fields require complex handling
+        const listFields = ['lsi_terms', 'paa_terms', 'topic_cluster'];
 
-          let existingValue = rows[0] ? rows[0][additionalInfoKey] : '';
-          let existingKeywords = existingValue ? existingValue.split(', ') : [];
-          let newKeywords = suggestions.map((sugg) => sugg.keyword);
+        if (listFields.includes(additionalInfoKey)) {
+          // Handle fields with suggestions and overrideExisting
+          const { suggestions, overrideExisting } = additionalInfoData;
 
-          let updatedKeywords;
-
-          if (!overrideExisting && existingValue) {
-            // Append to existing value
-            updatedKeywords = [...existingKeywords, ...newKeywords];
-          } else {
-            // Override existing value
-            updatedKeywords = newKeywords;
+          if (!suggestions || typeof overrideExisting === 'undefined') {
+            throw new Error(`Invalid payload structure for ${additionalInfoKey}`);
           }
 
-          // Remove duplicates
-          updatedKeywords = Array.from(new Set(updatedKeywords));
+          for (const entry_id of entry_ids) {
+            // Fetch existing value
+            const [rows] = await pool.query(
+              'SELECT ?? FROM entries WHERE entry_id = ?',
+              [additionalInfoKey, entry_id]
+            );
 
-          // Join keywords into a comma-separated string
-          let newValue = updatedKeywords.join(', ');
+            let existingValue = rows[0] ? rows[0][additionalInfoKey] : '';
+            let existingKeywords = existingValue ? existingValue.split(', ') : [];
+            let newKeywords = suggestions.map((sugg) => sugg.keyword);
 
-          // Update the entry
-          await pool.query(
-            'UPDATE entries SET ?? = ? WHERE entry_id = ?',
-            [additionalInfoKey, newValue, entry_id]
-          );
+            let updatedKeywords;
+
+            if (!overrideExisting && existingValue) {
+              // Append to existing value
+              updatedKeywords = [...existingKeywords, ...newKeywords];
+            } else {
+              // Override existing value
+              updatedKeywords = newKeywords;
+            }
+
+            // Remove duplicates
+            updatedKeywords = Array.from(new Set(updatedKeywords));
+
+            // Join keywords into a comma-separated string
+            let newValue = updatedKeywords.join(', ');
+
+            // Update the entry
+            await pool.query(
+              'UPDATE entries SET ?? = ? WHERE entry_id = ?',
+              [additionalInfoKey, newValue, entry_id]
+            );
+          }
+        } else {
+          // Handle simple key-value fields like word_count, existing_content, etc.
+          for (const entry_id of entry_ids) {
+            await pool.query(
+              'UPDATE entries SET ?? = ? WHERE entry_id = ?',
+              [additionalInfoKey, additionalInfoData, entry_id]
+            );
+          }
         }
       } else {
         // For other fields, we can update directly

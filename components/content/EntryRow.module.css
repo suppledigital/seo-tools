@@ -184,3 +184,16 @@
 .selectedRow {
   background-color: #e0f7fa; /* Light cyan color */
 }
+
+/* EntryRow.module.css */
+
+.wordCountBadge {
+  display: inline-block;
+  background-color: #6c757d; /* Bootstrap secondary color */
+  color: white;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  margin-left: 8px; /* Space between the View icon and badge */
+  vertical-align: middle;
+}

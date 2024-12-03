@@ -29,6 +29,26 @@
 .startButton:hover {
   background-color: #005bb5;
 }
+/* Add this to your projectId.module.css */
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.configureButton {
+  padding: 10px 20px;
+  background-color: #6c757d; /* Gray color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.configureButton:hover {
+  background-color: #5a6268;
+}
 
 /* Excel Input Styling */
 .excelInput {
@@ -41,12 +61,16 @@
 }
 
 .infoBlock {
-  padding: 5px;
-  margin: 3px;
   background-color: #f0f0f0;
   border-radius: 5px;
-  cursor: pointer;
+
+
   display: inline-block;
+    padding: 3px 8px;
+    margin: 2px;
+    font-size: 12px;
+    border-radius: 12px;
+    cursor: pointer;
 }
 
 .set {
@@ -62,9 +86,12 @@
 .addBlock {
   background-color: #42a5f5;
   color: white;
-  padding: 5px;
   border-radius: 50%;
   cursor: pointer;
+
+  padding: 5px;
+  margin: 2px;
+  font-size: 12px;
 }
 
 .additionalInfoDropdown {
@@ -193,3 +220,5 @@
   padding: 5px;
   border-radius: 5px;
 }
+/* projectId.module.css */
+

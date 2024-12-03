@@ -42,7 +42,7 @@ export default async function handler(req, res) {
         phrase: keyword,
         database: database,
         export_columns: exportColumns,
-        display_limit: 20,
+        display_limit: 100,
       },
     });
     const broadMatchKeywords = parseSemrushResponse(broadResponse.data);

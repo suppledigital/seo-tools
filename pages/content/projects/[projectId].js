@@ -7,6 +7,10 @@ import axios from 'axios';
 import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.full.css';
 import { getSession } from 'next-auth/react';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Ensure CSS is imported
+
+
 
 // Import custom components
 import EntriesTable from '../../../components/content/EntriesTable';
@@ -14,6 +18,8 @@ import InfoModal from '../../../components/content/InfoModal';
 import ContentModal from '../../../components/content/ContentModal';
 import Sidebar from '../../../components/content/Sidebar';
 import AdvancedActions from '../../../components/content/AdvancedActions';
+import ConfigureProjectModal from '../../../components/content/ConfigureProjectModal';
+
 
 
 export default function ProjectPage({ initialData }) {
@@ -51,14 +57,17 @@ export default function ProjectPage({ initialData }) {
   const [sidebarType, setSidebarType] = useState(null);
   const [loadingAnalysisResults, setLoadingAnalysisResults] = useState(false);
   const [classificationLoading, setClassificationLoading] = useState(false);
-  const [selectedEntries, setSelectedEntries] = useState([]);
+  const [selectedEntries, setSelectedEntries] = useState([]); // Starts empty
   const [lastSelectedEntryId, setLastSelectedEntryId] = useState(null);
 
-// Add state for the bulk action modal
-const [bulkActionModalVisible, setBulkActionModalVisible] = useState(false);
-const [bulkActionType, setBulkActionType] = useState('');
-const [bulkActionField, setBulkActionField] = useState('');
-const [bulkActionValue, setBulkActionValue] = useState('');
+  // Add state for the bulk action modal
+  const [bulkActionModalVisible, setBulkActionModalVisible] = useState(false);
+  const [bulkActionType, setBulkActionType] = useState('');
+  const [bulkActionField, setBulkActionField] = useState('');
+  const [bulkActionValue, setBulkActionValue] = useState('');
+
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+
 
 
   const sidebarRef = useRef(null);
@@ -109,33 +118,47 @@ const [bulkActionValue, setBulkActionValue] = useState('');
         await axios.post(`/api/content/projects/${projectId}/save-data`, {
           data: data,
         });
-        alert('Data saved successfully!');
+        toast.success('Data saved successfully!');
         router.reload();
       } catch (error) {
         console.error('Error saving data:', error);
-        alert('Error saving data.');
+        toast.error('Error saving data.');
       }
     }
   };
 
+
   const handleSaveProjectInfo = async (formData) => {
     try {
-      await axios.post('/api/content/projects/save-info', {
-        project_id: projectId,
-        form_data: formData,
+      const response = await axios.post('/api/content/projects/update-project', {
+        project_id: projectId, // Your actual project ID
+        form_data: formData, // Updated form data from the modal
       });
-      alert('Project information saved!');
-      setShowProjectInfoModal(false);
+  
+      if (response.data.status === 'success') {
+        toast.success('Project information updated successfully!');
+        setIsConfigModalOpen(false);
+        // Update the project state with the new data
+        setProject((prevProject) => ({
+          ...prevProject,
+          ...formData,
+        }));
+      } else {
+        toast.error('Failed to update project information.');
+      }
     } catch (error) {
-      console.error('Error saving project information:', error);
-      alert('Error saving project information.');
+      console.error('Error updating project information:', error);
+      toast.error('Error updating project information.');
     }
   };
+  
+  
+
 
 
   const handleKeywordSearch = () => {
     if (!keywordInput.trim()) {
-      alert('Please enter a keyword.');
+      toast.error('Please enter a keyword.');
       return;
     }
 
@@ -154,6 +177,7 @@ const [bulkActionValue, setBulkActionValue] = useState('');
     fetchSerpResults(keywordInput.trim(), selectedCountry);
     fetchSemrushData(keywordInput.trim(), selectedCountry);
   };
+
 
   const handleCheckboxChange = (tableType, keyword, isChecked) => {
     let setterFunction;
@@ -198,7 +222,7 @@ const [bulkActionValue, setBulkActionValue] = useState('');
 
   const handleSetAs = async (tableType, infoType, selectedKeywords) => {
     if (selectedKeywords.length === 0) {
-      alert('No keywords selected.');
+      toast.error('No keywords selected.');
       return;
     }
 
@@ -225,7 +249,7 @@ const [bulkActionValue, setBulkActionValue] = useState('');
         )
       );
 
-      alert(`${infoType} terms saved successfully!`);
+      toast.success(`${infoType} terms saved successfully!`);
 
       // Clear selected keywords
       if (tableType === 'related') {
@@ -237,7 +261,7 @@ const [bulkActionValue, setBulkActionValue] = useState('');
       }
     } catch (error) {
       console.error(`Error saving ${infoType} terms:`, error);
-      alert(`Error saving ${infoType} terms.`);
+      toast.error(`Error saving ${infoType} terms.`);
     }
   };
 
@@ -267,19 +291,19 @@ const [bulkActionValue, setBulkActionValue] = useState('');
         );
       } catch (error) {
         console.error('Error deleting entry:', error);
-        alert('Error deleting entry.');
+        toast.error('Error deleting entry.');
       }
     }
   };
 
   const handleCopyContent = (content) => {
     navigator.clipboard.writeText(content);
-    alert('Content copied to clipboard!');
+    toast.success('Content copied to clipboard!');
   };
 
   const handleEditContent = (entryId) => {
     // Implement edit functionality (e.g., open a modal for editing)
-    console.log('Edit content for entry:', entryId);
+    //console.log('Edit content for entry:', entryId);
   };
 
   const handleViewContent = (content) => {
@@ -289,7 +313,7 @@ const [bulkActionValue, setBulkActionValue] = useState('');
 
   const handleUrlLookup = (url) => {
     // Placeholder for future functionality
-    console.log('Lookup URL:', url);
+   // console.log('Lookup URL:', url);
   };
 
   const handleKeywordLookup = (e, keyword, entryId) => {
@@ -350,7 +374,7 @@ const [bulkActionValue, setBulkActionValue] = useState('');
       }));
     } catch (error) {
       console.error('Error fetching keyword analysis:', error);
-      alert('Error fetching keyword analysis.');
+      toast.error('Error fetching keyword analysis.');
     } finally {
       setLoadingAnalyzeKeyword(false);
     }
@@ -403,24 +427,24 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
       });
     } catch (error) {
       console.error('Error fetching smart analysis data:', error);
-      alert('Error fetching smart analysis data.');
+      toast.error('Error fetching smart analysis data.');
     } finally {
       setLoadingAnalysisResults(false);
     }
   };
 
   const handleGenerateContent = async (entryId) => {
-    // Set loading state to true
+    // Set loading state to true for this entry
     setLoadingEntries((prevState) => ({
       ...prevState,
       [entryId]: true,
     }));
-
+  
     const entry = entries.find((e) => e.entry_id === entryId);
-
+  
     // Ensure that both page_type and content_type are set
     if (!entry.page_type || !entry.content_type) {
-      alert('Please select both Page Type and Content Type for this entry.');
+      toast.error('Please select both Page Type and Content Type for this entry.');
       // Reset loading state
       setLoadingEntries((prevState) => ({
         ...prevState,
@@ -428,66 +452,84 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
       }));
       return;
     }
-
+  
+    // Get compulsory fields based on page_type and content_type
+    const compulsoryFields = getCompulsoryFields(entry.page_type, entry.content_type);
+  
+    for (const { field, type } of compulsoryFields) {
+      const value = entry[field];
+  
+      if (type === 'string') {
+        if (!value || typeof value !== 'string' || !value.trim()) {
+          toast.error(`Please provide ${field.replace('_', ' ')} for this entry.`);
+          setLoadingEntries((prevState) => ({
+            ...prevState,
+            [entryId]: false,
+          }));
+          return;
+        }
+      } else if (type === 'number') {
+        if (value === undefined || value === null || typeof value !== 'number') {
+          toast.error(`Please provide a valid ${field.replace('_', ' ')} for this entry.`);
+          setLoadingEntries((prevState) => ({
+            ...prevState,
+            [entryId]: false,
+          }));
+          return;
+        }
+        // Optionally, check for positive numbers
+        if (value <= 0) {
+          toast.error(`${field.replace('_', ' ')} must be a positive number.`);
+          setLoadingEntries((prevState) => ({
+            ...prevState,
+            [entryId]: false,
+          }));
+          return;
+        }
+      }
+      // Add more type-specific validations if necessary
+    }
+  
     try {
-      // Fetch the prompt from the database
-      const response = await axios.get('/api/content/prompts', {
-        params: {
-          page_type: entry.page_type,
-          content_type: entry.content_type,
+      // Send a POST request to the generate-content API with entry_id
+      const generateResponse = await axios.post(
+        `/api/content/projects/${projectId}/generate-content`,
+        {
+          entry_id: entryId,
         },
-        withCredentials: true,
-      });
-
-      const promptTemplate = response.data.prompt_text;
-
-      if (!promptTemplate) {
-        alert('No prompt found for this Page Type and Content Type combination.');
-        // Reset loading state
+        {
+          withCredentials: true,
+        }
+      );
+  
+      const generatedContent = generateResponse.data.data; // Extract the string
+  
+      //console.log('Generated Content:', generatedContent); // Debugging log
+  
+      if (!generatedContent) {
+        toast.error('Received empty content from AI.');
         setLoadingEntries((prevState) => ({
           ...prevState,
           [entryId]: false,
         }));
         return;
       }
-
-      // Replace placeholders in the prompt with actual data
-      const prompt = promptTemplate
-        .replace('{url}', entry.url)
-        .replace('{keywords}', entry.primary_keyword || entry.secondary_keyword || '');
-      // Add more replacements as needed
-
-      // Call the API to run the prompt
-      const runPromptResponse = await axios.post(
-        `/api/content/projects/${projectId}/run-prompt`,
-        {
-          entry_id: entryId,
-          prompt,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-
-      const responseData = runPromptResponse.data.data;
-
-      // Update the entry with the generated content
+  
+      // Update the entry in the client-side state
       setEntries((prevEntries) =>
         prevEntries.map((e) =>
-          e.entry_id === entryId ? { ...e, generated_content: responseData } : e
+          e.entry_id === entryId ? { ...e, generated_content: generatedContent } : e
         )
       );
-
-      // Save the generated content to the database
-      await axios.post('/api/content/entries/save-generated-content', {
-        entry_id: entryId,
-        generated_content: responseData,
-      });
-
-      alert('Content generated successfully!');
+  
+      toast.success('Content generated and saved successfully!');
     } catch (error) {
       console.error('Error generating content:', error);
-      alert('Error generating content.');
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(`Error generating content: ${error.response.data.message}`);
+      } else {
+        toast.error('Error generating content.');
+      }
     } finally {
       // Reset loading state
       setLoadingEntries((prevState) => ({
@@ -496,6 +538,31 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
       }));
     }
   };
+  
+  
+  
+  const getCompulsoryFields = (pageType, contentType) => {
+    const compulsoryFields = [
+      { field: 'primary_keyword', type: 'string' },
+      { field: 'word_count', type: 'number' },
+    ];
+  
+    // Add more compulsory fields based on pageType and contentType
+    if (contentType === 'Rewrite Content' || contentType === 'Additional Content') {
+      compulsoryFields.push({ field: 'existing_content', type: 'string' });
+    }
+    if (pageType === 'Product Page') {
+      compulsoryFields.push({ field: 'existing_product_info', type: 'string' });
+    }
+    if (pageType === 'Category Page') {
+      compulsoryFields.push({ field: 'brand_terms', type: 'string' });
+    }
+    // Add other rules as needed
+    return compulsoryFields;
+  };
+  
+  
+  
 
   const handleBadgeClick = (entryId, field, currentValue) => {
     // Set the editing field to show the dropdown
@@ -530,7 +597,7 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
       );
     } catch (error) {
       console.error('Error updating classification:', error);
-      alert('Error updating classification.');
+      toast.error('Error updating classification.');
     }
   };
 
@@ -565,7 +632,7 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
       setInfoModalVisible(false);
     } catch (error) {
       console.error('Error saving information:', error);
-      alert('Error saving information.');
+      toast.error('Error saving information.');
     }
   };
 
@@ -632,7 +699,7 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
         parsedData = JSON.parse(content);
       } catch (e) {
         console.error('Error parsing JSON:', e);
-        alert('An error occurred while processing the data.');
+        toast.error('An error occurred while processing the data.');
         return;
       }
 
@@ -665,11 +732,11 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
         }
       } else {
         console.error('Invalid response format:', parsedData);
-        alert('An error occurred while processing the data.');
+        toast.error('An error occurred while processing the data.');
       }
     } catch (error) {
       console.error('Error starting classifications:', error);
-      alert('Error starting classifications.');
+      toast.error('Error starting classifications.');
     }
     finally{
       setClassificationLoading(false); // Stop loading
@@ -697,7 +764,7 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
   // Handler for Bulk Modify
 const handleBulkModify = () => {
   if (selectedEntries.length === 0) {
-    alert('Please select entries to modify.');
+    toast.error('Please select entries to modify.');
     return;
   }
   setBulkActionType('modify');
@@ -707,7 +774,7 @@ const handleBulkModify = () => {
 // Handler for Bulk Reset
 const handleBulkReset = () => {
   if (selectedEntries.length === 0) {
-    alert('Please select entries to reset.');
+    toast.error('Please select entries to reset.');
     return;
   }
   setBulkActionType('reset');
@@ -781,13 +848,12 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
       })
     );
 
-    alert('Bulk action applied successfully!');
+    toast.success('Bulk action applied successfully!');
   } catch (error) {
     console.error('Error applying bulk action:', error);
     alert('Error applying bulk action.');
   }
 };
-
 
   const renderAdditionalInfoBlocks = (entry) => {
     const compulsoryItems = getCompulsoryInfoItems(entry);
@@ -851,6 +917,9 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
     );
   };
 
+
+
+
   // Collect all handlers to pass to EntriesTable and Sidebar
   const handlers = {
     handleBadgeClick,
@@ -906,9 +975,17 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
             applyBulkAction={applyBulkAction}
           />
           
-          <button className={styles.startButton} onClick={handleStartClassifications}>
-            Start Classifications
-          </button>
+          <div className={styles.actionButtons}>
+            <button className={styles.startButton} onClick={handleStartClassifications}>
+              Start Classifications
+            </button>
+            <button
+              className={styles.configureButton}
+              onClick={() => setIsConfigModalOpen(true)}
+            >
+              Configure Project
+            </button>
+          </div>
           <EntriesTable
             entries={entries}
             handlers={handlers}
@@ -935,6 +1012,14 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
         onClose={() => setIsModalOpen(false)}
         content={modalContent}
       />
+      {/* Configure Project Modal */}
+      <ConfigureProjectModal
+        isVisible={isConfigModalOpen}
+        onClose={() => setIsConfigModalOpen(false)}
+        initialData={project} // Pass the current project data as initialData
+        onSave={handleSaveProjectInfo}
+      />
+
       {/* Sidebar */}
       {isSidebarOpen && (
         <Sidebar

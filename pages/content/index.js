@@ -53,7 +53,6 @@ export default function ContentHome() {
     setIsLoading(true);
     router.push(`/content/projects/${projectId}`);
   };
-  
 
   if (status === 'loading') {
     return <p>Loading...</p>;
@@ -70,9 +69,17 @@ export default function ContentHome() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.topContainer}><h1 className={styles.title}>Content Projects</h1>
+      <div className={styles.topContainer}>
+        <h1 className={styles.title}>Content Projects</h1>
         <p className={styles.welcomeText}>Welcome, {session?.user?.email}</p>
         <button className={styles.button} onClick={() => signOut()}>Sign Out</button>
+        {session?.user?.permissions_level === 'admin' && (
+          <Link legacyBehavior href="/content/settings">
+            <a className={styles.settingsIcon}>
+              <i className="fas fa-cog"></i>
+            </a>
+          </Link>
+        )}
       </div>
       <div className={styles.bodyContainer}>
         <button className={styles.button} onClick={() => setShowModal(true)}>Add New Project</button>
@@ -129,7 +136,6 @@ export default function ContentHome() {
             </div>
           </div>
         )}
-
       </div>
     </div>
   );

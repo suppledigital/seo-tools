@@ -69,4 +69,16 @@
       font-size: 1rem;
     }
   }
-  
+  /* Add these styles at the end of index.module.css */
+
+.settingsIcon {
+  margin-left: 20px;
+  font-size: 1.5rem;
+  color: #4a5568;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.settingsIcon:hover {
+  color: #2d3748;
+}
