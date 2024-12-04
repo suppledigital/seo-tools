@@ -1,0 +1,61 @@
+		2021-11-18	2021-12-16	2022-01-20	2022-02-17	2022-03-18	2022-04-22	2022-05-18	2022-06-14	2022-06-16	2022-07-15	2022-08-17	2022-09-16	2022-10-13	2022-11-17	2022-12-15	2023-01-19	2023-02-16	2023-03-16	2023-04-14	2023-05-17	2023-06-15	2023-07-20	2023-08-17	2023-09-15	2023-10-20	2023-11-17	2023-12-14	2024-01-19	2024-02-15	2024-03-15	2024-04-19	2024-05-16	2024-06-13	2024-07-18	2024-08-16	2024-09-20	2024-10-18	2024-11-14
+auto mechanic baulkham hills		9	8	9	10	10	11	10	12	9	12	12	15	15	14	10	9	10	11	11	9	9	9	8	8	11	8	7	7	7	8	6	6	7	7	10	7	8	7
+auto mechanic bella vista		2	3	2	5	5	5	5	5	5	6	6	4	4	4	5	4	5	6	5	3	3	4	4	1	2	2	2	2	1	1	1	1	1	3	3	2	2	2
+auto mechanic castle hill		22	27	23	20	21	15	10	12	12	13	8	27	27	35	28	21	20	23	20	20	18	13	15	16	14	16	15	18	20	16	14	19	17	12	14	8	8	10
+auto mechanic kellyville		12	13	11	12	12	12	11	11	9	10	11	10	10	10	9	12	10	10	11	9	8	8	10	10	9	10	11	11	12	9	11	7	16	12	14	14	15	15
+auto repair castle hill		12	11	11	15	13	9	8	9	10	11	10	25	23	23	22	30	27	21	21	20	11	15	16	20	20	17	16	22	23	16	17	19	17	15	14	15	11	12
+car log book baulkham hills		3	3	7	8	8	9	11	8	14	10	16	18	10	7	10	10	9	10	10	5	6	6	2	2	3	3	4	2	5	5	5	6	5	5	5	6	5	6
+car log book kellyville		4	2	2	3	3	2	2	3	4	4	5	6	6	5	4	8	10	9	9	6	6	4	4	8	5	5	8	5	3	2	2	3	5	4	4	5	4	7
+car maintenance baulkham hills		5	5	5	6	6	8	6	8	8	8	9	7	7	6	8	9	7	10	11	8	8	7	10	9	11	7	7	7	7	9	6	8	9	8	12	5	7	7
+car maintenance castle hill		22	23	37	33	15	11	10	8	8	9	8	22	21	24	22	19	32	26	29	25	20	16	21	32	27	17	16	17	19	18	16	18	15	17	28	32	30	18
+4wd repairs kellyville		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+4wd service baulkham hills		1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+4wd service glenhaven		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+4wd service kellyville		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+brake repairs baulkham hills		1	1	2	4	3	3	4	3	4	2	4	3	2	2	2	2	2	2	2	2	2	44	2	2	2	2	2	2	3	3	4	3	4	4	5	5	5	4
+brake repairs castle hill		10	11	19	12	14	9	15	14	11	9	10	13	14	14	18	14	13	19	14	12	20	15	15	12	15	15	14	14	14	13	16	11	15	11	16	11	11	12
+car repairs castle hill		31	19	22	18	19	19	18	18	19	19	18	27	25	31	28	29	24	22	31	32	-	20	21	23	22	21	27	33	31	23	21	26	42	19	24	22	19	21
+car service bella vista		2	3	3	3	3	3	3	3	3	3	3	4	3	3	2	1	1	1	2	1	1	1	1	1	1	1	1	1	2	2	1	1	1	1	1	2	2	1
+european car service bella vista		1	1	1	1	1	1	1	2	3	3	3	2	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+european car service castle hill		15	17	15	17	19	16	17	16	18	18	25	15	16	13	18	18	14	16	17	15	15	17	13	19	13	11	14	13	13	9	10	10	10	9	10	9	10	9
+european car service kellyville		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+logbook service bella vista		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+logbook service castle hill		3	3	4	4	4	6	5	3	3	4	3	3	3	2	3	3	2	3	2	3	2	1	5	5	7	6	5	5	9	6	5	4	4	5	4	2	3	5
+logbook service pennant hills		3	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	2	2
+mechanic castle hill		42	43	53	60	36	31	31	30	29	22	13	35	33	35	50	25	29	34	28	26	29	28	20	26	24	17	22	30	32	20	18	20	22	27	25	25	16	17
+audi service kellyville		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	1	1	4	3	2	1	1	2
+audi service castle hill		8	8	7	13	13	10	9	10	11	11	15	11	9	12	10	4	8	8	9	7	7	5	8	7	5	6	5	5	5	6	5	10	8	12	8	5	11	7
+audi service bella vista		1	1	1	1	1	1	2	3	2	2	3	4	4	3	2	1	1	1	1	1	1	-	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bmw service kellyville		5	3	5	6	6	4	3	4	4	3	3	3	2	2	1	3	2	1	2	2	2	3	3	2	2	2	2	2	2	2	2	2	3	3	2	2	2	3
+bmw service castle hill		9	7	7	7	9	10	9	11	11	12	12	10	7	8	8	7	7	14	11	12	13	31	13	11	11	12	12	12	11	11	10	13	15	18	21	20	31	31
+bmw service bella vista		1	1	1	1	1	1	1	3	3	1	1	3	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	2	1	2	1
+volkswagen service kellyville		3	3	3	2	1	1	1	1	1	1	1	1	1	1	1	1	1	3	3	3	2	2	3	2	2	3	3	2	3	3	4	4	4	3	3	3	3	5
+volkswagen service castle hill		12	15	17	18	15	16	13	8	8	9	9	11	10	12	6	12	11	15	11	12	12	-	22	17	8	14	13	15	14	14	13	16	22	23	24	17	22	18
+volkswagen service bella vista		1	1	1	1	-	1	2	1	3	4	2	3	2	2	1	1	1	2	-	-	-	-	-	-	2	-	29	2	1	2	4	2	2	2	1	1	2	2
+jeep service kellyville		1	1	2	2	2	2	2	3	3	2	2	2	2	2	2	2	2	1	2	2	1	1	1	1	3	1	1	1	1	1	1	1	1	1	1	1	1	3
+jeep service castle hill		7	6	6	7	7	5	8	8	6	5	7	8	5	7	6	8	9	5	6	6	5	31	7	6	5	4	4	4	5	4	3	5	4	5	3	5	6	5
+jeep service bella vista		1	1	1	1	1	1	1	1	2	2	6	2	3	3	2	1	1	1	1	2	2	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	2	1
+peugeot service kellyville		1	2	1	5	2	2	2	2	2	2	2	1	1	2	1	2	2	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	2	3	1	3	2	3
+peugeot service castle hill		4	3	6	6	6	6	4	5	5	4	5	4	5	6	-	5	6	7	-	8	10	17	-	32	3	-	-	2	2	2	3	3	3	4	3	5	6	2
+peugeot service bella vista		1	1	1	1	1	1	1	4	4	1	5	2	1	1	1	1	1	1	-	4	-	-	6	-	1	1	30	1	1	1	1	1	1	1	1	1	2	1
+skoda service kellyville		1	3	2	2	2	2	2	2	2	1	2	2	1	1	1	2	1	1	2	2	2	2	1	3	1	1	1	1	1	1	1	1	1	1	1	2	1	2
+skoda service castle hill		9	9	8	6	5	5	5	6	6	5	6	5	5	5	4	3	4	5	6	5	5	3	7	7	4	7	3	3	3	3	2	6	6	7	7	4	4	4
+skoda service bella vista		1	2	1	1	1	1	1	1	1	1	1	2	2	1	1	1	1	1	-	-	1	1	-	-	-	-	1	1	1	1	1	1	1	2	1	1	1	1
+audi logbook service kellyville		1	1	1	3	3	2	2	2	1	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	3	1	2	1	1	2	2	4	4	4	3	3	3
+bmw logbook service kellyville		1	1	2	3	2	2	2	2	2	2	2	3	2	2	1	2	2	1	1	2	1	1	1	1	1	2	1	1	1	1	1	1	3	3	5	3	1	3
+brake and clutch repairs castle hill		18	15	10	15	9	6	6	7	8	13	10	10	9	8	10	11	11	8	9	9	9	7	7	8	7	7	6	6	5	10	5	6	8	8	5	5	5	4
+radiator repairs castle hill		16	14	13	16	13	15	14	8	8	9	9	10	10	9	13	10	9	10	11	10	9	10	12	8	9	9	10	8	6	7	9	3	4	4	5	4	3	3
+steering & suspension repairs castle hill		7	7	5	9	8	5	5	3	3	3	3	3	3	3	3	3	4	4	3	3	3	4	3	2	1	1	2	2	2	1	1	1	2	2	2	2	2	1
+rego inspections castle hill		17	18	14	15	18	18	18	17	20	24	24	18	16	19	18	19	19	19	18	19	19	16	18	16	17	14	10	9	9	8	8	9	10	10	9	8	8	8
+batteries for all models castle hill		15	13	9	9	10	8	7	8	9	13	16	20	18	19	13	17	16	11	10	9	9	-	8	17	21	11	-	10	15	12	8	7	-	-	12	17	15	16
+power steering repairs castle hill		10	7	4	6	7	3	5	4	5	4	5	5	5	4	4	3	3	2	2	3	3	5	3	5	4	2	2	2	2	3	3	3	2	2	3	2	2	1
+4wd & light truck repairs castle hill		7	6	6	7	7	4	3	6	4	4	3	4	3	5	6	5	4	4	5	3	5	3	4	4	3	3	3	3	3	3	3	1	1	1	3	2	1	1
+car service Cherrybrook		-	-	-	-	-	-	-	-	-	36	57	49	51	47	31	4	4	4	3	4	4	3	5	3	4	3	4	3	3	2	2	2	2	2	4	4	3	2
+car service Rouse Hill		-	-	-	-	-	-	-	-	-	65	10	-	8	9	9	8	9	10	9	10	9	10	12	12	9	10	10	9	10	9	9	9	8	8	10	9	9	9
+auto mechanic Cherrybrook		-	-	-	-	-	-	-	-	57	35	7	4	3	32	30	5	5	6	4	3	4	4	4	4	2	3	2	2	3	3	2	1	1	3	5	4	3	3
+auto mechanic Rouse Hill		-	-	-	-	-	-	-	-	18	22	7	7	7	9	9	7	8	8	8	8	9	9	10	10	10	11	11	12	10	11	10	9	7	9	8	8	7	6
+european car service Cherrybrook		-	-	-	-	-	-	-	-	-	9	1	6	6	5	7	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+european car service Rouse Hill		-	-	-	-	-	-	-	-	17	15	14	9	3	3	3	3	2	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	2	3	3	3	3	3
+4wd service Cherrybrook		-	-	-	-	-	-	-	-	-	2	2	2	1	4	4	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+4wd service Rouse Hill		-	-	-	-	-	-	-	-	8	7	8	5	6	7	6	6	5	5	6	5	6	5	6	6	2	3	4	3	3	3	3	4	4	6	5	4	4	4
+logbook service Rouse Hill		-	-	-	-	-	-	-	-	15	19	10	11	9	11	6	9	6	12	8	8	8	8	6	12	7	5	6	8	8	8	8	8	8	7	6	3	4	4

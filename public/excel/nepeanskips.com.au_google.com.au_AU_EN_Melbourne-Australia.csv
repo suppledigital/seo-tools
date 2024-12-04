@@ -1,0 +1,101 @@
+		2021-11-18	2021-12-16	2022-01-20	2022-02-17	2022-03-18	2022-04-22	2022-05-18	2022-06-15	2022-07-15	2022-08-17	2022-09-16	2022-10-13	2022-11-17	2022-12-15	2023-01-19	2023-02-16	2023-03-16	2023-04-14	2023-05-17	2023-06-15	2023-06-19	2023-07-20	2023-08-17	2023-09-15	2023-10-20	2023-11-17	2023-12-14	2024-01-19	2024-02-15	2024-03-15	2024-04-19	2024-05-16	2024-06-13	2024-07-18	2024-08-16	2024-09-20	2024-10-18	2024-11-14
+bin hire arthurs seat		-	-	-	1	1	5	3	1	2	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	1	2	2	2	1	2
+bin hire flinders		2	3	1	1	1	1	2	2	2	2	2	14	9	2	2	2	2	2	2	2	2	2	3	-	4	3	4	5	4	2	2	2	2	2	2	2	2	2
+bin hire mt martha		2	2	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	2	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+bin hire portsea		2	2	2	2	2	2	2	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	5	3	3	4	4	2	2	2	2	2	3
+bin hire safety beach		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	2	2	-	2	2	2	1	8	1	1	1	1	1	1	1	1	1	2
+cheap bin hire dromana		3	3	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	1	1	1	2	2	2	2	2	2	2	2	2
+cheap bin hire frankston		2	2	2	3	2	4	3	3	3	4	5	5	4	4	4	3	3	3	3	3	3	3	3	3	3	3	3	3	2	2	3	3	4	4	4	4	6	5
+cheap bin hire mornington		4	3	1	2	2	3	3	4	4	4	4	4	4	4	4	3	5	3	3	3	3	3	3	4	3	3	3	4	4	4	4	4	4	4	4	4	3	3
+cheap bin hire mt martha		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2
+cheap bin hire rosebud		3	1	1	1	1	1	2	2	2	2	2	2	1	2	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	3	3	2	2	1	1	1
+cheap bin hire safety beach		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+cheap bin hire tyabb		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	4	1	1	1	1	1
+rubbish skips frankston		3	3	2	65	2	3	4	4	3	3	3	4	5	6	5	4	4	4	4	5	4	3	4	3	3	3	2	1	2	3	3	3	3	3	3	3	4	6
+rubbish skips hire dromana		2	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	3	2	2	2	2	4	3	3	3	3	3	3	3	3	3	3	3	2	2	2	2
+rubbish skips hire moorooduc		2	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	4	2	2	3	5	3	-	3	4	4	1	1	1	1	1	2	1	1	1	1	1	2
+rubbish skips hire mt eliza		1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	2	2	3	3	2	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1
+rubbish skips hire mt martha		1	1	1	1	1	1	2	1	2	1	1	1	3	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	1	2	2	2
+rubbish skips hire rosebud		2	3	2	2	2	2	1	1	1	1	1	1	2	2	3	3	2	2	3	3	3	2	2	3	2	2	3	2	2	2	2	2	2	2	1	1	2	2
+rubbish skips hire somerville		2	2	2	2	1	1	1	2	2	2	2	2	2	2	2	2	2	2	2	3	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+rubbish skips hire tyabb		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	2	2	2	2	2	2	2	2	2	2
+skip bin hire frankston		4	5	5	4	4	4	4	4	4	5	5	4	7	6	6	6	5	5	4	5	4	4	4	4	4	5	6	4	4	3	3	4	4	4	5	4	5	4
+skip bin hire merricks		1	2	2	1	1	2	2	1	1	2	2	2	8	9	2	2	2	2	2	5	4	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	4
+skip bin hire moorooduc		2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	2	2	1	1	1	2	2	2	2	1	1	1	1	1	1
+skip bin hire mt martha		1	1	1	1	1	2	2	1	2	2	2	2	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bin hire rye		1	2	1	2	1	1	2	2	1	2	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	3	2	3	2	2	2	2
+skip bin hire shoreham		2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bin hire sorrento		2	2	2	2	2	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	2	2	2	2	2	2	2	2	3	2	2	2	2
+skip bin hire tyabb		2	2	2	2	2	2	1	1	2	2	2	2	2	2	2	2	2	1	1	1	1	1	1	1	2	2	2	2	2	1	1	2	2	2	2	2	2	2
+skip bins frankston		3	6	3	4	4	6	4	6	5	6	5	6	6	6	5	5	5	5	5	5	5	4	5	5	5	5	6	5	5	3	5	4	4	3	5	5	6	5
+skip hire mornington		3	3	2	3	2	5	3	3	4	3	2	1	4	5	2	2	5	3	2	2	3	3	2	1	1	2	2	3	2	3	2	2	3	4	3	4	4	4
+bin hire balnarring		2	2	1	1	2	2	2	2	2	2	2	1	2	1	2	2	2	2	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	3
+bin hire blairgowrie		1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	2	1	1	1	1	1	1	2	2	2	2	2	2	2	2	2	1	1	1	2	2
+bin hire dromana		4	3	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	3	2	2	2	2	2	1	1	1	1	1	1	2	2
+bin hire frankston		3	5	5	3	4	4	4	5	4	6	7	7	6	7	6	6	4	5	4	4	4	4	4	4	4	4	5	4	4	4	4	4	4	4	5	4	6	5
+bin hire hastings		2	2	1	1	1	1	2	2	2	2	2	2	2	2	2	2	1	1	2	1	1	1	1	2	2	2	2	2	2	2	2	2	2	3	3	3	3	3
+bin hire merricks		2	2	2	2	1	1	1	1	2	2	11	2	7	2	2	2	2	2	2	6	6	2	2	2	3	2	2	2	2	2	2	2	2	2	1	2	2	4
+bin hire moorooduc		2	1	1	1	1	1	1	1	2	1	2	1	1	1	2	2	1	2	2	3	4	3	2	2	3	2	2	1	2	2	2	2	2	2	2	3	2	2
+bin hire mornington		2	2	2	2	2	3	2	3	3	2	2	2	2	2	3	3	5	3	3	3	3	3	1	3	2	2	2	2	2	3	3	3	3	3	3	3	3	3
+bin hire mt eliza		1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	2	3	1	1	1	2	2	1	1	1	1	1	1	2	2	2	1	2	1	1	2	2
+bin hire rosebud		2	3	2	1	1	2	2	3	2	2	2	2	4	3	4	4	3	4	2	2	2	1	2	3	4	2	3	3	3	2	2	3	2	2	3	1	2	3
+bin hire rye		1	1	1	1	1	1	1	1	1	1	2	1	2	1	2	2	2	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	1	2	2	2	2	4
+bin hire shoreham		1	1	1	1	1	1	1	1	1	1	1	1	1	19	1	1	1	1	1	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	1	2	2	2
+bin hire somerville		2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3
+bin hire sorrento		2	2	2	2	2	1	1	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	2	2	2	2	2	2	2	2	2	3	2
+bin hire tootgarook		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+bin hire tyabb		2	2	1	1	1	1	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+mini skip hire hastings		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	20	1
+skip bin hire arthurs seat		7	-	-	1	1	3	2	2	1	1	2	2	2	2	1	1	1	1	1	2	2	2	2	3	3	3	2	2	2	2	2	2	2	3	2	2	1	1
+skip bin hire capel sound		1	-	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+skip bin hire dromana		3	3	3	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	1	1	2	1	2	4	3	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bin hire flinders		3	2	2	2	2	2	2	3	2	2	17	16	3	3	3	3	3	3	4	4	4	4	4	-	5	5	5	6	5	2	2	2	2	2	2	2	2	2
+skip bin hire hastings		2	2	1	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	1	2	2	2	2
+skip bin hire mornington		2	2	2	2	1	3	1	3	4	3	1	1	2	3	1	1	3	2	1	1	1	1	1	1	1	1	1	3	1	2	1	2	3	2	3	4	4	3
+skip bin hire mt eliza		1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	1	2	2	2	2	2	1	1	1	2	2	2	2	2	2	2	2	2	2	2
+skip bin hire prices mornington		2	5	3	4	5	8	6	6	4	4	4	4	6	6	4	4	4	4	4	4	4	4	4	4	4	4	4	5	4	4	4	5	4	4	7	4	4	4
+skip bin hire rosebud		2	2	2	2	1	1	1	1	1	1	1	1	2	3	3	3	3	2	2	1	1	2	1	1	1	2	2	2	2	1	1	2	2	2	2	2	1	2
+skip bin hire safety beach		1	1	1	1	1	1	1	2	2	2	1	1	2	2	2	2	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	2
+skip bin hire somerville		2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bin hire tootgarook		1	1	1	1	1	2	1	1	1	2	1	2	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	1	1	1	1	1	1
+skip bins mornington		7	7	2	16	4	5	5	5	4	4	3	1	4	4	2	2	4	3	2	2	3	2	2	2	2	1	2	2	3	3	3	2	4	3	3	4	2	3
+bin hire langwarrin		2	2	2	2	1	1	1	2	2	2	2	2	1	2	2	2	2	2	2	2	2	2	2	3	3	2	3	2	3	2	3	3	3	3	3	2	3	4
+skip bin hire balnarring		2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	1	1	2	2	2	2	2	2	4
+skip bin hire baxter		2	2	2	2	2	2	1	1	1	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	2	2	2	2	2	2	2	2	2	2	2	2
+skip bin hire blairgowrie		1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	1	1	1	1	1
+skip bin hire mount eliza		2	2	2	2	2	1	1	1	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bin hire pearcedale		3	3	2	2	5	7	1	2	2	2	2	4	5	4	3	2	1	2	2	2	2	3	3	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bin hire skye		1	1	1	1	1	1	1	1	1	1	2	2	2	2	1	1	1	1	1	1	1	1	1	2	2	1	1	1	2	2	1	1	1	1	2	2	2	3
+skip bins baxter		2	2	2	2	2	2	3	3	2	2	2	2	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bins blairgowrie		1	2	2	2	1	2	2	2	2	2	1	1	2	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1
+skip bins crib point		2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	2	2	2	2	2	2	2	2	2	2	2	2	2	3
+skip bins dromana		3	2	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	1	1	1	2	3	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bins flinders		4	2	3	2	2	2	2	2	2	2	40	43	9	3	3	3	3	2	3	19	4	22	4	-	5	5	5	5	7	5	2	2	2	2	2	2	2	2
+skip bins hastings		2	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bins langwarrin		2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	3	3	3	3	3	4	3	3	3	3	3	2	2	3
+skip bins mount eliza		2	2	2	2	2	2	2	2	2	2	2	1	3	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	1	1	1	2	1	1	1	1
+skip bins mount martha		2	2	2	2	2	2	2	2	2	2	2	2	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bins pearcedale		5	7	5	3	7	8	7	6	4	4	5	5	6	6	3	3	2	3	3	3	2	2	2	3	2	2	2	3	3	2	3	3	2	2	2	2	2	2
+skip bins portsea		1	1	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	1	1	1	3	3	3	3	3	3	3	2	2	2	2
+skip bins rosebud		2	2	2	2	2	2	2	1	1	1	2	2	3	3	3	3	2	2	3	2	2	2	1	2	1	2	2	2	2	1	2	2	2	2	2	1	1	2
+skip bins rye		2	2	1	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bins safety beach		1	1	2	1	1	1	1	1	2	2	1	1	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2
+skip bins skye		1	1	1	1	1	1	1	1	1	1	2	3	2	3	1	1	1	3	2	1	1	1	1	4	3	3	2	2	2	2	2	2	2	3	3	3	3	2
+skip bins somerville		2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip bins sorrento		1	2	3	1	2	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	2	2	2	2	2	2	2	2	2	2	2
+skip hire blairgowrie		2	2	2	2	2	2	2	2	2	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	1	2	2	2
+skip hire dromana		3	3	3	1	1	1	1	1	1	1	1	1	2	4	2	3	3	3	3	2	2	2	3	4	3	2	2	2	2	2	2	2	2	2	2	2	2	2
+skip hire hastings		2	2	1	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	22	2	3
+skip hire rosebud		2	2	2	2	2	2	2	2	2	2	2	2	3	3	3	3	3	3	3	3	3	3	2	1	1	2	1	2	2	2	2	2	2	2	2	2	2	2
+skip hire shoreham		2	2	2	1	1	1	2	2	2	1	1	1	2	2	1	2	2	2	1	2	1	2	2	2	2	2	2	2	2	2	2	2	7	2	2	2	2	2
+skip hire rye		2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	6	3	3	4	2	2	2	2	3
+concrete recycling mornington		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	3	1	1	1	1	1	1	1	1	1	1
+concrete recycling hastings		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	1	1	1	1	1	1	1	1	1	1
+concrete recycling mt martha		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	1	1	1	1	1	1	1	1	1	1
+concrete recycling mt eliza		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	1	1	1	1	1	1	1	1	1	1
+concrete recycling somerville		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	2	2	2	2	1	3	3	3	1	1	1
+concrete recycling safety beach		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	1	1	1	1	1	2	1	1	1	1
+concrete recycling baxter		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	1	1	1	1	1	1	1	1	1	1
+concrete recycling rosebud		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	7	4	1	1	1	1	1	1	2	1	1
+concrete recycling frankston		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	3	3	2	1	1	1	1	1	1	1	1
+concrete recycling langwarrin		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	1	1	1	1	1	1	1	1	1	1

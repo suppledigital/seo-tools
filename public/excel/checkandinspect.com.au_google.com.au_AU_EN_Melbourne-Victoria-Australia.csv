@@ -1,0 +1,124 @@
+		2021-11-25	2021-12-17	2022-01-20	2022-02-17	2022-03-18	2022-04-22	2022-05-18	2022-06-15	2022-07-15	2022-08-17	2022-09-16	2022-10-13	2022-11-17	2022-12-15	2022-12-24	2023-01-20	2023-02-17	2023-03-16	2023-04-14	2023-05-17	2023-06-15	2023-07-20	2023-08-17	2023-09-15	2023-10-20	2023-11-17	2023-12-14	2024-01-19	2024-02-15	2024-03-15	2024-04-19	2024-05-16	2024-06-13	2024-07-18	2024-08-16	2024-08-27	2024-09-20	2024-10-18	2024-11-14
+Smoke Alarm Check Reservoir		-	2	2	1	1	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+Smoke Alarm Check Craigieburn		-	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+Smoke Alarm Check Glen Waverley		-	1	2	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+Smoke Alarm Check Preston		-	3	2	1	2	2	2	1	1	1	1	1	1	1	1	1	2	2	2	2	5	4	-	3	4	1	1	1	1	1	1	1	1	1	1	1	1	4	1
+Smoke Alarm Check Epping		-	3	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+Smoke Alarm Check Coburg		-	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+Gas Safety Check Reservoir		-	5	3	3	2	4	3	2	2	3	2	2	3	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1
+Gas Safety Check Craigieburn		-	7	5	5	3	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1
+Gas Safety Check Glen Waverley		-	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+Gas Safety Check Preston		-	6	3	3	3	3	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2
+Gas Safety Check Epping		-	2	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+Gas Safety Check Coburg		-	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	4	1	1	1
+Electrical Safety Check Reservoir		-	5	4	1	23	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+Electrical Safety Check Craigieburn		-	8	3	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+Electrical Safety Check Glen Waverley		-	11	7	3	3	3	4	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1
+Electrical Safety Check Preston		-	4	4	2	1	6	3	2	1	1	1	1	1	1	1	1	7	8	46	9	11	8	3	8	7	1	1	1	1	1	1	1	1	1	1	1	1	16	1
+Electrical Safety Check Epping		-	3	1	1	2	2	1	1	1	9	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	2	1	1
+Electrical Safety Check Coburg		-	3	1	1	1	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+electrical safety check		-	-	-	-	-	95	84	15	9	9	6	6	7	6	5	3	5	5	6	8	9	9	9	6	8	8	8	6	5	6	7	9	6	7	7	7	5	36	6
+electrical safety check victoria		-	-	94	58	39	33	26	20	8	9	11	10	7	8	7	8	9	8	8	6	7	5	5	5	7	7	7	7	5	5	7	8	5	5	5	5	5	5	5
+electrical inspection melbourne		-	50	44	43	-	-	19	96	48	15	12	11	14	11	11	12	13	10	13	9	12	-	9	8	10	8	8	8	8	5	6	9	5	4	5	6	7	4	5
+electrical safety inspection		-	-	-	-	-	-	-	47	23	24	35	46	27	11	8	11	12	8	8	8	9	8	6	7	7	5	5	5	5	5	5	4	4	4	3	4	4	7	4
+electrical safety service		-	-	-	-	-	58	57	19	13	13	14	13	6	6	4	5	-	3	4	5	6	6	5	5	5	4	5	3	5	3	6	5	4	3	3	10	8	4	3
+gas safety check		-	-	62	29	37	14	12	11	6	-	5	5	4	4	3	4	3	8	8	5	5	9	7	7	6	5	5	5	4	4	4	7	4	2	2	4	5	5	4
+gas safety check victoria		-	-	65	45	24	16	10	7	5	5	5	5	5	4	4	6	4	3	4	4	5	4	4	4	5	5	5	5	4	4	5	5	5	4	4	5	5	5	4
+gas safety check melbourne		-	-	42	25	28	18	16	7	4	4	4	4	4	5	4	2	3	3	4	5	5	4	4	1	1	2	2	1	1	1	2	1	1	1	1	1	1	1	2
+gas safety inspection		-	84	-	27	36	28	22	10	8	10	7	6	6	6	5	4	4	4	7	4	4	6	6	5	4	4	4	4	3	3	3	3	4	3	2	3	3	38	2
+smoke alarm safety service		-	-	-	70	33	27	26	11	11	12	15	6	4	6	6	10	6	11	13	13	20	13	11	10	11	6	7	4	3	3	3	4	4	4	4	5	3	3	2
+smoke alarm testing service		-	-	-	-	-	-	-	66	71	45	44	17	13	11	5	8	11	18	44	58	70	20	31	23	29	-	24	8	20	6	5	7	13	12	13	12	10	7	4
+smoke alarm testing victoria		-	61	48	44	55	41	31	11	11	14	12	13	13	11	7	12	11	13	16	19	21	13	13	13	13	12	12	11	11	8	8	8	12	10	10	10	10	10	7
+smoke alarm safety service melbourne		-	-	-	35	44	18	13	7	7	6	6	6	5	6	6	4	3	4	6	7	7	4	5	4	2	2	2	3	2	1	1	1	1	1	1	1	1	2	3
+smoke alarm safety check		-	-	-	81	53	38	28	8	8	6	5	5	2	4	4	9	8	7	9	11	12	11	11	9	11	4	4	3	3	3	4	4	3	4	3	3	4	2	3
+gas and electricity safety check		-	-	-	-	30	18	13	10	7	54	3	6	8	6	5	7	8	7	11	15	16	9	9	11	12	10	13	12	12	6	5	6	3	5	4	5	3	3	3
+gas and electrical safety checks victoria		-	-	72	49	32	14	12	5	4	4	3	4	6	3	4	5	6	6	8	8	11	10	7	6	8	6	7	7	5	7	6	8	3	6	6	10	7	9	6
+gas and electric safety checks for landlords victoria		-	-	-	39	44	26	14	11	10	12	7	9	7	11	7	7	6	6	9	8	7	5	5	6	7	6	6	6	4	5	5	4	7	5	6	7	6	4	3
+electrical safety check for landlords		-	-	-	-	-	-	-	-	-	-	9	9	5	13	6	5	4	5	7	8	6	5	4	6	8	7	6	10	16	17	16	16	14	16	16	28	25	30	10
+gas safety check for landlords		-	-	-	-	-	-	87	20	27	20	17	12	12	12	11	7	5	13	8	6	24	6	6	5	5	6	6	7	13	12	12	13	45	7	12	11	-	15	6
+smoke alarm check for landlords		-	-	-	-	-	-	-	-	-	-	-	72	70	74	78	87	93	92	-	88	-	54	52	39	41	34	38	39	31	32	30	31	30	27	27	22	21	28	29
+rental safety check melbourne		-	-	-	-	-	-	-	-	-	-	-	-	-	-	12	14	5	4	6	6	6	6	7	4	4	4	4	4	3	3	2	5	6	4	8	8	12	3	2
+rental safety check		-	-	-	-	-	-	-	-	-	-	-	-	-	-	23	23	5	3	6	7	5	4	4	5	4	7	7	7	4	5	5	6	6	4	6	5	6	7	3
+landlord safety check melbourne		-	-	-	-	-	-	-	-	-	-	-	-	-	-	5	4	3	1	3	3	3	2	2	2	2	3	2	2	1	2	1	2	2	2	4	4	3	2	2
+smoke alarm check tarneit		-	-	-	-	-	-	-	-	-	-	-	-	-	-	8	9	1	2	4	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+smoke alarm check box hill		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	7	5	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+smoke alarm check hampton park		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+gas safety check tarneit		-	-	-	-	-	-	-	-	-	-	-	-	-	-	4	3	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+gas safety check box hill		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	5	6	1	3	5	2	3	1	1	1	2	2	2	2	2	1	1	1	1	1	1	1	1
+gas safety check hampton park		-	-	-	-	-	-	-	-	-	-	-	-	-	-	24	7	3	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+electrical safety check tarneit		-	-	-	-	-	-	-	-	-	-	-	-	-	-	4	3	4	2	1	1	1	1	-	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+electrical safety check box hill		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	8	8	2	5	8	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1
+electrical safety check hampton park		-	-	-	-	-	-	-	-	-	-	-	-	-	-	7	8	3	2	2	6	8	1	1	1	1	1	2	2	2	1	5	6	6	8	1	1	1	1	1
+smoke alarm check melton		-	-	-	-	-	-	-	-	-	-	-	-	-	-	10	-	1	6	1	11	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+gas safety check melton		-	-	-	-	-	-	-	-	-	-	-	-	-	-	6	7	6	8	10	9	1	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+electrical safety check melton		-	-	-	-	-	-	-	-	-	-	-	-	-	-	6	9	8	8	12	10	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1
+Electrical Safety Check Melbourne		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	2	1	3	3
+Smoke Alarm Check Dandenong		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	5	5	2	1
+Smoke Alarm Check Pakenham		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	3	4	2	2
+Smoke Alarm Check South Yarra		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	9	8	1
+Smoke Alarm Check Bundoora		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	9	3	2	2
+Smoke Alarm Check St Kilda		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	18	14	1	17
+Smoke Alarm Check Mount Waverley		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	4	3	1	2
+Smoke Alarm Check Hawthorn		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	42	9	1	1
+Smoke Alarm Check Clayton		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	39	4	1	1
+Smoke Alarm Check Cheltenham		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	9	1	-
+Smoke Alarm Check Glen Iris		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	8	3	7	8
+Smoke Alarm Check Rowville		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	16	1	1	1
+Smoke Alarm Check Port Melbourne		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	8	11	1	2
+Smoke Alarm Check Brighton		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	18	1	1
+Smoke Alarm Check Elwood		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	6	1	1	4
+Smoke Alarm Check Carnegie		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	13	5	5	2
+Smoke Alarm Check Doncaster		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	20	5	4	2
+Smoke Alarm Check Kew		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	27	3	1	2
+Smoke Alarm Check Burwood		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	19	1	23	1
+Smoke Alarm Check Endeavour Hills		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	2	2	1
+Smoke Alarm Check Bentleigh		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	20	8	1	1
+Smoke Alarm Check Thomastown		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	8	1	1	1
+Smoke Alarm Check Wheelers Hill		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	19	1	1	1
+Smoke Alarm Check Cranbourne		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	5	4	3	5
+Electrical Safety Check Dandenong		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	4	3	1	1
+Electrical Safety Check Pakenham		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	8	8	2	2
+Electrical Safety Check South Yarra		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	21	22	3
+Electrical Safety Check Bundoora		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	9	8	5
+Electrical Safety Check St Kilda		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	25	2	21
+Electrical Safety Check Mount Waverley		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	5	4	1	3
+Electrical Safety Check Hawthorn		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	81	23	2	2
+Electrical Safety Check Clayton		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	17	2	18
+Electrical Safety Check Cheltenham		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	24	12	6
+Electrical Safety Check Glen Iris		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	17	17	2	2
+Electrical Safety Check Rowville		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	26	1	1	2
+Electrical Safety Check Port Melbourne		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	19	18	16	10
+Electrical Safety Check Brighton		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	31	26	13
+Electrical Safety Check Elwood		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	36	21	20	19
+Electrical Safety Check Carnegie		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	40	22	6
+Electrical Safety Check Doncaster		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	33	16	14
+Electrical Safety Check Kew		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	3	4
+Electrical Safety Check Burwood		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	1	8
+Electrical Safety Check Endeavour Hills		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	92	2	1	3
+Electrical Safety Check Bentleigh		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	36	21	3	3
+Electrical Safety Check Thomastown		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	2	2	1
+Electrical Safety Check Wheelers Hill		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	3	2
+Electrical Safety Check Cranbourne		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	4	3	3	5
+Gas Safety Check Dandenong		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	7	5	2	3
+Gas Safety Check Pakenham		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	3	3	2	2
+Gas Safety Check South Yarra		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	22	2	2	2
+Gas Safety Check Bundoora		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	18	5	6	6
+Gas Safety Check St Kilda		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	21	9	1	7
+Gas Safety Check Mount Waverley		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	1	1	1	2
+Gas Safety Check Hawthorn		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	21	6	2	2
+Gas Safety Check Clayton		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	17	8	5	4
+Gas Safety Check Cheltenham		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	5	5	4
+Gas Safety Check Glen Iris		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	3	2	3	3
+Gas Safety Check Rowville		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	6	5	4	2
+Gas Safety Check Port Melbourne		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	11	5	3	3
+Gas Safety Check Brighton		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	22	21	3
+Gas Safety Check Elwood		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	17	5	2	2
+Gas Safety Check Carnegie		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	14	6	5	1
+Gas Safety Check Doncaster		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	42	11	3	-
+Gas Safety Check Kew		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	10	1	2	1
+Gas Safety Check Burwood		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	31	2	-	1
+Gas Safety Check Endeavour Hills		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	15	4	1	1
+Gas Safety Check Bentleigh		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	10	4	1	1
+Gas Safety Check Thomastown		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	2	2	2	2
+Gas Safety Check Wheelers Hill		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	9	3	1	1
+Gas Safety Check Cranbourne		-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	2	2	1	1

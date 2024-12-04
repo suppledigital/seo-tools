@@ -1,0 +1,89 @@
+		2021-11-18	2021-12-16	2022-01-20	2022-02-17	2022-03-18	2022-04-22	2022-05-18	2022-06-15	2022-07-15	2022-08-17	2022-09-16	2022-10-13	2022-11-17	2022-12-15	2023-01-19	2023-02-16	2023-03-16	2023-04-14	2023-05-17	2023-06-15	2023-07-20	2023-08-17	2023-09-15	2023-10-20	2023-11-17	2023-12-14	2024-01-19	2024-02-15	2024-03-15	2024-04-19	2024-05-16	2024-06-13	2024-07-18	2024-08-16	2024-09-20	2024-10-18	2024-11-14
+mechanic alexandria		1	2	2	1	2	2	2	2	2	2	2	1	2	2	2	2	2	2	1	2	2	2	1	1	2	2	1	1	2	2	1	1	2	1	1	1	1
+mechanic redfern		6	8	9	5	7	7	7	11	9	12	12	13	11	10	11	7	9	9	7	7	8	8	9	10	9	8	9	9	9	7	7	6	4	5	4	5	6
+mechanic waterloo		10	8	12	9	10	9	5	6	7	4	3	3	3	4	3	3	4	4	4	4	6	8	4	8	9	6	6	5	4	3	2	3	2	2	4	2	3
+mechanic zetland		9	6	9	6	9	9	8	6	10	8	11	10	13	7	7	4	5	3	3	3	5	7	10	10	8	5	4	4	4	5	4	3	3	3	3	3	4
+auto electrician alexandria		6	6	6	5	6	8	6	3	8	9	4	2	6	6	8	6	8	11	10	10	8	10	7	7	4	5	5	6	5	5	4	4	4	4	2	2	2
+auto electrician redfern		19	18	17	12	18	16	16	14	17	13	17	13	16	12	12	12	13	14	15	15	15	20	19	16	14	10	19	39	20	21	19	18	10	9	6	8	8
+auto electrician waterloo		24	16	26	13	17	10	11	9	11	11	9	11	8	9	10	10	8	9	6	10	14	16	12	14	12	10	10	9	14	13	10	11	8	9	8	6	8
+mechanic erskineville		12	7	11	10	12	10	9	10	14	8	8	11	10	10	8	8	7	7	8	9	6	8	8	8	7	6	5	5	8	6	4	5	6	6	6	4	4
+pink slip alexandria		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+blue slip alexandria		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+blue slip waterloo		1	1	1	1	1	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	2	1	1	1	1	1	1	1	1	1	1
+pink slip waterloo		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+pink slip redfern		1	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	2	2	2	2	3	1	1	1	2	2	1	1	2	1	2
+blue slip redfern		1	2	2	2	2	2	2	2	1	1	2	2	2	3	1	1	1	1	1	1	1	2	2	2	3	3	2	2	2	2	2	2	2	2	1	2	2
+pink slip zetland		1	1	1	1	1	1	1	1	1	1	1	1	1	-	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+blue slip zetland		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+blue slip erskineville		2	2	2	2	3	2	2	2	2	2	2	2	2	3	2	3	3	3	3	3	3	2	2	2	2	2	2	2	1	1	1	1	1	1	1	1	1
+pink slip erskineville		4	4	4	4	4	4	3	4	4	4	4	4	4	4	4	3	4	5	4	4	4	2	5	2	2	2	2	1	1	1	1	1	1	1	1	1	1
+car repair alexandria		2	2	2	2	2	1	2	1	2	2	3	3	4	3	4	4	3	3	3	3	3	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+car repair waterloo		16	10	25	10	8	4	4	4	14	5	5	5	4	4	4	3	3	3	3	3	4	5	4	8	9	6	5	4	5	6	5	4	4	2	8	6	6
+car repair erskineville		9	5	6	6	8	8	8	10	14	6	8	8	9	10	7	7	7	9	7	11	10	8	7	13	5	6	6	6	6	4	7	8	8	6	6	5	6
+car repair redfern		3	5	3	3	3	2	2	2	2	2	2	1	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	3	4	3	4	2	2	2	5
+car repair zetland		4	6	4	4	3	4	6	7	7	6	5	-	8	9	9	9	9	9	9	8	8	10	10	10	8	8	8	8	8	6	7	7	6	5	7	6	7
+car service alexandria		1	1	1	1	1	1	1	1	2	1	2	2	2	2	3	3	1	3	1	2	2	2	2	2	1	1	1	1	1	2	2	1	2	1	2	2	2
+car service erskineville		6	4	4	4	4	6	7	6	10	7	7	8	8	8	5	5	4	7	6	6	5	5	6	4	3	4	4	4	3	3	3	3	3	2	3	3	3
+car service redfern		1	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2
+car service waterloo		5	4	4	4	4	3	3	3	3	2	2	3	4	5	3	1	3	4	4	4	4	4	6	5	5	5	5	5	6	6	6	6	9	6	7	5	6
+car service zetland		2	3	3	2	2	3	4	4	3	3	3	2	3	3	3	3	4	5	5	4	4	3	5	4	4	3	3	3	3	2	4	4	5	5	4	4	5
+log book service redfern		1	1	1	1	1	1	1	1	1	1	2	1	2	2	1	1	1	1	1	2	2	2	1	1	1	1	1	1	1	1	2	1	1	1	2	2	3
+log book service waterloo		1	2	2	1	1	2	1	2	3	2	6	4	5	5	5	3	4	3	8	6	5	6	8	6	5	6	5	5	6	9	6	8	7	11	10	5	10
+log book service zetland		2	2	2	2	2	2	2	3	3	3	3	4	3	4	3	3	3	5	4	4	3	3	7	8	6	6	6	6	1	2	4	4	6	2	1	2	4
+log book service alexandria		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	1	2	3	3	2	2	3	2	1	1	3	1	1	1
+log book service erskineville		1	1	2	1	1	1	2	4	7	4	5	5	7	5	4	4	2	5	5	6	5	2	4	5	4	4	5	3	1	1	1	5	5	1	2	2	1
+car inspection alexandria		1	1	1	1	1	1	1	-	1	1	1	1	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	5
+car inspection redfern		3	3	4	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	2	2	5	2	2	2	3
+car inspection waterloo		4	3	2	2	2	1	1	1	2	1	2	1	2	2	2	2	1	1	2	2	2	2	1	2	1	1	1	1	1	2	2	8	3	3	2	1	3
+car inspection zetland		3	3	4	3	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	2	1	1	1	1	1	1	3	3	2	3	2	1	2
+car inspection erskineville		3	4	2	2	6	3	2	4	6	7	7	8	8	6	2	2	1	3	4	1	1	1	2	2	1	1	2	2	1	2	2	3	5	4	3	3	3
+brake repairs alexandria		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	1	1	1	1	1
+brake repairs erskineville		1	1	1	3	2	1	1	3	6	7	7	6	10	9	3	3	4	3	3	2	1	3	1	1	1	1	1	1	1	1	1	1	1	3	2	1	1
+brake repairs redfern		1	1	2	2	2	1	1	2	1	2	3	3	3	2	2	2	1	1	1	1	1	1	2	1	1	1	1	1	1	2	2	2	2	1	1	2	1
+brake repairs waterloo		1	1	1	2	1	1	1	1	2	1	1	1	1	1	2	2	2	1	2	1	3	2	3	5	4	3	3	3	3	3	3	12	3	3	2	2	2
+brake repairs zetland		2	3	3	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	2	1	1	1	1	1	2	2	2	3	2	3	2	1	1
+car air conditioning alexandria		3	4	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	5	2	4	2	4	4	1	2
+car air conditioning erskineville		1	1	1	1	1	1	2	3	8	3	2	3	3	2	2	2	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+car air conditioning redfern		1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+car air conditioning waterloo		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	1	1	5	2	3	3	3	3	2	1	2	2	3
+car air conditioning zetland		1	1	1	1	1	1	2	2	3	2	2	2	5	1	1	1	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+tyre service alexandria		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	2	2	2	2	3	1	3	1	1	1	1	1	1	1	1	1	3
+tyre service erskineville		2	2	2	2	2	2	1	1	2	1	3	3	5	3	1	1	1	1	1	1	1	1	2	2	1	1	2	2	2	2	2	2	2	2	1	1	1
+tyre service redfern		1	2	1	1	1	1	1	1	1	1	1	2	1	1	3	3	1	2	1	1	1	1	1	1	1	1	1	2	1	2	2	2	2	2	2	2	2
+tyre service waterloo		1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	7	5	12	12	6	2	8	12	2	3
+tyre service zetland		1	1	2	1	2	1	1	1	1	1	1	2	2	3	3	3	3	3	1	1	1	1	1	1	1	1	1	1	2	2	2	3	2	1	1	1	1
+wheel alignment alexandria		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	2	4	2	2	3	2	2	2
+wheel alignment erskineville		1	1	2	2	3	2	3	4	7	3	5	6	2	2	3	3	2	2	3	1	1	1	1	1	1	1	1	2	3	2	2	2	3	4	2	1	2
+wheel alignment redfern		1	1	1	1	1	1	1	1	2	1	1	1	1	1	2	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+wheel alignment waterloo		1	4	2	1	5	1	1	1	1	1	2	1	3	1	1	1	1	1	1	1	1	2	1	3	3	3	3	3	3	3	5	6	3	4	3	3	3
+wheel alignment zetland		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+audi service alexandria		1	1	1	1	1	3	3	3	3	3	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	2	3	1	1	1	2	1	1	1	1	1	1
+audi service centre waterloo		3	3	2	2	2	2	2	4	3	3	2	2	2	1	2	2	2	2	3	2	1	2	1	1	2	1	3	2	4	3	4	5	4	4	4	4	5
+audi service zetland		9	5	4	4	4	4	4	4	4	4	5	4	4	3	4	3	3	4	3	3	2	2	3	4	5	4	5	5	5	5	6	6	9	5	7	6	5
+bmw service alexandria		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	2	1	1	2	1	1	1	1	1	1	1	1	1	1
+bmw service centre waterloo		1	1	1	1	1	1	1	2	2	1	2	2	1	1	1	1	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	3	3	3	5
+bmw service erskineville		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bmw service zetland		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+ford service alexandria		2	4	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	2	2	3	3	3	3	4	4	4	4	4	4	4	4	4	4	4	4	4	4
+ford service centre waterloo		2	3	4	3	1	2	5	2	1	1	1	2	1	1	1	2	1	1	2	2	1	1	2	2	2	2	1	1	1	1	2	3	3	3	3	5	3
+ford service zetland		3	3	22	2	4	1	4	2	1	1	1	2	3	4	2	2	2	2	2	2	2	2	2	3	3	3	3	3	2	1	2	3	2	1	2	2	2
+honda service alexandria		4	2	2	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	9	2
+honda service waterloo		3	3	2	2	2	2	2	2	2	2	2	2	3	2	2	2	2	2	2	2	2	4	3	3	3	3	3	3	3	3	3	2	2	3	3	2	2
+hyundai service alexandria		3	3	2	2	2	1	2	1	2	1	2	1	2	2	1	1	1	1	2	1	1	1	2	1	1	1	1	1	1	1	3	1	1	1	1	1	2
+land rover service alexandria		4	4	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	3	3	3	3	3	3	4	5	8	4	3	4	4	4
+lexus service alexandria		3	3	2	2	2	2	2	2	2	2	1	1	1	1	1	2	1	1	3	3	2	2	2	2	3	3	2	3	2	2	2	2	2	12	4	2	1
+lexus service waterloo		2	6	2	2	3	2	2	2	2	2	3	3	3	3	3	2	3	3	3	5	6	5	5	10	4	4	8	15	19	4	5	4	29	24	23	3	3
+mazda service alexandria		3	3	2	2	2	2	2	2	2	2	2	2	2	2	3	2	2	2	3	3	3	3	3	3	3	4	4	4	4	4	4	4	4	4	4	4	5
+mazda service centre redfern		3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+mercedes service alexandria		3	3	2	2	2	2	2	2	2	2	2	1	1	2	1	1	2	2	2	1	1	1	2	2	1	1	1	1	1	2	1	2	2	3	4	2	4
+mitsubishi service alexandria		2	1	2	2	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+mitsubishi service centre zetland		6	7	6	20	4	6	17	5	3	3	5	4	7	7	7	6	7	6	2	2	1	1	2	1	1	1	1	1	1	1	1	1	1	1	2	1	1
+nissan service alexandria		1	1	1	1	1	2	2	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	4	4	3	2	3	3	4
+nissan service redfern		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+subaru service alexandria		1	2	1	1	1	1	1	1	3	2	2	1	3	3	3	3	3	3	3	3	3	3	4	5	5	5	5	4	4	4	5	4	5	4	4	4	4
+subaru service centre erskineville		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+toyota service alexandria		2	1	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	2	2	1	3	3	3	3	3	3	3	3	2	3
+toyota service redfern		1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	2	1	1	3
+toyota service waterloo		8	10	3	2	5	5	6	11	8	4	8	5	5	10	10	4	3	4	3	5	3	3	14	15	5	5	5	5	5	5	10	11	33	28	11	11	18
+volvo service alexandria		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	5	1	1	1	1	1
+vw service alexandria		2	2	1	1	1	1	1	1	1	1	2	2	2	2	1	1	2	1	2	2	1	1	1	1	1	2	2	2	2	1	1	1	4	1	1	1	2

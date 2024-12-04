@@ -7,12 +7,11 @@ export default async function handler(req, res) {
     try {
       const excelDir = path.join(process.cwd(), 'public', 'excel');
 
-      // Check if the directory exists
       if (!fs.existsSync(excelDir)) {
         return res.status(200).json({ files: [] });
       }
 
-      const files = fs.readdirSync(excelDir).filter((file) => file.endsWith('.xlsx'));
+      const files = fs.readdirSync(excelDir).filter((file) => file.endsWith('.csv'));
       res.status(200).json({ files });
     } catch (error) {
       console.error('Error listing Excel files:', error);

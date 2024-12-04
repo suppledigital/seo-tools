@@ -1,90 +1,69 @@
 // utils/excel.js
-import ExcelJS from 'exceljs';
 import fs from 'fs';
 import path from 'path';
 
 /**
- * Create an Excel file with Landing Pages and Rankings data
- * @param {Object} data - The data to be written to Excel
- * @param {string} filePath - The path where the Excel file will be saved
+ * Create a CSV file for Rankings data.
+ * @param {Object} data - The data to be written to the CSV file.
+ * @param {string} filePath - The path where the CSV file will be saved.
  */
-export const createExcelFile = async (data, filePath) => {
+export const createCsvFile = async (data, filePath) => {
   try {
-    const workbook = new ExcelJS.Workbook();
+    if (!Array.isArray(data.rankings)) {
+      throw new Error('Rankings data is not an array.');
+    }
 
-    // Create a worksheet for Landing Pages
-    const landingPagesSheet = workbook.addWorksheet('Landing Pages');
-    landingPagesSheet.columns = [
-      { header: 'URL', key: 'url', width: 50 },
-      { header: 'Title', key: 'title', width: 50 },
-      { header: 'Keywords', key: 'keywords', width: 50 },
-    ];
-
-    if (Array.isArray(data.landingPages)) {
-      data.landingPages.forEach((page) => {
-        if (page.url && page.title && Array.isArray(page.keywords)) {
-          landingPagesSheet.addRow({
-            url: page.url,
-            title: page.title,
-            keywords: page.keywords.join(', '),
+    // Extract all scan dates for headers
+    const allDates = new Set();
+    data.rankings.forEach((rank) => {
+      rank.positions.forEach((position) => {
+        if (Array.isArray(position.scan_history)) {
+          position.scan_history.forEach((scan) => {
+            allDates.add(scan.date);
           });
-        } else {
-          console.warn('Invalid landing page data:', page);
         }
       });
-      console.log(`Added ${data.landingPages.length} landing pages to Excel.`);
-    } else {
-      console.warn('Landing Pages data is not an array.');
-    }
+    });
 
-    // Create a worksheet for Rankings
-    const rankingsSheet = workbook.addWorksheet('Rankings');
-    rankingsSheet.columns = [
-      { header: 'Keyword', key: 'keyword', width: 30 },
-      { header: 'Ranking', key: 'ranking', width: 10 },
-      { header: 'Location', key: 'location', width: 20 },
-      { header: 'SERP URL', key: 'serp_url', width: 50 },
-      { header: 'Search Engine', key: 'search_engine', width: 20 },
-      { header: 'Scan Date', key: 'scan_date', width: 20 },
-      { header: 'Search Type', key: 'search_type', width: 15 },
-    ];
+    const sortedDates = Array.from(allDates).sort();
 
-    if (Array.isArray(data.rankings)) {
-      data.rankings.forEach((rank) => {
-        // Iterate through all positions and their scan histories
-        rank.positions.forEach((position) => {
-          if (Array.isArray(position.scan_history)) {
-            position.scan_history.forEach((scan) => {
-              rankingsSheet.addRow({
-                keyword: rank.kw || '',
-                ranking: scan.pos || '',
-                location: position.location || '',
-                serp_url: scan.url || '',
-                search_engine: position.se || '',
-                scan_date: scan.date || '',
-                search_type: scan.type || 'organic',
-              });
-            });
-          }
-        });
+    // Prepare CSV headers
+    const headers = ['', '', ...sortedDates];
+    const rows = [headers];
+
+    // Prepare rows for each keyword
+    data.rankings.forEach((rank) => {
+      const row = Array(headers.length).fill('');
+      row[0] = rank.kw; // Keyword in first column
+
+      rank.positions.forEach((position) => {
+        if (Array.isArray(position.scan_history)) {
+          position.scan_history.forEach((scan) => {
+            const dateIndex = headers.indexOf(scan.date);
+            if (dateIndex !== -1) {
+              row[dateIndex] = scan.pos || '-';
+            }
+          });
+        }
       });
-      console.log(`Added ranking history to Excel.`);
-    } else {
-      console.warn('Rankings data is not an array.');
-    }
 
-    // Ensure the directory exists
+      rows.push(row);
+    });
+
+    // Write rows to CSV format
+    const csvContent = rows.map((row) => row.join('\t')).join('\n'); // Tab-separated values
+
+    // Ensure directory exists
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
-      console.log(`Created directory: ${dir}`);
     }
 
-    // Write to file
-    await workbook.xlsx.writeFile(filePath);
-    console.log(`Excel file successfully created at: ${filePath}`);
+    // Write to the file
+    await fs.promises.writeFile(filePath, csvContent, 'utf8');
+    console.log(`CSV file successfully created at: ${filePath}`);
   } catch (error) {
-    console.error('Error creating Excel file:', error);
-    throw error; // Propagate the error to be handled by the caller
+    console.error('Error creating CSV file:', error);
+    throw error;
   }
 };

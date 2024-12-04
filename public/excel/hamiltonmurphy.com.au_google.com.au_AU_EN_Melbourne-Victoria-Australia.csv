@@ -1,0 +1,148 @@
+		2021-11-18	2021-12-16	2022-01-20	2022-02-17	2022-03-18	2022-04-22	2022-05-18	2022-06-15	2022-07-15	2022-08-17	2022-09-16	2022-10-13	2022-11-17	2022-12-15	2023-01-19	2023-02-16	2023-03-16	2023-04-14	2023-05-17	2023-06-15	2023-07-20	2023-07-24	2023-08-17	2023-09-15	2023-10-20	2023-11-17	2023-12-14	2024-01-19	2024-02-15	2024-03-15	2024-04-19	2024-05-16	2024-06-13	2024-07-10	2024-08-16	2024-09-20	2024-10-18	2024-11-14
+insolvency bankstown		1	3	2	1	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency blacktown		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	22	22	6	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency campbelltown		3	3	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency fairfield		38	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency gosford		2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2
+insolvency mount druitt		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency wollongong		2	3	2	3	4	4	3	3	3	3	3	3	3	3	3	3	3	2	3	3	3	3	3	3	3	4	4	4	4	4	5	5	4	4	9	10	7	7
+insolvency wyong		27	30	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency newcastle		3	3	1	3	2	2	2	3	3	3	2	3	2	2	2	3	2	4	4	4	4	4	4	4	5	4	5	4	5	3	3	5	3	4	5	8	7	7
+bankruptcy advisor bankstown		1	1	2	1	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor blacktown		1	1	1	1	1	1	2	2	2	2	2	2	2	2	2	2	1	1	2	1	8	10	9	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor campbelltown		10	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1
+bankruptcy advisor fairfield		52	1	1	1	1	1	1	1	1	1	2	2	2	2	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	3	1	5
+bankruptcy advisor gosford		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor mount druitt		1	1	1	1	1	1	1	1	1	1	2	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor wollongong		2	1	1	1	3	2	2	2	2	2	2	2	2	2	1	1	2	1	2	1	3	3	1	2	2	1	2	2	2	2	2	3	3	3	3	3	4	4
+bankruptcy advisor wyong		4	5	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor newcastle		1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	2	2	2	1	2	2	2	3	3	4	4	12	5	2
+liquidators bankstown		2	1	2	1	1	2	2	2	2	1	2	2	3	2	1	1	1	1	2	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators blacktown		4	3	2	2	3	2	2	2	2	3	3	3	2	2	2	1	1	2	3	1	11	10	12	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1
+liquidators campbelltown		3	3	2	2	2	2	2	1	1	2	2	2	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators fairfield		-	-	1	1	1	1	1	1	1	1	1	1	1	2	1	2	2	1	2	2	2	1	1	2	1	1	1	27	1	1	1	1	1	9	4	10	12	1
+liquidators gosford		5	6	3	4	3	3	3	3	2	3	3	3	3	3	3	3	3	3	2	2	2	2	2	2	2	1	1	1	2	2	2	1	1	1	1	1	1	1
+liquidators mount druitt		5	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators wollongong		5	4	4	4	5	5	4	5	5	5	6	6	6	6	3	4	3	4	3	4	3	3	3	3	7	5	4	4	4	4	5	6	6	6	7	5	5	5
+liquidators wyong		15	14	2	2	2	1	1	1	1	2	2	2	2	2	1	2	1	2	2	1	2	1	1	2	3	3	3	1	1	2	1	1	1	1	1	1	1	1
+liquidators newcastle		6	6	5	6	5	6	6	5	5	4	4	4	3	3	3	3	3	3	3	3	3	3	2	2	2	3	3	3	4	4	3	2	4	4	6	6	7	9
+insolvency bunbury		3	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	-	2	3	3	2	3	3	2	2	1	2	2	2	3
+insolvency gosnells		-	2	2	1	1	15	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	17	1	21	3	20	18	3	2	16	15	17	15	13	19	19	28
+insolvency joondalup		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency mandurah		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency penrith		1	1	1	1	1	1	1	1	1	1	1	1	28	30	26	1	1	28	1	2	2	2	2	2	2	1	2	2	2	2	2	2	2	2	1	1	2	2
+insolvency rockingham		1	1	1	1	1	16	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	1	1	1	2	1	2	2	2	2	2
+insolvency stirling		2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	46	1	1	1	1	1
+insolvency swan		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	1	1	1	1	1	1	1	1	1
+insolvency wanneroo		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	3	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor bunbury		3	3	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	2	1	1	1	1	2
+bankruptcy advisor gosnells		-	1	1	1	1	3	1	1	1	1	1	1	1	1	2	2	1	1	1	2	1	1	3	2	1	2	1	2	1	2	2	2	2	2	2	2	2	2
+bankruptcy advisor joondalup		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor mandurah		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor penrith		1	1	1	1	1	11	16	7	10	1	1	1	1	1	1	1	1	6	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	2	1	2	2
+bankruptcy advisor rockingham		1	1	1	1	2	13	1	2	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor stirling		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor swan		22	1	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor wanneroo		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators bunbury		3	3	2	2	2	2	2	2	2	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2
+liquidators gosnells		10	2	1	1	1	6	2	1	1	1	1	1	1	1	1	1	1	8	1	2	1	1	1	2	2	2	2	1	1	1	1	1	1	1	3	12	10	2
+liquidators joondalup		2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators mandurah		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators penrith		1	2	2	2	2	2	20	2	2	2	2	2	2	2	1	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators rockingham		1	1	1	1	1	31	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators stirling		1	2	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	3	3	2	2	2	2	1	1	1	39	1	1	3	1	1
+liquidators swan		3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	3
+liquidators wanneroo		1	2	2	2	2	3	2	2	2	2	1	2	2	1	1	1	1	2	2	6	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency bendigo		21	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	1	1	1	1	1	1	1	3	2	2	3	3
+insolvency casey		1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency dandenong		52	3	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	2	1	1	1	1	1	1	1	2	2	2
+insolvency geelong		3	4	2	2	2	2	1	1	1	2	3	2	3	3	3	3	2	1	2	2	2	2	1	1	2	3	2	3	3	3	3	3	2	2	2	4	4	4
+insolvency melton		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	6	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	8
+insolvency mornington		3	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2
+insolvency tullamarine		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency whittlesea		1	1	9	1	1	1	6	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency wyndham		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	19	18	18	24	1	1	1	1	1	1	1	1	1	1	1	1	2	2
+bankruptcy advisor bendigo		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	7	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	2
+bankruptcy advisor casey		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor dandenong		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	2	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor geelong		1	1	1	1	1	1	1	1	1	2	1	1	1	2	1	2	1	1	1	1	1	1	2	2	2	2	1	1	1	1	1	1	2	1	2	3	1	1
+bankruptcy advisor melton		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor mornington		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor tullamarine		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor whittlesea		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor wyndham		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators bendigo		41	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	2	2	1	2	1	1	2	1	1	1	1	2	2	2	2	2	2	2	2	2	2	3
+liquidators casey		2	2	2	2	2	2	2	1	1	1	2	2	1	1	2	1	6	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators dandenong		5	4	2	2	2	3	2	2	2	2	3	2	2	2	2	2	2	2	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	2	3	3	2	3
+liquidators geelong		4	4	3	5	5	3	4	2	2	2	2	2	2	2	2	2	2	2	2	2	1	2	1	1	1	1	1	2	2	2	3	3	4	4	4	4	4	4
+liquidators melton		1	1	2	2	1	1	1	1	1	1	1	2	1	2	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators mornington		4	2	1	3	1	2	2	2	2	2	2	3	2	3	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2
+liquidators tullamarine		1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators whittlesea		2	1	7	1	10	1	1	1	1	1	2	1	2	1	1	2	2	2	2	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators wyndham		1	2	1	1	1	1	2	1	1	2	2	2	2	2	2	2	2	2	2	2	10	11	17	13	2	2	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency highfields		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency ipswich		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	2	2	2	2	2	2	2	2	2	2	2
+insolvency mackay		5	5	4	4	4	3	2	2	4	4	4	4	4	4	4	3	4	3	3	3	5	5	4	5	5	4	5	7	7	7	8	7	7	7	7	6	6	6
+insolvency ormeau		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	11	14	16	1	2	2	3	1	1	1	1	1	1	1	1	1
+insolvency pittsworth		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency rockhampton		4	5	3	4	3	2	2	2	1	1	1	1	1	1	1	2	2	1	2	3	40	37	-	-	3	3	3	3	3	3	3	3	3	3	3	3	3	4
+insolvency toowoomba		7	3	3	3	4	1	1	1	1	1	1	3	1	1	2	2	2	2	2	3	3	3	3	3	3	3	4	3	4	5	3	5	4	5	5	5	5	5
+insolvency townsville		4	3	3	5	4	2	1	1	1	1	2	2	2	1	1	1	1	1	2	2	24	26	27	33	3	5	4	4	4	4	4	3	3	4	4	3	5	5
+bankruptcy advisor highfields		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor ipswich		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor mackay		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	2	2	2	2	3	2	2	2	2	2	2	2	3	3
+bankruptcy advisor ormeau		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	-	3	1	1	2	2	2	1	1	1	1	1	1	1	1	1
+bankruptcy advisor pittsworth		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor rockhampton		2	6	2	2	2	3	2	4	2	1	2	1	1	1	1	1	1	1	1	2	11	13	10	13	1	1	1	1	2	2	2	2	1	2	3	2	3	3
+bankruptcy advisor toowoomba		1	1	1	3	3	4	2	2	2	2	2	2	2	1	1	1	1	1	2	2	2	2	2	2	2	2	2	2	3	3	2	2	3	3	3	4	4	4
+bankruptcy advisor townsville		1	1	1	1	1	1	1	2	1	2	2	2	2	1	1	1	1	1	1	1	18	17	-	16	1	1	2	1	1	1	1	2	2	2	1	1	1	2
+liquidators highfields		2	1	1	1	1	1	1	1	1	1	2	2	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators ipswich		1	3	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	2	1	2	2	1	1	1	1	2	2	2	2	2	2	2	2	2	2	2
+liquidators mackay		6	6	3	3	4	3	3	3	4	2	4	4	4	4	4	4	4	3	3	3	4	3	4	4	4	4	5	5	6	5	6	6	6	5	6	7	5	5
+liquidators ormeau		1	2	2	1	1	1	1	2	1	2	2	2	2	1	1	1	1	1	1	1	1	1	3	3	2	4	3	3	3	1	1	1	1	1	1	1	1	1
+liquidators pittsworth		1	1	1	1	1	1	1	1	1	1	1	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators rockhampton		57	-	35	4	6	5	4	17	3	2	2	2	2	2	2	3	3	2	2	3	22	24	14	18	4	4	4	4	4	4	4	4	4	4	3	3	3	4
+liquidators toowoomba		5	7	7	5	4	7	5	2	4	2	2	3	3	2	3	3	3	3	3	4	4	4	4	4	4	4	4	3	3	3	3	3	2	3	3	3	3	3
+liquidators townsville		-	5	4	4	4	3	4	2	3	3	3	3	3	3	3	3	3	3	3	3	39	34	32	49	2	3	3	4	3	3	3	3	2	2	3	2	4	4
+insolvency gawler		1	1	1	1	1	17	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1
+insolvency mount gambier		1	1	1	1	30	1	1	1	1	1	1	1	1	1	1	1	1	1	13	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency onkaparinga		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency playford		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+insolvency salisbury		1	1	1	1	1	1	1	1	1	1	31	29	25	28	1	31	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor gawler		1	1	1	1	1	5	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	1	2	2	2	1	3	2	4	1	6	5	4
+bankruptcy advisor mount gambier		1	1	1	1	1	1	1	2	6	4	5	7	8	8	7	1	1	5	6	1	1	1	1	1	1	1	3	3	1	1	1	1	1	1	1	11	13	1
+bankruptcy advisor onkaparinga		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor playford		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advisor salisbury		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators gawler		2	3	1	1	1	9	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+liquidators mount gambier		2	18	10	11	11	21	2	14	17	21	1	1	1	1	1	1	2	1	14	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	15	1	1	1
+liquidators onkaparinga		2	2	2	2	2	1	1	1	1	1	1	2	2	2	2	2	2	2	2	4	2	2	2	1	1	2	2	1	1	1	1	1	1	1	1	1	1	1
+liquidators playford		2	3	1	1	1	1	1	1	1	8	1	1	1	1	1	1	1	1	2	1	1	1	2	2	1	1	2	1	1	1	1	1	1	1	1	1	1	1
+liquidators salisbury		2	1	2	1	1	2	2	1	1	1	25	20	27	19	21	21	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+bankruptcy advice melbourne		5	4	2	2	1	3	3	1	1	1	1	1	1	2	1	1	1	1	1	1	16	18	3	42	21	34	35	37	29	24	39	13	18	16	25	13	12	28
+bankruptcy advice perth		4	3	2	3	3	5	2	5	5	5	5	6	10	14	9	8	9	7	6	9	29	28	16	28	18	22	27	27	15	18	31	25	26	37	34	37	31	16
+bankruptcy advice sydney		2	2	1	1	1	3	3	3	5	3	6	8	9	9	6	5	7	5	5	6	43	44	13	19	39	56	87	93	32	13	27	27	-	-	75	99	91	-
+Business Recovery		31	23	7	15	20	20	13	11	15	21	24	11	8	10	13	10	9	15	18	20	26	24	29	26	23	35	46	54	22	24	29	26	12	13	11	14	15	18
+Business Restructuring		36	29	31	34	28	35	27	14	12	16	14	16	17	23	18	14	19	17	20	29	27	26	28	36	30	40	47	25	29	21	51	72	52	45	36	59	79	77
+corporate insolvency melbourne		5	3	3	4	2	3	1	1	3	1	2	2	2	2	1	1	1	1	1	1	1	1	1	4	3	4	4	2	3	1	2	2	1	1	1	1	1	1
+corporate insolvency perth		5	5	4	7	4	6	4	4	5	4	7	6	6	6	3	3	4	2	5	4	4	4	4	6	6	6	8	3	2	2	3	3	2	3	4	1	2	5
+corporate insolvency sydney		3	2	2	4	2	5	3	6	6	4	11	12	7	9	1	2	2	1	1	1	1	1	2	6	8	8	7	4	3	1	1	1	1	1	1	4	3	10
+insolvency practitioners melbourne		1	1	1	1	1	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	2	2	2	2	1	1	1	1	1
+insolvency practitioners perth		2	1	2	2	3	3	3	3	3	3	2	2	2	2	2	2	1	1	1	2	2	2	2	2	2	2	2	2	3	3	1	3	2	2	1	2	1	2
+insolvency practitioners sydney		3	3	3	3	3	2	2	2	2	3	3	4	2	2	3	3	6	4	3	6	2	2	1	6	5	5	4	2	3	3	2	2	2	2	2	3	3	2
+personal insolvency melbourne		6	4	3	2	3	2	1	1	1	1	2	1	1	1	1	1	2	1	1	2	1	1	1	2	1	1	2	2	1	1	1	2	2	2	3	1	2	2
+personal insolvency perth		6	6	2	5	5	5	3	3	3	5	4	4	4	4	3	4	4	4	3	3	4	3	3	3	4	4	3	3	4	4	4	3	2	4	4	5	5	4
+personal insolvency sydney		4	1	2	2	3	3	1	2	1	2	3	3	3	4	1	1	1	1	2	1	3	1	2	4	6	3	4	4	4	4	4	4	2	4	4	5	4	6
+liquidators melbourne		26	24	14	14	17	24	27	13	18	11	13	16	20	17	17	16	16	11	10	12	12	14	11	12	35	16	18	20	22	20	20	-	16	18	17	15	14	13
+liquidators perth		43	42	39	26	27	35	33	31	26	22	27	29	17	16	15	13	12	14	16	14	14	15	12	31	31	16	11	16	15	91	14	16	15	17	14	19	14	15
+liquidators sydney		36	41	41	22	33	59	38	35	27	36	33	39	38	39	27	30	37	21	21	22	33	43	39	45	45	41	59	22	25	24	45	23	37	39	36	25	43	33
+bankruptcy advice gold coast		30	29	20	25	29	26	30	30	28	35	23	26	26	26	23	21	21	25	26	25	30	31	32	39	34	34	29	35	36	76	38	39	40	31	44	75	61	57
+bankruptcy advice brisbane		16	16	17	16	19	25	26	21	26	27	32	34	41	40	20	14	17	16	16	18	37	36	48	37	34	22	68	29	29	28	35	60	26	29	41	38	-	-
+corporate insolvency gold coast		28	36	30	20	39	17	37	18	18	18	28	23	18	15	17	19	16	16	17	18	23	24	13	22	22	28	31	22	17	32	21	18	15	17	24	21	25	25
+corporate insolvency brisbane		19	14	13	31	17	29	21	20	26	20	32	31	26	33	21	22	12	8	19	15	14	14	17	22	20	19	23	10	9	10	10	11	6	11	15	23	26	24
+insolvency practitioners gold coast		8	10	13	12	22	13	22	26	26	24	31	26	28	24	18	17	14	14	16	13	11	11	14	15	13	14	11	11	11	13	10	9	6	6	13	17	17	20
+insolvency practitioners brisbane		3	5	6	9	8	8	11	9	8	11	14	12	8	13	8	13	12	8	7	7	8	8	6	6	10	14	14	10	10	9	10	7	7	7	11	15	22	21
+personal insolvency gold coast		15	18	15	14	21	22	17	16	33	15	18	19	19	20	19	19	25	25	25	25	13	12	10	12	16	13	13	12	14	16	17	12	7	10	25	19	20	16
+personal insolvency brisbane		10	8	6	7	12	14	11	13	13	13	15	15	13	13	6	7	8	8	9	6	5	5	6	7	8	6	7	6	7	7	9	7	3	8	13	6	7	12
+liquidators gold coast		-	56	52	74	-	84	82	65	54	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	84	-	82	-	-	64	34	-	-	95
+liquidators brisbane		50	49	54	23	25	44	26	47	19	21	26	25	34	37	24	24	26	39	34	30	37	42	38	46	52	46	42	26	30	-	47	33	42	36	32	46	58	44

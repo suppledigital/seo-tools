@@ -1,55 +1,97 @@
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Grid,
+  Typography,
+  IconButton,
+} from '@mui/material';
 import Link from 'next/link';
-import styles from './index.module.css'; // Import the CSS module
+import SettingsIcon from '@mui/icons-material/Settings';
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const [isMounted, setIsMounted] = useState(false);
+  const tools = [
+    { name: 'Content Generation Tool', link: '/content' },
+    { name: 'Site Audit', link: '/audit' },
+    { name: 'Trello Audit', link: '/trello-audit' },
+    { name: 'Keywords Tool', link: '/keywords' },
+    { name: 'Keywords Exporter', link: '/webceo-keywords' },
+    { name: 'Chat', link: '/chat' },
+  ];
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted || status === 'loading') {
-    return <p>Loading...</p>;
+  if (status === 'loading') {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (status === 'unauthenticated') {
     return (
-      <div className={styles.container}>
-        <h1 className={styles.title}>Please Sign In</h1>
-        <button className={styles.button} onClick={() => signIn('google')}>Sign in with Google</button>
-      </div>
+      <Container maxWidth="sm">
+        <Typography variant="h4" align="center" gutterBottom>
+          Please Sign In
+        </Typography>
+        <Box display="flex" justifyContent="center" mt={2}>
+          <Button variant="contained" color="primary" onClick={() => signIn('google')}>
+            Sign in with Google
+          </Button>
+        </Box>
+      </Container>
     );
   }
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Available Tools</h1>
-      <p className={styles.welcomeText}>Welcome, {session?.user?.email}</p>
-      <button className={styles.button} onClick={() => signOut()}>Sign Out</button>
-      <ul className={styles.list}>
-        <li className={styles.listItem}>
-          <Link href="/content" className={styles.link}>Content Tool</Link>
-        </li>
-        <li className={styles.listItem}>
-          <Link href="/audit" className={styles.link}>Site Audit</Link>
-        </li>
-        <li className={styles.listItem}>
-          <Link href="/trello-audit" className={styles.link}>Trello Audit</Link>
-        </li>
-        <li className={styles.listItem}>
-          <Link href="/keywords" className={styles.link}>Keywords Tool</Link>
-        </li>
-        <li className={styles.listItem}>
-          <Link href="/webceo-keywords" className={styles.link}>Keywords Exporter</Link>
-        </li>
-        <li className={styles.listItem}>
-          <Link href="/chat" className={styles.link}>Chat</Link>
-        </li>
-        
-      </ul>
-    </div>
+    <Container maxWidth="lg">
+      <Box display="flex" justifyContent="space-between" alignItems="center" mt={4} mb={4}>
+        <Typography variant="h4">Available Tools</Typography>
+        <Box display="flex" alignItems="center">
+          <Typography variant="subtitle1" mr={2}>
+            Welcome, {session?.user?.email}
+          </Typography>
+          <IconButton onClick={() => alert('Settings Coming Soon')}>
+            <SettingsIcon />
+          </IconButton>
+          <Button variant="outlined" color="secondary" onClick={() => signOut()} size="small" sx={{ ml: 2 }}>
+            Sign Out
+          </Button>
+        </Box>
+      </Box>
+
+      <Grid container spacing={3}>
+        {tools.map((tool) => (
+          <Grid item xs={12} sm={6} md={4} key={tool.link}>
+            <Box
+              borderRadius={2}
+              boxShadow={2}
+              p={3}
+              display="flex"
+              flexDirection="column"
+              justifyContent="space-between"
+              height="150px"
+              bgcolor="#f9f9f9"
+            >
+              <Typography variant="h6" gutterBottom>
+                {tool.name}
+              </Typography>
+              <Button
+                component={Link}
+                href={tool.link}
+                variant="outlined"
+                color="primary"
+                size="small"
+              >
+                Open
+              </Button>
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
   );
 }

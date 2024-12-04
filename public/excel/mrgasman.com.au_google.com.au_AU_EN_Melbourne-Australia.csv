@@ -1,0 +1,77 @@
+		2021-11-18	2021-11-30	2022-01-20	2022-02-17	2022-03-18	2022-04-22	2022-05-18	2022-06-15	2022-07-15	2022-08-17	2022-09-16	2022-10-13	2022-11-17	2022-12-15	2023-01-19	2023-02-16	2023-03-16	2023-04-14	2023-05-17	2023-06-15	2023-07-20	2023-08-17	2023-09-15	2023-10-20	2023-11-17	2023-12-14	2024-01-19	2024-02-15	2024-03-15	2024-04-19	2024-05-16	2024-06-13	2024-07-18	2024-08-16	2024-09-20	2024-10-18	2024-11-14
+air conditioning dromana		15	17	16	12	10	9	12	11	9	9	9	8	9	9	9	9	8	9	7	9	7	10	8	7	8	7	8	7	2	2	3	2	5	4	3	2	2
+air conditioning frankston		49	46	42	39	41	29	27	27	18	31	29	28	27	25	28	32	33	27	26	20	17	23	29	14	14	17	16	18	22	23	17	15	16	16	31	26	26
+air conditioning installation frankston		48	48	40	38	42	33	27	31	18	28	20	21	30	33	19	20	20	20	18	28	22	23	24	20	22	27	25	27	25	26	21	18	20	13	25	17	15
+air conditioning installation hastings		8	9	7	9	9	7	6	6	4	6	6	6	6	6	83	81	6	5	7	2	2	2	1	1	2	2	2	1	2	4	4	5	6	7	4	2	4
+air conditioning installation mornington		31	27	26	27	27	32	32	36	26	25	27	22	23	12	20	22	13	23	14	16	16	16	25	23	21	23	23	22	17	17	14	14	16	15	10	19	21
+air conditioning mount eliza		6	5	6	7	6	8	8	10	8	7	8	6	6	6	7	6	7	3	8	7	7	8	4	8	8	9	10	10	12	11	8	8	8	10	8	8	8
+cooling frankston		20	21	30	29	30	21	25	35	71	23	16	20	19	20	19	17	17	20	20	16	20	21	25	23	26	22	36	32	-	29	29	29	25	27	28	35	26
+cooling mornington		8	8	11	12	10	17	20	19	13	16	16	11	12	11	5	5	4	4	3	3	2	3	5	5	5	6	8	6	6	5	5	5	6	5	5	5	5
+cooling mt eliza		10	11	10	10	11	9	9	9	8	7	7	7	6	5	7	8	7	9	9	8	8	7	7	9	10	10	10	10	13	11	12	10	9	12	9	12	11
+cooling rosebud		22	24	37	20	19	26	38	50	38	40	39	36	33	34	43	48	34	33	27	27	29	23	27	24	21	79	28	-	44	-	-	81	77	66	43	66	43
+ducted heating frankston		2	2	2	2	2	2	2	3	2	3	3	4	3	2	3	3	3	3	3	3	2	2	1	1	2	2	2	2	2	2	2	1	1	1	1	1	1
+ducted heating mornington peninsula		1	1	1	1	1	2	2	2	2	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	4	2	1	1	1	3
+ducted heating rye		7	10	10	10	12	9	11	10	4	3	4	4	4	4	3	2	2	2	2	2	1	2	3	2	1	1	1	1	1	1	1	1	1	2	4	2	6
+ducted heating somerville		2	3	2	1	2	2	2	2	2	2	2	2	2	2	1	1	2	2	2	1	2	2	2	3	3	3	3	4	4	3	3	4	3	4	5	5	6
+evaporative cooling frankston		20	17	40	20	17	16	15	16	18	26	12	16	15	14	15	10	11	11	14	11	10	11	19	14	16	14	17	18	-	20	17	19	9	16	16	21	21
+gas heater repairs frankston		2	3	3	2	2	4	4	4	5	6	6	6	5	5	5	5	4	5	3	3	4	3	4	3	3	3	3	3	3	3	3	2	2	2	3	3	3
+gas log fires frankston		5	5	3	4	3	3	3	3	3	2	4	5	5	4	3	3	1	1	1	1	1	2	2	2	2	3	3	3	3	3	5	5	6	11	4	4	4
+gas log fires mt eliza		1	1	1	2	2	1	1	2	1	1	1	1	1	1	1	1	2	1	1	2	1	1	2	1	1	1	1	1	1	2	1	1	1	1	1	1	1
+gas log fires rye		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	1	1	1	1	1
+gas log fires somerville		1	1	1	1	1	1	1	1	1	2	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	1
+heating frankston		4	3	3	6	1	1	1	3	5	5	3	5	4	4	3	3	2	2	2	4	2	3	3	4	4	4	4	4	4	5	3	2	3	2	2	2	3
+heating mornington		5	2	2	1	2	2	2	3	5	4	5	5	3	3	3	3	5	5	2	7	9	4	3	6	4	5	5	4	5	5	4	5	5	7	9	12	10
+heating mt eliza		3	3	3	6	6	8	8	8	10	7	5	6	4	4	7	6	7	7	3	4	4	5	5	7	8	5	5	7	8	6	6	9	6	5	8	7	7
+heating rosebud		25	28	26	16	20	17	29	23	21	15	16	21	12	-	9	8	4	5	4	6	3	5	7	7	-	5	-	44	37	35	33	24	28	19	38	28	29
+hot water heater mornington		1	1	1	1	1	1	1	2	1	1	2	2	3	3	2	3	3	2	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2
+air conditioners frankston		41	38	33	29	37	22	22	26	15	24	24	23	23	16	20	21	25	20	21	19	20	21	18	13	14	19	22	22	25	22	20	18	-	15	19	17	14
+air conditioning installation mornington peninsula		33	33	32	42	43	44	42	41	-	28	32	28	25	26	31	28	26	26	23	19	18	19	32	31	35	28	25	26	24	26	29	30	18	22	19	24	26
+ducted heating mornington		1	1	1	1	1	2	2	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2
+ducted heating repairs frankston		3	3	3	3	3	3	3	3	3	3	4	4	4	4	4	4	3	4	4	3	3	3	3	3	2	2	2	2	3	2	2	2	2	2	2	2	2
+evaporative cooling mornington		4	4	5	4	4	4	6	6	5	4	3	2	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+evaporative cooling mornington peninsula		5	5	3	5	4	4	6	6	6	6	4	3	3	4	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+evaporative cooling repairs frankston		9	10	8	8	9	9	10	11	13	11	10	10	11	10	8	12	11	11	11	8	9	8	7	7	7	7	9	11	9	10	9	11	9	8	8	8	7
+evaporative cooling repairs mornington peninsula		5	5	5	4	5	6	6	5	5	4	2	2	3	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+gas heater frankston		3	2	1	2	1	1	2	3	4	5	4	5	3	2	2	2	2	2	1	1	1	1	1	2	1	1	1	1	2	1	1	1	2	1	1	1	1
+gas heater mornington		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+gas heater mt eliza		1	1	1	3	3	3	6	2	2	6	12	14	7	7	7	6	2	2	3	4	2	2	3	4	3	2	2	2	1	4	1	4	3	1	1	1	2
+gas heater repairs langwarrin		3	3	2	7	7	4	5	6	4	5	4	4	8	7	6	7	4	4	4	4	3	1	3	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+gas heater repairs mornington peninsula		2	1	3	5	4	5	5	6	7	8	7	7	6	7	5	6	2	2	2	2	2	1	2	3	3	3	3	3	3	3	3	3	5	2	2	1	1
+gas heater service frankston		6	6	7	7	6	5	4	5	5	7	6	6	5	5	5	5	3	3	3	3	3	3	3	3	3	3	3	3	3	3	2	2	3	3	3	3	3
+gas heater service mornington peninsula		1	1	1	3	2	3	4	5	3	5	6	5	7	7	7	4	2	1	1	2	1	1	2	2	2	2	2	3	3	3	3	2	2	2	2	1	1
+gas heater service rosebud		3	3	2	3	3	5	3	4	5	5	4	4	4	3	4	5	5	5	4	5	4	3	1	1	1	1	1	1	2	2	1	1	1	1	2	2	3
+gas heater service seaford		12	11	7	8	7	4	6	5	4	4	2	3	3	3	3	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	1	1	2
+gas heaters balnarring		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+gas heaters frankston		2	2	2	2	2	2	2	2	3	3	3	3	2	2	2	2	2	1	1	1	1	-	2	2	3	2	3	3	3	1	1	2	2	1	1	1	1
+gas heaters hastings		3	3	1	3	3	2	1	2	2	2	1	1	2	1	1	2	1	1	1	1	1	1	2	1	3	3	2	1	1	1	1	1	1	1	1	1	1
+gas heaters langwarrin		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+gas heaters mt martha		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	3	1	1	1	1	1
+gas heaters rosebud		1	1	1	1	1	1	1	2	1	1	1	1	1	1	2	2	2	1	1	1	1	-	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1
+gas heaters seaford		5	4	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	3	3	2	2	3	3	2	2	1	2	1	1	1
+gas heaters somerville		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+gas heating mornington		1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+gas hot water service mornington peninsula		6	5	3	8	7	6	7	6	9	9	6	7	4	4	4	4	4	4	2	1	1	2	1	2	2	3	3	3	3	3	3	3	3	2	2	2	2
+gas hot water systems rosebud		2	2	2	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	3	3	2	2	1	1	1	1	2	1	2	2	1	1	1	1	1	1	1
+gas hot water systems seaford		4	4	3	2	2	1	1	1	1	1	1	1	1	1	1	1	1	2	2	1	1	1	1	2	2	3	3	4	5	4	3	7	2	2	2	2	2
+gas log fires hastings		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+gas log fires mornington		1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	3
+gas log fires rosebud		1	1	1	1	1	1	1	1	1	-	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+heater repairs frankston		4	4	4	4	4	4	4	5	6	6	6	6	6	6	4	6	4	4	4	2	3	2	3	2	2	4	3	3	2	3	3	2	2	2	2	2	2
+hot water heater repair frankston		16	16	13	18	14	21	18	24	24	24	26	28	19	23	15	15	14	12	21	11	11	14	16	10	11	12	15	16	19	15	13	11	10	29	20	24	19
+hot water heater repair rosebud		1	1	1	2	2	2	2	3	3	2	3	2	3	3	2	2	3	3	5	3	3	2	2	1	1	1	1	1	1	2	2	1	1	1	1	1	2
+hot water heater repair seaford		2	3	3	3	3	2	2	2	2	2	2	2	2	2	3	2	2	2	2	1	2	2	2	3	3	3	4	6	6	6	5	4	4	4	6	7	6
+hot water systems balnarring		5	6	7	4	4	3	3	7	4	4	6	6	4	5	4	4	2	2	4	3	2	3	2	2	4	2	2	2	2	2	1	1	2	1	1	2	2
+hot water systems‎ frankston		36	36	45	45	-	32	26	32	14	27	16	15	16	40	41	41	36	34	31	34	36	44	43	70	45	46	53	58	52	50	46	48	46	49	48	63	63
+hot water systems hastings		7	7	18	7	33	7	8	7	8	11	13	6	8	7	9	6	9	8	10	11	9	12	13	8	11	12	13	13	12	12	-	13	16	26	20	16	14
+hot water systems mornington		2	3	1	3	4	2	4	5	6	4	6	7	5	4	3	5	4	2	2	1	1	1	1	2	2	2	2	3	3	3	3	3	2	2	2	3	3
+hot water systems somerville		6	6	6	5	6	6	4	6	5	12	7	5	6	3	3	3	4	4	2	5	5	7	7	8	9	13	8	9	10	11	10	14	15	17	10	12	9
+instant hot water langwarrin		2	3	2	2	2	2	2	2	4	2	3	3	3	3	3	3	3	2	2	1	2	3	4	3	7	7	7	6	7	9	7	9	11	13	8	2	3
+instant hot water mornington		1	1	1	1	1	1	1	1	1	1	2	2	2	2	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1
+instant hot water rosebud		3	3	2	2	2	2	2	3	5	4	6	4	2	3	4	5	13	4	6	5	5	4	4	4	4	5	6	5	5	7	5	6	6	3	2	5	5
+outdoor gas heaters mornington		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+split air conditioners mornington peninsula		20	19	23	23	20	23	22	22	15	17	15	15	14	15	16	16	16	17	14	13	9	9	15	15	19	15	18	18	19	75	19	25	19	18	15	14	16
+split system mornington		11	10	9	11	18	7	10	12	11	11	11	11	7	6	9	7	6	7	6	5	5	5	6	6	5	5	7	2	6	4	12	13	12	8	7	10	10
+wall furnaces mornington		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+wood heaters balnarring		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	2	2	1	2	1	1	2	1	1	1	1	1	1	1	1	1	1	1
+wood heaters langwarrin		1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
+wood heaters mornington		1	1	1	1	2	1	1	1	1	2	2	2	2	1	2	2	2	2	2	2	4	4	3	4	4	4	4	4	4	3	4	4	3	4	4	4	4

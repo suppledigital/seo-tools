@@ -170,7 +170,7 @@ export default function EntryRow({
                   onClick={() => handleCopyContent(entry.generated_content)}
                 ></i>
                 <i
-                  className={`fas fa-redo ${styles.contentActionIcon}`}
+                  className={`fas fa-redo ${styles.contentActionIcon} ${styles.redoActionIcon}`}
                   title="Regenerate"
                   onClick={() => handleGenerateContent(entry.entry_id)}
                 ></i>

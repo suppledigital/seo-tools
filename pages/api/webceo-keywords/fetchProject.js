@@ -1,7 +1,7 @@
 // pages/api/webceo-keywords/fetchProject.js
-import { fetchLandingPages, fetchRankings } from '../../../utils/webceo';
-import { createExcelFile } from '../../../utils/excel';
 import path from 'path';
+import { fetchRankings } from '../../../utils/webceo';
+import { createCsvFile } from '../../../utils/excel';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -12,42 +12,89 @@ export default async function handler(req, res) {
     }
 
     try {
-      const [landingPagesData, rankingsData] = await Promise.all([
-        fetchLandingPages(projectId),
-        fetchRankings(projectId, { history_depth: 1000 }), // Adjust history_depth as needed
-      ]);
-
-      // Log the fetched data for debugging
-      console.log(`Fetched landing pages for project "${projectName}":`, landingPagesData);
-      console.log(`Fetched rankings for project "${projectName}":`, rankingsData);
-
-      // Correctly access the nested 'data' properties
-      const data = {
-        landingPages: landingPagesData.data?.urls || [],
-        rankings: rankingsData.data?.ranking_data || [],
-      };
-
-      // Additional logging to verify data integrity
-      console.log(`Processed Landing Pages Count for "${projectName}":`, data.landingPages.length);
-      console.log(`Processed Rankings Count for "${projectName}":`, data.rankings.length);
-
-      // Validate that the expected arrays are present
-      if (!Array.isArray(data.landingPages) || !Array.isArray(data.rankings)) {
+      const rankingsData = await fetchRankings(projectId, { history_depth: 1000 });
+      const rankings = rankingsData.data?.ranking_data || [];
+      if (!Array.isArray(rankings)) {
         throw new Error('Invalid data structure received from WebCEO API.');
       }
 
-      // Create Excel File
-      const sanitizedProjectName = projectName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-      const fileName = `${sanitizedProjectName}_${Date.now()}.xlsx`; // Append timestamp for uniqueness
-      const filePath = path.join(process.cwd(), 'public', 'excel', fileName);
+      // Normalize the project name by removing "www" if present
+      const normalizedProjectName = projectName.replace(/^www\./, '').toLowerCase();
 
-      await createExcelFile(data, filePath);
+      const filesData = {}; // To group rankings by file name
 
-      console.log(`Excel file created for project "${projectName}" at: ${filePath}`);
+      // Group rankings by file name combinations
+      rankings.forEach((ranking) => {
+        ranking.positions.forEach((position) => {
+          // Extract the search engine domain from the 'description' field
+          const description = position.description || '';
+          let searchEngineDomain = '';
+          if (description) {
+            const [domainPart] = description.split(' - ');
+            searchEngineDomain = domainPart ? domainPart.toLowerCase() : '';
+          }
+          if (!searchEngineDomain) {
+            // Fallback to previous method if description is not available
+            searchEngineDomain = `${(position.se || 'unknown')}.com`.toLowerCase();
+          }
+
+          const countryCode = position.country || 'XX';
+          const language = position.language || 'XX';
+          const location = position.location?.replace(/, /g, '-') || '';
+
+          // Correctly handle the 'mobile' parameter
+          let deviceType = ''; // Default to empty string for desktop
+          if (position.mobile === 1) {
+            deviceType = 'mobile';
+          } else if (position.mobile === 2) {
+            deviceType = 'tablet';
+          }
+          // For desktop, we leave deviceType as empty string
+
+          const fileNameComponents = [
+            normalizedProjectName,
+            searchEngineDomain,
+            countryCode,
+            language,
+            // Include deviceType only if it's 'mobile' or 'tablet'
+            ...(deviceType ? [deviceType] : []),
+            location,
+          ];
+
+          const fileName = fileNameComponents
+            .filter(Boolean)
+            .join('_') + '.csv';
+
+          // Create a new object that includes only the data for this ranking and position
+          const rankingData = {
+            kw: ranking.kw,
+            positions: [
+              {
+                ...position,
+                scan_history: position.scan_history || [],
+              },
+            ],
+          };
+
+          if (!filesData[fileName]) {
+            filesData[fileName] = [];
+          }
+          filesData[fileName].push(rankingData);
+        });
+      });
+
+      const createdFiles = [];
+
+      // Create CSV files for each grouped combination
+      for (const [fileName, rankings] of Object.entries(filesData)) {
+        const filePath = path.join(process.cwd(), 'public', 'excel', fileName);
+        await createCsvFile({ rankings }, filePath);
+        createdFiles.push(`/excel/${fileName}`);
+      }
 
       res.status(200).json({
-        message: `Project data fetched and Excel file created for "${projectName}"`,
-        file: `/excel/${fileName}`,
+        message: `Project data fetched and CSV files created for "${normalizedProjectName}"`,
+        files: createdFiles,
         createdAt: new Date().toISOString(),
       });
     } catch (error) {

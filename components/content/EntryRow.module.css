@@ -120,11 +120,19 @@
   height: 10px;
   overflow-y: hidden;
 }
-
+.generatedContent::-webkit-scrollbar-track-piece {
+  background: #091e420f;
+}
+.generatedContent::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 .generatedContent {
   display: block;
   overflow-y: scroll;
   height: 100px;
+  scrollbar-color:#091e4224 #091e420f;
+  scrollbar-width: thin;
 }
 
 /* Content Action Icons */
@@ -137,7 +145,9 @@
   cursor: pointer;
   color: #0070f3;
 }
-
+.redoActionIcon{
+  color:red;
+}
 .contentActionIcon:hover {
   color: #005bb5;
 }

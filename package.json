@@ -22,6 +22,7 @@
     "@mui/material": "^6.1.9",
     "@mui/x-data-grid": "^7.22.3",
     "@upsetjs/react": "^1.11.0",
+    "archiver": "^7.0.1",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.6",
