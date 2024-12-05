@@ -27,11 +27,18 @@ import {
   Card,
   CardContent,
   CardActions,
+  Modal,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemText,
+  
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
+import DescriptionIcon from '@mui/icons-material/Description'; // This resembles a document
 import Backdrop from '@mui/material/Backdrop';
 import { Group as GroupIcon, Settings as SettingsIcon, PlayArrow as PlayArrowIcon, Replay as ReplayIcon } from '@mui/icons-material';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
@@ -105,6 +112,12 @@ export default function ProjectPage({ initialData }) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+// Add these state variables
+const [isExporting, setIsExporting] = useState(false);
+const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
+
+
+
 
   const sidebarRef = useRef(null);
 
@@ -133,7 +146,47 @@ export default function ProjectPage({ initialData }) {
       onClick: () => { handleForceGenerateAllContent(); handleClose(); },
       group: 'Generate',
     },
+    {
+      icon: <DescriptionIcon  />,
+      name: 'Export to Google Docs',
+      onClick: () => {
+        handleExportToGoogleDocs();
+        handleClose();
+      },
+      group: 'Export',
+    },
   ];
+
+  const handleExportToGoogleDocs = async () => {
+    setIsExporting(true);  // Show the modal with the progress bar
+    setExportedDocumentUrl('');  // Clear any previous document URL
+  
+    try {
+      const response = await axios.get(`/api/content/projects/${projectId}/export-to-google-docs`);
+  
+      if (response.data.documentUrl) {
+        // Store the document URL in state
+        setExportedDocumentUrl(response.data.documentUrl);
+      } else {
+        toast.error('Failed to export to Google Docs.');
+        setIsExporting(false);  // Hide the modal
+      }
+    } catch (error) {
+      console.error('Error exporting to Google Docs:', error);
+  
+      if (error.response && error.response.status === 401) {
+        // Token might have expired or scopes not granted, prompt re-authentication
+        signIn('google', { prompt: 'consent', callbackUrl: window.location.href });
+      } else {
+        toast.error('Error exporting to Google Docs.');
+      }
+      setIsExporting(false);  // Hide the modal
+    }
+  };
+  
+  
+
+
   const handleForceGenerateAllContent = async () => {
     const entriesToProcess = entries; // Process all entries, regardless of generated_content
     const totalEntries = entriesToProcess.length;
@@ -1423,7 +1476,7 @@ const getRandomValues = (valuesArray, numberOfValues) => {
 <Backdrop open={open} />
 <SpeedDial
   ariaLabel="Actions"
-  sx={{ position: 'fixed', bottom: 16, right: 16 }}
+  sx={{ position: 'fixed', bottom: 16, left: '50%', transform: 'translateX(-50%)' }}
   icon={<SpaceDashboardIcon />}
   onClose={handleClose}
   onOpen={handleOpen}
@@ -1438,6 +1491,60 @@ const getRandomValues = (valuesArray, numberOfValues) => {
     />
   ))}
 </SpeedDial>
+{/* Export Progress Modal */}
+<Modal
+  open={isExporting}
+  onClose={() => setIsExporting(false)}
+  aria-labelledby="export-modal-title"
+  aria-describedby="export-modal-description"
+>
+  <Box
+    sx={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: 400,
+      bgcolor: 'background.paper',
+      borderRadius: 2,
+      boxShadow: 24,
+      p: 4,
+      textAlign: 'center',
+    }}
+  >
+    <Typography id="export-modal-title" variant="h6" component="h2" gutterBottom>
+      {exportedDocumentUrl ? 'Export Complete' : 'Exporting to Google Docs'}
+    </Typography>
+    {!exportedDocumentUrl ? (
+      <>
+        <LinearProgress sx={{ mt: 2, mb: 2 }} />
+        <Typography id="export-modal-description" variant="body1">
+          Please wait while we export your content.
+        </Typography>
+      </>
+    ) : (
+      <>
+        <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
+          Your content has been successfully exported.
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => window.open(exportedDocumentUrl, '_blank')}
+          startIcon={<OpenInNewIcon />}
+          sx={{ mb: 2 }}
+        >
+          Open Document
+        </Button>
+        <Button variant="outlined" onClick={() => setIsExporting(false)}>
+          Close
+        </Button>
+      </>
+    )}
+  </Box>
+</Modal>
+
+
 
     </div>
 

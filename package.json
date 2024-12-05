@@ -32,6 +32,7 @@
     "datatables.net-dt": "^2.1.8",
     "dotenv": "^16.4.5",
     "exceljs": "^4.4.0",
+    "googleapis": "^144.0.0",
     "handsontable": "^14.6.0",
     "highcharts": "^11.4.8",
     "highcharts-react-official": "^3.2.1",

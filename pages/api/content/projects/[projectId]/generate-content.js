@@ -182,14 +182,16 @@ async function runPrompt(prompt) {
   const apiKey = process.env.CLAUDE_API_KEY;
 
   const data = {
-    model: 'claude-3-5-sonnet-20241022', // Replace with the model you have access to
+   // model: 'claude-3-5-opus-20241022', // Replace with the model you have access to
+    model: 'claude-3-opus-20240229',
     messages: [
       {
         role: 'user',
         content: prompt,
       },
     ],
-    max_tokens: 8000,
+    //max_tokens: 8000,
+    max_tokens: 4096,
     temperature: 1.0,
   };
 
