@@ -21,7 +21,6 @@ import {
   DialogContent,
   DialogTitle,
   Fab,
-  Grid,
   IconButton,
   TextField,
   Typography,
@@ -29,6 +28,7 @@ import {
   CardContent,
   CardActions,
 } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
@@ -989,14 +989,74 @@ const handleBulkReset = () => {
 
 const applyBulkAction = async (actionType, actionField, actionValue) => {
   try {
+    if (actionType === 'modify' && actionField === 'additional_info') {
+      const additionalInfoKey = Object.keys(actionValue)[0];
+      const additionalInfoData = actionValue[additionalInfoKey];
+
+      if (additionalInfoData.randomAssignment) {
+        // For each selected entry, generate random values and update
+        const { values, numberOfValues, overrideExisting } = additionalInfoData;
+
+        if (!values || values.length === 0) {
+          toast.error('No values provided for random assignment.');
+          return;
+        }
+
+        const updatedEntries = [];
+
+        for (const entryId of selectedEntries) {
+          // Find the entry
+          const entry = entries.find((e) => e.entry_id === entryId);
+          if (!entry) continue;
+
+          // Generate random values
+          let randomValues = getRandomValues(values, numberOfValues);
+          randomValues = randomValues.filter((val) => val && val.trim());
+
+          // Prepare the new value
+          let newValue;
+          if (overrideExisting) {
+            newValue = randomValues;
+          } else {
+            const existingItems = entry[additionalInfoKey]
+              ? entry[additionalInfoKey].split(/[\n,]+/).map((val) => val.trim()).filter((val) => val)
+              : [];
+            newValue = [...existingItems, ...randomValues];
+          }
+
+          // Send request to update entry
+          await axios.post('/api/content/entries/save-info', {
+            entry_id: entryId,
+            info_type: additionalInfoKey,
+            info_value: newValue.join(', '),
+          });
+
+          // Collect updated entry
+          updatedEntries.push({
+            ...entry,
+            [additionalInfoKey]: newValue.join(', '),
+          });
+        }
+
+        // Update entries state
+        setEntries((prevEntries) =>
+          prevEntries.map((e) => {
+            const updatedEntry = updatedEntries.find((u) => u.entry_id === e.entry_id);
+            return updatedEntry || e;
+          })
+        );
+
+        toast.success('Bulk action applied successfully!');
+        return; // Exit function after processing
+      }
+    }
+
+    // Existing code for other cases
     const payload = {
       entry_ids: selectedEntries,
       field: actionField,
       value: actionValue,
     };
-
-    // No need to add overrideExisting, suggestions, or additionalInfoKey separately
-    // The backend will extract these from 'value'
 
     if (actionType === 'modify') {
       await axios.post('/api/content/entries/bulk-modify', payload);
@@ -1014,32 +1074,18 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
             const additionalInfoKey = Object.keys(actionValue)[0];
             const additionalInfoData = actionValue[additionalInfoKey];
 
-            if (
-              ['lsi_terms', 'paa_terms', 'topic_cluster'].includes(
-                additionalInfoKey
-              )
-            ) {
-              // Ensure additionalInfoData is an object with suggestions array
-              if (
-                additionalInfoData &&
-                Array.isArray(additionalInfoData.suggestions)
-              ) {
-                const existingItems = additionalInfoData.overrideExisting
-                  ? []
-                  : entry[additionalInfoKey] || [];
-                updatedEntry[additionalInfoKey] = [
-                  ...existingItems,
-                  ...additionalInfoData.suggestions,
-                ];
-              } else {
-                // Handle cases where suggestions are missing or not an array
-                console.error(
-                  `Invalid additionalInfoData for ${additionalInfoKey}:`,
-                  additionalInfoData
-                );
-                // You can choose to handle this case differently if needed
-              }
-            } else {
+            if (additionalInfoData.suggestions) {
+              // For suggestions
+              const existingItems = additionalInfoData.overrideExisting
+                ? []
+                : entry[additionalInfoKey]
+                ? entry[additionalInfoKey].split(/[\n,]+/).map((val) => val.trim()).filter((val) => val)
+                : [];
+              updatedEntry[additionalInfoKey] = [
+                ...existingItems,
+                ...additionalInfoData.suggestions,
+              ].join(', ');
+            } else if (typeof additionalInfoData === 'string') {
               // For other additional info types
               updatedEntry[additionalInfoKey] = additionalInfoData;
             }
@@ -1056,9 +1102,24 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
     toast.success('Bulk action applied successfully!');
   } catch (error) {
     console.error('Error applying bulk action:', error);
-    alert('Error applying bulk action.');
+    toast.error('Error applying bulk action.');
   }
 };
+
+const getRandomValues = (valuesArray, numberOfValues) => {
+  const result = [];
+  if (!valuesArray || valuesArray.length === 0) {
+    return result;
+  }
+  for (let i = 0; i < numberOfValues; i++) {
+    const randomIndex = Math.floor(Math.random() * valuesArray.length);
+    result.push(valuesArray[randomIndex]);
+  }
+  return result;
+};
+
+
+
 
   const renderAdditionalInfoBlocks = (entry) => {
     const compulsoryItems = getCompulsoryInfoItems(entry);

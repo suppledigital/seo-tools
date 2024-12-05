@@ -28,6 +28,8 @@ export default function AdvancedActions({
   const [suggestions, setSuggestions] = useState([]);
   const [selectedSuggestions, setSelectedSuggestions] = useState([]);
   const [overrideExisting, setOverrideExisting] = useState(true);
+  const [assignRandomly, setAssignRandomly] = useState(false);
+  const [numberOfRandomValues, setNumberOfRandomValues] = useState(1);
 
   const allInfoItems = [
     { key: 'word_count', label: 'Word Count' },
@@ -63,7 +65,9 @@ export default function AdvancedActions({
 
   const handleDeselectAll = () => {
     setSelectedEntries([]);
-    setSelectionCriteriaList([{ logicalOperator: null, criteria: '', criteriaOperator: '', value: '' }]); // Reset selection criteria
+    setSelectionCriteriaList([
+      { logicalOperator: null, criteria: '', criteriaOperator: '', value: '' },
+    ]); // Reset selection criteria
   };
 
   // Handle changes in criteria and values
@@ -76,9 +80,6 @@ export default function AdvancedActions({
       if (field === 'criteria') {
         newList[index]['value'] = '';
         newList[index]['criteriaOperator'] = '';
-        console.log(`Criteria at index ${index} changed. Value and criteriaOperator reset.`);
-      } else if (field === 'criteriaOperator') {
-        console.log(`Criteria Operator at index ${index} set to: ${value}`);
       }
 
       return newList;
@@ -92,12 +93,10 @@ export default function AdvancedActions({
   }, [selectionCriteriaList]);
 
   const applySelection = (criteriaList) => {
-    let selected = []; // Initialize as empty
-
-    console.log('Applying Selection Criteria:', criteriaList);
+    let selected = [];
 
     criteriaList.forEach((criteriaObj, idx) => {
-      const { criteria, value, operator, criteriaOperator, logicalOperator } = criteriaObj;
+      const { criteria, value, criteriaOperator, logicalOperator } = criteriaObj;
 
       if (!criteria) return;
 
@@ -148,9 +147,6 @@ export default function AdvancedActions({
         filteredEntries = entries;
       }
 
-      console.log(`Criteria ${idx + 1}: ${criteria} ${value} with operator ${criteriaOperator || operator}`);
-      console.log(`Filtered Entries:`, filteredEntries.map((e) => e.entry_id));
-
       if (filteredEntries.length === 0) return; // Skip if no entries match
 
       if (idx === 0) {
@@ -173,17 +169,13 @@ export default function AdvancedActions({
           });
         }
       }
-
-      console.log(`Selected after Criteria ${idx + 1}:`, selected.map((e) => e.entry_id));
     });
 
     setSelectedEntries(selected.map((entry) => entry.entry_id));
-    console.log('Final Selected Entries:', selected.map((e) => e.entry_id));
   };
 
-  // Add a function to handle adding new criteria
+  // Function to handle adding new criteria
   const addCriteria = (logicalOperator) => {
-    console.log(`Adding new criteria with logical operator: ${logicalOperator}`);
     setSelectionCriteriaList((prevList) => [
       ...prevList,
       { logicalOperator: logicalOperator, criteria: '', criteriaOperator: '', value: '' },
@@ -236,28 +228,67 @@ export default function AdvancedActions({
     }
   };
 
-  const handleApplyBulkAction = () => {
+  const handleApplyBulkAction = async () => {
     let actionValue = null;
-
+  
     if (bulkActionField === 'page_type') {
       actionValue = pageTypeValue;
     } else if (bulkActionField === 'content_type') {
       actionValue = contentTypeValue;
     } else if (bulkActionField === 'additional_info') {
-      if (['lsi_terms', 'paa_terms', 'topic_cluster'].includes(additionalInfoType)) {
+      if (
+        assignRandomly &&
+        ['lsi_terms', 'paa_terms', 'brand_terms'].includes(additionalInfoType)
+      ) {
+        // Prepare valuesArray based on additionalInfoType
+        let valuesArray = [];
+  
+        if (['lsi_terms', 'paa_terms'].includes(additionalInfoType)) {
+          if (selectedSuggestions.length === 0) {
+            alert('Please select suggestions to assign.');
+            return;
+          }
+          valuesArray = selectedSuggestions.map((suggestion) => suggestion.keyword);
+        } else if (additionalInfoType === 'brand_terms') {
+          valuesArray = additionalInfoValue
+            .split(/[\n,]+/)
+            .map((val) => val.trim())
+            .filter((val) => val);
+          if (valuesArray.length === 0) {
+            alert('Please enter values to assign.');
+            return;
+          }
+        }
+  
+        // Prepare data for random assignment
         actionValue = {
           [additionalInfoType]: {
-            suggestions: selectedSuggestions,
+            randomAssignment: true,
+            values: valuesArray,
+            numberOfValues: parseInt(numberOfRandomValues, 10),
+            overrideExisting: overrideExisting,
+          },
+        };
+      } else if (['lsi_terms', 'paa_terms', 'topic_cluster'].includes(additionalInfoType)) {
+        // When not assigning randomly, use selected suggestions
+        if (selectedSuggestions.length === 0) {
+          alert('Please select suggestions to assign.');
+          return;
+        }
+        actionValue = {
+          [additionalInfoType]: {
+            suggestions: selectedSuggestions.map((s) => s.keyword),
             overrideExisting: overrideExisting,
           },
         };
       } else {
+        // For other additional info types
         actionValue = { [additionalInfoType]: additionalInfoValue };
       }
     }
-
-    applyBulkAction(bulkActionType, bulkActionField, actionValue);
-
+  
+    await applyBulkAction(bulkActionType, bulkActionField, actionValue);
+  
     // Reset state
     setShowBulkActionOptions(false);
     setBulkActionField('');
@@ -269,7 +300,12 @@ export default function AdvancedActions({
     setSuggestions([]);
     setShowGenerateIdeas(false);
     setKeywordForIdeas('');
+    setAssignRandomly(false);
+    setNumberOfRandomValues(1);
   };
+  
+
+  
 
   return (
     <div className={styles.advancedActions}>
@@ -305,10 +341,12 @@ export default function AdvancedActions({
                 </select>
 
                 {/* Criteria-Specific Operator Dropdown */}
-                {(['url', 'keyword'].includes(criteriaObj.criteria)) && (
+                {['url', 'keyword'].includes(criteriaObj.criteria) && (
                   <select
                     value={criteriaObj.criteriaOperator}
-                    onChange={(e) => handleCriteriaChange(index, 'criteriaOperator', e.target.value)}
+                    onChange={(e) =>
+                      handleCriteriaChange(index, 'criteriaOperator', e.target.value)
+                    }
                   >
                     <option value="">--Select Operator--</option>
                     <option value="contains">Contains</option>
@@ -317,13 +355,14 @@ export default function AdvancedActions({
                 )}
 
                 {/* Value Input or Selection */}
-                {(['page_type', 'content_type'].includes(criteriaObj.criteria)) && (
+                {['page_type', 'content_type'].includes(criteriaObj.criteria) && (
                   <select
                     value={criteriaObj.value}
                     onChange={(e) => handleCriteriaChange(index, 'value', e.target.value)}
                   >
                     <option value="">
-                      --Select {criteriaObj.criteria === 'page_type' ? 'Page Type' : 'Content Type'}--
+                      --Select{' '}
+                      {criteriaObj.criteria === 'page_type' ? 'Page Type' : 'Content Type'}--
                     </option>
                     {criteriaObj.criteria === 'page_type' &&
                       Object.keys(pageTypeCounts).map((type) => (
@@ -340,18 +379,13 @@ export default function AdvancedActions({
                   </select>
                 )}
 
-                {(['url', 'keyword'].includes(criteriaObj.criteria)) && (
+                {['url', 'keyword'].includes(criteriaObj.criteria) && (
                   <input
                     type="text"
                     placeholder="Enter value..."
                     value={criteriaObj.value}
                     onChange={(e) => handleCriteriaChange(index, 'value', e.target.value)}
                   />
-                )}
-
-                {(['select_all'].includes(criteriaObj.criteria)) && (
-                  // No additional fields needed for 'Select All'
-                  null
                 )}
 
                 {/* Operator Links for Adding New Criteria */}
@@ -408,10 +442,22 @@ export default function AdvancedActions({
 
             <div className={styles.selectAllContainer}>
               <span>or you can also</span>
-              <a href="#" onClick={(e) => { e.preventDefault(); handleSelectAll(); }}>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSelectAll();
+                }}
+              >
                 Select All
               </a>
-              <a href="#" onClick={(e) => { e.preventDefault(); handleDeselectAll(); }}>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDeselectAll();
+                }}
+              >
                 Deselect All
               </a>
             </div>
@@ -441,6 +487,8 @@ export default function AdvancedActions({
                     setSuggestions([]);
                     setShowGenerateIdeas(false);
                     setKeywordForIdeas('');
+                    setAssignRandomly(false);
+                    setNumberOfRandomValues(1);
                   }}
                 >
                   <option value="">Select Field</option>
@@ -505,6 +553,8 @@ export default function AdvancedActions({
                       setSuggestions([]);
                       setShowGenerateIdeas(false);
                       setKeywordForIdeas('');
+                      setAssignRandomly(false);
+                      setNumberOfRandomValues(1);
                     }}
                   >
                     <option value="">Select Info Type</option>
@@ -542,10 +592,7 @@ export default function AdvancedActions({
                   {['lsi_terms', 'paa_terms', 'topic_cluster'].includes(additionalInfoType) && (
                     <div>
                       <label>
-                        {
-                          allInfoItems.find((item) => item.key === additionalInfoType)?.label
-                        }
-                        :
+                        {allInfoItems.find((item) => item.key === additionalInfoType)?.label}:
                       </label>
                       <button
                         className={styles.generateButton}
@@ -625,15 +672,85 @@ export default function AdvancedActions({
                               Add to Existing Items
                             </label>
                           </div>
+
+                          {/* Assign Randomly Option */}
+                          <div className={styles.randomiseOptions}>
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={assignRandomly}
+                              onChange={(e) => setAssignRandomly(e.target.checked)}
+                            />
+                            Assign randomly to selected entries
+                          </label>
+                          </div>
+
+                          {assignRandomly && (
+                            <div>
+                              <label>
+                                Assign{' '}
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="100"
+                                  value={numberOfRandomValues}
+                                  onChange={(e) => setNumberOfRandomValues(e.target.value)}
+                                  style={{ width: '50px', margin: '0 5px' }}
+                                />{' '}
+                                random values to each selection
+                              </label>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
                   )}
 
+                  {/* LSI Terms, PAA Terms, Brand Terms without Generate Ideas */}
+                  {['lsi_terms', 'paa_terms', 'brand_terms'].includes(additionalInfoType) &&
+                    !['lsi_terms', 'paa_terms', 'topic_cluster'].includes(additionalInfoType) && (
+                      <div>
+                        <label>
+                          Enter{' '}
+                          {allInfoItems.find((item) => item.key === additionalInfoType)?.label}:
+                        </label>
+                        <textarea
+                          rows="4"
+                          value={additionalInfoValue}
+                          onChange={(e) => setAdditionalInfoValue(e.target.value)}
+                        ></textarea>
+
+                        {/* Assign Randomly Option */}
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={assignRandomly}
+                            onChange={(e) => setAssignRandomly(e.target.checked)}
+                          />
+                          Assign randomly to selected entries
+                        </label>
+
+                        {assignRandomly && (
+                          <div>
+                            <label>
+                              Assign{' '}
+                              <input
+                                type="number"
+                                min="1"
+                                max="100"
+                                value={numberOfRandomValues}
+                                onChange={(e) => setNumberOfRandomValues(e.target.value)}
+                                style={{ width: '50px', margin: '0 5px' }}
+                              />{' '}
+                              random values to each selection
+                            </label>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                   {/* Other Additional Info Types */}
-                  {['existing_content', 'existing_product_info', 'brand_terms'].includes(
-                    additionalInfoType
-                  ) && (
+                  {['existing_content', 'existing_product_info'].includes(additionalInfoType) && (
                     <div>
                       <label>
                         Enter{' '}
@@ -664,6 +781,8 @@ export default function AdvancedActions({
                     setSuggestions([]);
                     setShowGenerateIdeas(false);
                     setKeywordForIdeas('');
+                    setAssignRandomly(false);
+                    setNumberOfRandomValues(1);
                   }}
                 >
                   Cancel

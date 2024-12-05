@@ -2,6 +2,18 @@ import { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import styles from './EntryRow.module.css';
+import {
+  TableRow,
+  TableCell,
+  Checkbox,
+  IconButton,
+  Button,
+  Select,
+  MenuItem,
+  Tooltip,
+} from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 export default function EntryRow({
   entry,

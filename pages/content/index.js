@@ -13,7 +13,6 @@ import {
   DialogContent,
   DialogTitle,
   Fab,
-  Grid,
   IconButton,
   TextField,
   Typography,
@@ -21,6 +20,7 @@ import {
   CardContent,
   CardActions,
 } from '@mui/material';
+import Grid from '@mui/material/Grid2'
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
@@ -246,21 +246,21 @@ export default function ContentHome() {
         </Box>
 
         {/* Projects Grid */}
-        <Grid container spacing={3}>
-          {filteredProjects.map((project) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={project.project_id}>
-              <Card
-                sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  position: 'relative',
-                  transition: 'transform 0.2s',
-                  '&:hover': {
-                    transform: 'scale(1.02)',
-                  },
-                }}
-              >
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+        {filteredProjects.map((project) => (
+    <Grid size={{ xs: 2, sm: 4, md: 4 }}key={project.project_id}>
+      <Card
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          transition: 'transform 0.2s',
+          '&:hover': {
+            transform: 'scale(1.02)',
+          },
+        }}
+      >
                 {(project.user_email === session.user.email || isAdmin) && (
                   <IconButton
                     aria-label="more"

@@ -228,11 +228,11 @@
     margin-right: 10px;
   }
   
-  .overrideOptions {
+  .overrideOptions,.randomiseOptions {
     margin-top: 15px;
   }
   
-  .overrideOptions label {
+  .overrideOptions label,.randomiseOptions label {
     margin-right: 20px;
   }
   

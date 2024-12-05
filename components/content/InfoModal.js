@@ -1,22 +1,43 @@
 // components/content/InfoModal.js
 
 import styles from './InfoModal.module.css';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+} from '@mui/material';
+
 
 export default function InfoModal({ isVisible, onClose, title, value, onChange, onSave }) {
-  if (!isVisible) return null;
-
   return (
-    <div className={styles.modal}>
-      <div className={styles.modalContent}>
-        <span className={styles.close} onClick={onClose}>
-          &times;
-        </span>
-        <h2>{title}</h2>
-        <textarea value={value} onChange={(e) => onChange(e.target.value)}></textarea>
-        <button className={styles.saveButton} onClick={onSave}>
+    <Dialog open={isVisible} onClose={onClose} fullWidth>
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>
+        <TextField
+          autoFocus
+          margin="dense"
+          id="infoValue"
+          label="Value"
+          type="text"
+          fullWidth
+          multiline
+          rows={4}
+          variant="outlined"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary">
+          Cancel
+        </Button>
+        <Button onClick={onSave} color="primary">
           Save
-        </button>
-      </div>
-    </div>
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
