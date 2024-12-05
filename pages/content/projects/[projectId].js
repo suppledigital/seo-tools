@@ -29,8 +29,13 @@ import {
   CardContent,
   CardActions,
 } from '@mui/material';
+import SpeedDial from '@mui/material/SpeedDial';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
+import Backdrop from '@mui/material/Backdrop';
+import { Group as GroupIcon, Settings as SettingsIcon, PlayArrow as PlayArrowIcon, Replay as ReplayIcon } from '@mui/icons-material';
+import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import AddIcon from '@mui/icons-material/Add';
-import SettingsIcon from '@mui/icons-material/Settings';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
@@ -65,6 +70,7 @@ export default function ProjectPage({ initialData }) {
   const [showAdditionalInfoDropdown, setShowAdditionalInfoDropdown] = useState(false);
   const [selectedEntryId, setSelectedEntryId] = useState(null);
   const [loadingEntries, setLoadingEntries] = useState({});
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState('');
   // Sidebar State
@@ -95,10 +101,67 @@ export default function ProjectPage({ initialData }) {
   const [bulkActionValue, setBulkActionValue] = useState('');
 
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
-
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
 
   const sidebarRef = useRef(null);
+
+  const actions = [
+    {
+      icon: <SettingsIcon />,
+      name: 'Configure Project',
+      onClick: () => { setIsConfigModalOpen(true); handleClose(); },
+      group: 'Setup',
+    },
+    {
+      icon: <GroupIcon />,
+      name: 'Auto Classify Page Type',
+      onClick: () => { handleStartClassifications(); handleClose(); },
+      group: 'Setup',
+    },
+    {
+      icon: <PlayArrowIcon />,
+      name: 'Generate All',
+      onClick: () => { handleGenerateAllContent(); handleClose(); },
+      group: 'Generate',
+    },
+    {
+      icon: <ReplayIcon />,
+      name: 'Force Generate All',
+      onClick: () => { handleForceGenerateAllContent(); handleClose(); },
+      group: 'Generate',
+    },
+  ];
+  const handleForceGenerateAllContent = async () => {
+    const entriesToProcess = entries; // Process all entries, regardless of generated_content
+    const totalEntries = entriesToProcess.length;
+    const batchSize = 20;
+  
+    for (let i = 0; i < totalEntries; i += batchSize) {
+      const batchEntries = entriesToProcess.slice(i, i + batchSize);
+  
+      // Initialize retries count
+      const retries = {};
+      batchEntries.forEach((entry) => {
+        retries[entry.entry_id] = 0;
+        // Set loading state
+        setLoadingEntries((prevState) => ({
+          ...prevState,
+          [entry.entry_id]: { loading: true, message: '' },
+        }));
+      });
+  
+      const promises = batchEntries.map((entry) => generateContentWithRetry(entry, retries, true)); // Pass 'true' to force generation
+  
+      // Wait for all promises in the batch to complete
+      await Promise.all(promises);
+    }
+  
+    toast.success('Force generation process completed.');
+  };
+  
 
   useEffect(() => {
     if (project && !project.initialised) {
@@ -483,63 +546,151 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
     }
   };
 
-  const handleGenerateContent = async (entryId) => {
+
+  const handleGenerateAllContent = async () => {
+    const entriesToProcess = entries.filter((entry) => !entry.generated_content);
+    const totalEntries = entriesToProcess.length;
+    const batchSize = 20;
+
+    for (let i = 0; i < totalEntries; i += batchSize) {
+      const batchEntries = entriesToProcess.slice(i, i + batchSize);
+
+      // Initialize retries count
+      const retries = {};
+      batchEntries.forEach((entry) => {
+        retries[entry.entry_id] = 0;
+        // Set loading state
+        setLoadingEntries((prevState) => ({
+          ...prevState,
+          [entry.entry_id]: { loading: true, message: '' },
+        }));
+      });
+
+      const promises = batchEntries.map((entry) => generateContentWithRetry(entry, retries));
+
+      // Wait for all promises in the batch to complete
+      await Promise.all(promises);
+    }
+
+    toast.success('Generation process completed.');
+  };
+
+  const generateContentWithRetry = async (entry, retries, force = false) => {
+    const maxRetries = 3;
+    while (retries[entry.entry_id] < maxRetries) {
+      try {
+        await handleGenerateContent(entry.entry_id, true, force); // Pass 'force' to handleGenerateContent
+        // On success, break out of the loop
+        break;
+      } catch (error) {
+        retries[entry.entry_id] += 1;
+        if (retries[entry.entry_id] < maxRetries) {
+          // Update loadingEntries with retry message
+          setLoadingEntries((prevState) => ({
+            ...prevState,
+            [entry.entry_id]: {
+              loading: true,
+              message: `Retrying ${retries[entry.entry_id]} time(s)`,
+            },
+          }));
+        } else {
+          // Mark as failed after max retries
+          setLoadingEntries((prevState) => ({
+            ...prevState,
+            [entry.entry_id]: {
+              loading: false,
+              message: 'Failed after 3 retries',
+            },
+          }));
+        }
+      }
+    }
+    // Set loading to false after processing
+    setLoadingEntries((prevState) => ({
+      ...prevState,
+      [entry.entry_id]: {
+        ...prevState[entry.entry_id],
+        loading: false,
+      },
+    }));
+  };
+  
+
+  // Update handleGenerateContent to accept a second parameter for bulk generation
+  const handleGenerateContent = async (entryId, isBulk = false, force = false) => {
     // Set loading state to true for this entry
     setLoadingEntries((prevState) => ({
       ...prevState,
-      [entryId]: true,
+      [entryId]: { loading: true, message: prevState[entryId]?.message || '' },
     }));
   
     const entry = entries.find((e) => e.entry_id === entryId);
   
-    // Ensure that both page_type and content_type are set
-    if (!entry.page_type || !entry.content_type) {
-      toast.error('Please select both Page Type and Content Type for this entry.');
+    // If not forcing, isBulk is true, and content exists, skip generation
+    if (!force && isBulk && entry.generated_content) {
       // Reset loading state
       setLoadingEntries((prevState) => ({
         ...prevState,
-        [entryId]: false,
+        [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
       }));
       return;
     }
-  
+
+    // Ensure that both page_type and content_type are set
+    if (!entry.page_type || !entry.content_type) {
+      if (!isBulk) {
+        toast.error('Please select both Page Type and Content Type for this entry.');
+      }
+      // Reset loading state
+      setLoadingEntries((prevState) => ({
+        ...prevState,
+        [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
+      }));
+      return;
+    }
+
     // Get compulsory fields based on page_type and content_type
     const compulsoryFields = getCompulsoryFields(entry.page_type, entry.content_type);
-  
+
     for (const { field, type } of compulsoryFields) {
       const value = entry[field];
-  
+
       if (type === 'string') {
         if (!value || typeof value !== 'string' || !value.trim()) {
-          toast.error(`Please provide ${field.replace('_', ' ')} for this entry.`);
+          if (!isBulk) {
+            toast.error(`Please provide ${field.replace('_', ' ')} for this entry.`);
+          }
+          // Reset loading state
           setLoadingEntries((prevState) => ({
             ...prevState,
-            [entryId]: false,
+            [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
           }));
           return;
         }
       } else if (type === 'number') {
         if (value === undefined || value === null || typeof value !== 'number') {
-          toast.error(`Please provide a valid ${field.replace('_', ' ')} for this entry.`);
+          if (!isBulk) {
+            toast.error(`Please provide a valid ${field.replace('_', ' ')} for this entry.`);
+          }
           setLoadingEntries((prevState) => ({
             ...prevState,
-            [entryId]: false,
+            [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
           }));
           return;
         }
-        // Optionally, check for positive numbers
         if (value <= 0) {
-          toast.error(`${field.replace('_', ' ')} must be a positive number.`);
+          if (!isBulk) {
+            toast.error(`${field.replace('_', ' ')} must be a positive number.`);
+          }
           setLoadingEntries((prevState) => ({
             ...prevState,
-            [entryId]: false,
+            [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
           }));
           return;
         }
       }
-      // Add more type-specific validations if necessary
     }
-  
+
     try {
       // Send a POST request to the generate-content API with entry_id
       const generateResponse = await axios.post(
@@ -551,44 +702,48 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
           withCredentials: true,
         }
       );
-  
-      const generatedContent = generateResponse.data.data; // Extract the string
-  
-      //console.log('Generated Content:', generatedContent); // Debugging log
-  
+
+      const generatedContent = generateResponse.data.data;
+
       if (!generatedContent) {
-        toast.error('Received empty content from AI.');
+        if (!isBulk) {
+          toast.error('Received empty content from AI.');
+        }
         setLoadingEntries((prevState) => ({
           ...prevState,
-          [entryId]: false,
+          [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
         }));
         return;
       }
-  
+
       // Update the entry in the client-side state
       setEntries((prevEntries) =>
         prevEntries.map((e) =>
           e.entry_id === entryId ? { ...e, generated_content: generatedContent } : e
         )
-      );
-  
-      toast.success('Content generated and saved successfully!');
+      );  
+
+      if (!isBulk) {
+        toast.success('Content generated and saved successfully!');
+      }
     } catch (error) {
       console.error('Error generating content:', error);
-      if (error.response && error.response.data && error.response.data.message) {
-        toast.error(`Error generating content: ${error.response.data.message}`);
-      } else {
-        toast.error('Error generating content.');
+      if (!isBulk) {
+        if (error.response && error.response.data && error.response.data.message) {
+          toast.error(`Error generating content: ${error.response.data.message}`);
+        } else {
+          toast.error('Error generating content.');
+        }
       }
+      throw error; // Re-throw the error to trigger retry logic
     } finally {
       // Reset loading state
       setLoadingEntries((prevState) => ({
         ...prevState,
-        [entryId]: false,
+        [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
       }));
     }
   };
-  
   
   
   const getCompulsoryFields = (pageType, contentType) => {
@@ -1050,7 +1205,7 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
             applyBulkAction={applyBulkAction}
           />
           
-          <div className={styles.actionButtons}>
+         {/*} <div className={styles.actionButtons}>
             <button className={styles.startButton} onClick={handleStartClassifications}>
               Auto Classify Page Type
             </button>
@@ -1060,7 +1215,27 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
             >
               Configure Project
             </button>
-          </div>
+            <button className={styles.generateAllButton} onClick={handleGenerateAllContent}>
+              Generate All Content
+            </button>
+          </div>*}
+
+
+           {/* Add Project Button */}
+        {/*<Fab
+         size="medium"
+        variant="extended"
+          color="primary"
+          aria-label="add"
+          onClick={() => handleGenerateAllContent}
+          sx={{ position: 'fixed', bottom: 16, right: 16 }}
+        >
+          <PlayArrowIcon /> 
+          Generate All Content
+        </Fab>*/}
+
+
+      
           <EntriesTable
             entries={entries}
             handlers={handlers}
@@ -1180,9 +1355,32 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
       </button>
     </div>
   </div>
+
+  
 )}
+{/* SpeedDial FAB */}
+<Backdrop open={open} />
+<SpeedDial
+  ariaLabel="Actions"
+  sx={{ position: 'fixed', bottom: 16, right: 16 }}
+  icon={<SpaceDashboardIcon />}
+  onClose={handleClose}
+  onOpen={handleOpen}
+  open={open}
+>
+  {actions.map((action, index) => (
+    <SpeedDialAction
+      key={action.name}
+      icon={action.icon}
+      tooltipTitle={`${action.group}: ${action.name}`}
+      onClick={action.onClick}
+    />
+  ))}
+</SpeedDial>
 
     </div>
+
+    
 
     
 

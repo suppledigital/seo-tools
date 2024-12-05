@@ -211,7 +211,7 @@ export default function AdvancedActions({
   const handleGetIdeas = async () => {
     try {
       let response;
-      if (additionalInfoType === 'paa_terms') {
+      if (additionalInfoType === 'lsi_terms') {
         response = await axios.post('/api/content/semrush/paa-suggestions', {
           keyword: keywordForIdeas,
           country: 'AU',
@@ -220,7 +220,7 @@ export default function AdvancedActions({
           ...response.data.relatedKeywords.map((kw) => ({ ...kw, source: 'Related' })),
           ...response.data.broadMatchKeywords.map((kw) => ({ ...kw, source: 'Broad' })),
         ]);
-      } else if (additionalInfoType === 'lsi_terms') {
+      } else if (additionalInfoType === 'paa_terms') {
         response = await axios.post('/api/content/semrush/lsi-suggestions', {
           keyword: keywordForIdeas,
           country: 'AU',

@@ -28,6 +28,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Avatar from '@mui/material/Avatar';
+import Chip from '@mui/material/Chip';
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -70,7 +72,7 @@ export default function ContentHome() {
     if (!name) return '';
     const names = name.split(' ');
     const initials = names.map((n) => n.charAt(0).toUpperCase()).join('');
-    return initials;
+    return initials[0];
   };
 
   const handleMenuOpen = (event, projectId) => {
@@ -277,15 +279,19 @@ export default function ContentHome() {
                   </Typography>
                   {/* Display User Initials */}
                   <Box display="flex" alignItems="center" mt={1}>
-                    <Avatar
+                    {/*<Avatar
                       sx={{ width: 32, height: 32, mr: 1, padding: 1, fontSize: 12 }}
                       title={project.name} // Full name on hover
                     >
                       {getInitials(project.name)}
-                    </Avatar>
-                    <Typography variant="body2" color="textSecondary">
+                    </Avatar>*/}
+
+                    
+                  <Chip size="small" avatar={<Avatar>{getInitials(project.name)}</Avatar>} label={project.name || project.user_email}/> 
+
+                    {/*<Typography variant="body2" color="textSecondary">
                       {project.name || project.user_email}
-                    </Typography>
+                    </Typography>*/}
                   </Box>
                 </CardContent>
                 <CardActions>

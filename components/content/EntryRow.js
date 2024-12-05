@@ -1,5 +1,3 @@
-// components/content/EntryRow.js
-
 import { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -29,10 +27,14 @@ export default function EntryRow({
     handleViewContent,
   } = handlers;
 
+  const loadingState = loadingEntries[entry.entry_id] || { loading: false, message: '' };
+  const isLoading = loadingState.loading;
+  const retryMessage = loadingState.message;
+
   const isSelected = selectedEntries.includes(entry.entry_id);
   const wordCount = entry.generated_content
-  ? entry.generated_content.trim().split(/\s+/).length
-  : 0;
+    ? entry.generated_content.trim().split(/\s+/).length
+    : 0;
 
   const handleCheckboxChange = (e) => {
     const { checked } = e.target;
@@ -158,11 +160,11 @@ export default function EntryRow({
       <td className={styles.additionalInfoCell}>{renderAdditionalInfoBlocks(entry)}</td>
       {/* Generated Content Cell */}
       <td className={styles.generatedContentCell}>
-          {loadingEntries[entry.entry_id] ? (
-            <i className={`fas fa-spinner fa-spin ${styles.contentSpinner}`}></i>
-          ) : entry.generated_content ? (
-            <>
-              <span className={styles.generatedContent}>{entry.generated_content}</span>
+      {isLoading ? (
+          <i className={`fas fa-spinner fa-spin ${styles.contentSpinner}`}></i>
+        ) : entry.generated_content ? (
+          <>
+            <span className={styles.generatedContent}>{entry.generated_content}</span>
               <div className={styles.contentActions}>
                 <i
                   className={`fas fa-copy ${styles.contentActionIcon}`}
@@ -196,28 +198,36 @@ export default function EntryRow({
         </td>
       {/* Actions Cell */}
       <td className={styles.actionsCell}>
-      <button
-        className={styles.actionButton}
-        onClick={() => handlers.handleGenerateContent(entry.entry_id)}
-        disabled={loadingEntries[entry.entry_id]}
-      >
-        {loadingEntries[entry.entry_id] ? (
-          <>
-            <i className="fas fa-spinner fa-spin"></i> Generating...
-          </>
-        ) : entry.generated_content ? (
-          'Regenerate'
-        ) : (
-          'Generate'
-        )}
-      </button>
+        <button
+          className={styles.actionButton}
+          onClick={() => handlers.handleGenerateContent(entry.entry_id)}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <i className="fas fa-spinner fa-spin"></i> Generating...
+            </>
+          ) : entry.generated_content ? (
+            'Regenerate'
+          ) : (
+            'Generate'
+          )}
+        </button>
         <button
           className={styles.deleteButton}
           onClick={() => handleDeleteEntry(entry.entry_id)}
+          disabled={isLoading}
         >
           Delete
         </button>
+        {/* Display retry message if any */}
+        {retryMessage && (
+          <div className={styles.retryMessage}>
+            {retryMessage}
+          </div>
+        )}
       </td>
+
     </tr>
   );
 }
