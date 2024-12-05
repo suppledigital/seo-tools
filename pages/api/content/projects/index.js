@@ -13,19 +13,26 @@ export default async function handler(req, res) {
   const { method } = req;
 
   if (method === 'GET') {
-    // Fetch projects
+    // Fetch projects with user names
     try {
-      const [rows] = await pool.query('SELECT * FROM projects');
+      const [rows] = await pool.query(
+        `SELECT projects.*, users.name
+         FROM projects
+         LEFT JOIN users ON projects.user_email = users.email`
+      );
       res.status(200).json({ projects: rows });
     } catch (error) {
       console.error('Error fetching projects:', error);
       res.status(500).json({ message: 'Error fetching projects' });
     }
-  } else if (method === 'POST') {
+  }   else if (method === 'POST') {
     // Add new project
     const { project_name } = req.body;
     try {
-      await pool.query('INSERT INTO projects (project_name) VALUES (?)', [project_name]);
+      await pool.query(
+        'INSERT INTO projects (project_name, user_email) VALUES (?, ?)',
+        [project_name, session.user.email]
+      );
       res.status(201).json({ message: 'Project added' });
     } catch (error) {
       console.error('Error adding project:', error);

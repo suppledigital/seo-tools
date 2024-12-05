@@ -1,6 +1,8 @@
 // pages/projects/[projectId].js
 
 import { useRouter } from 'next/router';
+import { useSession, signIn, signOut } from 'next-auth/react';
+
 import { useEffect, useState, useRef } from 'react';
 import styles from './[projectId].module.css';
 import axios from 'axios';
@@ -9,7 +11,31 @@ import 'handsontable/dist/handsontable.full.css';
 import { getSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Ensure CSS is imported
-
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Fab,
+  Grid,
+  IconButton,
+  TextField,
+  Typography,
+  Card,
+  CardContent,
+  CardActions,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import SettingsIcon from '@mui/icons-material/Settings';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Avatar from '@mui/material/Avatar';
 
 
 // Import custom components
@@ -24,6 +50,8 @@ import ConfigureProjectModal from '../../../components/content/ConfigureProjectM
 
 export default function ProjectPage({ initialData }) {
   const router = useRouter();
+  const { data: session, status } = useSession();
+
   const { projectId } = router.query;
   const [project, setProject] = useState(initialData.project);
   const [entries, setEntries] = useState(initialData.entries || []);
@@ -84,10 +112,32 @@ export default function ProjectPage({ initialData }) {
         height: 600,
         manualColumnResize: true,
         licenseKey: 'non-commercial-and-evaluation',
+        beforePaste: (data, coords) => {
+          let invalidUrlFound = false;
+  
+          data.forEach((row) => {
+            const url = row[0];
+            if (
+              typeof url === 'string' &&
+              url.trim() !== '' &&
+              !(url.startsWith('http://') || url.startsWith('https://'))
+            ) {
+              // Clear the URL cell value
+              row[0] = '';
+              invalidUrlFound = true;
+            }
+          });
+  
+          if (invalidUrlFound) {
+            toast.info('Invalid URLs have been cleared.');
+          }
+        },
       });
       setHotInstance(hot);
     }
   }, [project]);
+  
+  
 
   /*useEffect(() => {
     const handleClickOutside = (event) => {
@@ -956,7 +1006,33 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
 
   return (
     <div className={styles.projects}>
-      <h1 className={styles.title}>Project: {project.project_name}</h1>
+      <Container maxWidth="xlg" sx={{ mt: 1, mb: 1 }}>
+        {/* Header */}
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+          <Typography variant="h9" component="h3">
+          Project: {project.project_name}
+          </Typography>
+          <Box display="flex" alignItems="center">
+            <Typography variant="subtitle1" mr={2}>
+              Welcome, {session?.user?.name || session?.user?.email}
+            </Typography>
+            <IconButton onClick={() => router.push('/content/settings')}>
+              <SettingsIcon />
+            </IconButton>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => signOut()}
+              size="small"
+              sx={{ ml: 2 }}
+            >
+              Sign Out
+            </Button>
+          </Box>
+        </Box>
+      </Container>
+      
+    
       {!project.initialised ? (
         <>
           <p>Please paste your data below to initialize the project.</p>
@@ -967,7 +1043,6 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
         </>
       ) : (
         <div className={styles.projectDetails}>
-          <h2 className={styles.entriesTitle}>Project Entries</h2>
           <AdvancedActions
             entries={entries}
             selectedEntries={selectedEntries}
@@ -977,7 +1052,7 @@ const applyBulkAction = async (actionType, actionField, actionValue) => {
           
           <div className={styles.actionButtons}>
             <button className={styles.startButton} onClick={handleStartClassifications}>
-              Start Classifications
+              Auto Classify Page Type
             </button>
             <button
               className={styles.configureButton}

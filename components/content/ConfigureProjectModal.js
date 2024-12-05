@@ -84,7 +84,7 @@ const ConfigureProjectModal = ({ isVisible, onClose, initialData, onSave }) => {
           &times;
         </span>
         <h2>Configure Project</h2>
-        <form onSubmit={handleSubmit}>
+        <form className={styles.overflowSection} onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label>Business Name:</label>
             <input
