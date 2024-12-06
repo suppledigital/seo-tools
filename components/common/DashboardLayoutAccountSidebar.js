@@ -29,27 +29,30 @@ import PersonIcon from '@mui/icons-material/Person';
 
 const NAVIGATION = [
   { kind: 'header', title: 'Supple Tools' },
-  // { segment: '', title: 'Home', icon: <HomeIcon /> }, // Removed to prevent duplication
+  { segment: '', title: 'Home', icon: <HomeIcon /> }, // Removed to prevent duplication
   {
+    segment: 'keywords',
     title: 'Keywords',
     icon: <KeyIcon />,
     children: [
-      { segment: 'keywords', title: 'Keywords Tool', icon: <KeyIcon /> },
+      { segment: 'internal', title: 'Keywords Tool', icon: <KeyIcon /> },
       { segment: 'webceo-keywords', title: 'Keywords Exporter', icon: <KeyIcon /> },
     ],
   },
   {
+    segment: 'content',
     title: 'Content',
     icon: <ArticleIcon />,
     children: [
-      { segment: 'content', title: 'Content Generator', icon: <ArticleIcon /> },
+      { segment: 'generate', title: 'Content Generator', icon: <ArticleIcon /> },
     ],
   },
   {
+    segment: 'audit',
     title: 'Audit',
     icon: <AssessmentIcon />,
     children: [
-      { segment: 'audit', title: 'Site Audit', icon: <AssessmentIcon /> },
+      { segment: 'site-audit', title: 'Site Audit', icon: <AssessmentIcon /> },
       { segment: 'trello-audit', title: 'Trello Audit', icon: <ListAltIcon /> },
     ],
   },
@@ -159,7 +162,7 @@ SidebarFooterAccount.propTypes = {
 export default function DashboardLayoutAccountSidebar({ children }) {
   const { data: session } = useSession();
   const routerNext = useRouter();
-  
+
   const router = useMemo(
     () => ({
       pathname: routerNext.pathname,

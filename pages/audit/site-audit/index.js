@@ -4,12 +4,12 @@ import axios from 'axios';
 import styles from './index.module.css';
 import dynamic from 'next/dynamic';
 
-import DomainOverview from '../../components/audit/domain-overview/DomainOverview';
-import SiteAudit from '../../components/audit/site-audit/SiteAudit';
-import KeywordResearch from '../../components/audit/keyword-research/KeywordResearch';
-import CompetitorAnalysis from '../../components/audit/competitor-analysis/CompetitorAnalysis';
+import DomainOverview from '../../../components/audit/domain-overview/DomainOverview';
+import SiteAudit from '../../../components/audit/site-audit/SiteAudit';
+import KeywordResearch from '../../../components/audit/keyword-research/KeywordResearch';
+import CompetitorAnalysis from '../../../components/audit/competitor-analysis/CompetitorAnalysis';
 
-import SortableTable from '../../components/common/SortableTable'; // Ensure SortableTable is correctly imported
+import SortableTable from '../../../components/common/SortableTable'; // Ensure SortableTable is correctly imported
 
 // Dynamically import HighchartsReact with SSR disabled if needed in other components
 const HighchartsReactNoSSR = dynamic(() => import('highcharts-react-official'), { ssr: false });

@@ -1,8 +1,8 @@
 // pages/trello-audit/index.js
 import { useSession, signIn } from 'next-auth/react';
 import { useEffect, useState, useRef } from 'react';
-import CardList from '../../components/trello-audit/CardList';
-import Timeline from '../../components/trello-audit/Timeline';
+import CardList from '../../../components/trello-audit/CardList';
+import Timeline from '../../../components/trello-audit/Timeline';
 import axios from 'axios';
 import styles from './TrelloAudit.module.css';
 

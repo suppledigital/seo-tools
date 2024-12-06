@@ -29,7 +29,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import DashboardLayoutAccountSidebar from '../../components/common/DashboardLayoutAccountSidebar';
+import DashboardLayoutAccountSidebar from '../../../components/common/DashboardLayoutAccountSidebar';
 
 export default function ContentHome() {
   const { data: session, status } = useSession();
@@ -151,7 +151,7 @@ export default function ContentHome() {
   const handleProjectClick = (projectId) => {
     if (isLoading) return;
     setIsLoading(true);
-    router.push(`/content/projects/${projectId}`);
+    router.push(`/content/generate/projects/${projectId}`);
   };
 
   if (status === 'loading') {

@@ -51,12 +51,12 @@ import Avatar from '@mui/material/Avatar';
 
 
 // Import custom components
-import EntriesTable from '../../../components/content/EntriesTable';
-import InfoModal from '../../../components/content/InfoModal';
-import ContentModal from '../../../components/content/ContentModal';
-import Sidebar from '../../../components/content/Sidebar';
-import AdvancedActions from '../../../components/content/AdvancedActions';
-import ConfigureProjectModal from '../../../components/content/ConfigureProjectModal';
+import EntriesTable from '../../../../components/content/EntriesTable';
+import InfoModal from '../../../../components/content/InfoModal';
+import ContentModal from '../../../../components/content/ContentModal';
+import Sidebar from '../../../../components/content/Sidebar';
+import AdvancedActions from '../../../../components/content/AdvancedActions';
+import ConfigureProjectModal from '../../../../components/content/ConfigureProjectModal';
 
 
 
@@ -1572,7 +1572,7 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  const pool = (await import('../../../lib/db')).default;
+  const pool = (await import('../../../../lib/db')).default;
 
   // Query the database directly
   try {
