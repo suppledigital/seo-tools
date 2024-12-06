@@ -18,6 +18,7 @@ export default async function handler(req, res) {
       // Fetch the entry data
       const [entryRows] = await pool.query('SELECT * FROM entries WHERE entry_id = ?', [entry_id]);
       const entry = entryRows[0];
+      console.log(entry);
 
       if (!entry) {
         return res.status(404).json({ message: 'Entry not found.' });
@@ -64,11 +65,12 @@ export default async function handler(req, res) {
         }
       }
 
-      console.log('Global Variables:', globalVariables);
-
+     // console.log('Global Variables:', globalVariables);
+console.log("-----");
       // Replace placeholders in the prompt with actual data, handling nested placeholders
       const prompt = replacePlaceholders(promptTemplate, project, entry, globalVariables);
       console.log("Final Prompt after Replacement:", prompt);
+      
 
       // Call the AI API to generate content
       const aiResponse = await runPrompt(prompt);
@@ -137,30 +139,42 @@ function replacePlaceholders(template, project, entry, globalVariables = {}) {
   const replacements = {
     '{url}': entry.url || '',
     '{business_name}': project.business_name || '',
-    '{supporting_keywords}': entry.lsi_terms || '',
-    '{additional_notes}': project.additional_notes || '',
     '{phone_number}': project.phone_number || '',
     '{physical_location}': project.physical_location || '',
     '{services_products}': project.services_products || '',
     '{primary_usp}': project.primary_usp || '',
     '{secondary_usp}': project.secondary_usp || '',
+    '{reference_content}': project.reference_content || '',
     '{home_content}': project.home_content || '',
     '{about_us_content}': project.about_us_content || '',
     '{target_locations}': project.target_locations || '',
-    '{tone}': project.tone || '',
-    '{grammar}': project.grammar || '',
-    '{word_count}': project.word_count || '',
+    '{language}': project.language || '',
+    '{primary_cta}': project.primary_cta || '',
+    '{secondary_cta}': project.secondary_cta || '',
+    '{trust_signals}': project.trust_signals || '',
+    '{awards_accreditations}': project.awards_accreditations || '',
+    '{additional_notes}': project.additional_notes || '',
+    '{word_count}': entry.word_count || '',
     '{other_primary_keywords}': project.other_primary_keywords || '',
     '{other_secondary_keywords}': project.other_secondary_keywords || '',
-    '{existing_content}': project.existing_content || '',
+    '{page_type}': entry.page_type || '',
+    '{content_type}': entry.content_type || '',
+
+
+    '{existing_content}': entry.existing_content || '',
     '{primary_keyword}': entry.primary_keyword || '',
     '{secondary_keyword}': entry.secondary_keyword || '',
+    '{topic_cluster}': entry.topic_cluster || '',
+    '{lsi_terms}': entry.lsi_terms || '',
+    '{paa_terms}': entry.paa_terms || '',
+    '{brand_terms}': entry.brand_terms || '',
+    '{existing_product_info}': entry.existing_product_info || '',
     '{additional_keywords}': Array.isArray(entry.additional_keywords)
       ? entry.additional_keywords.join(', ')
       : entry.additional_keywords || '',
-    '{other_rules_to_follow}': globalVariables['{other_rules_to_follow}'] || '',
-    '{important_rules_to_follow}': globalVariables['{important_rules_to_follow}'] || '',
     // Add more placeholders and their replacements as needed
+
+
   };
 
   // **Merge Global Variables Correctly**

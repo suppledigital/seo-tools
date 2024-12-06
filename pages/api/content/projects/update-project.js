@@ -34,14 +34,16 @@ export default async function handler(req, res) {
       services_products: Joi.string().required(),
       primary_usp: Joi.string().required(),
       secondary_usp: Joi.string().allow(''),
+      reference_content: Joi.string().required(),
       home_content: Joi.string().required(),
       about_us_content: Joi.string().required(),
       target_locations: Joi.string().required(),
-      tone: Joi.string().max(100).required(),
-      grammar: Joi.string().max(50).required(),
+      language: Joi.string().valid('British English/Australian English', 'US English').required(),
+      primary_cta: Joi.string().allow(''),
+      secondary_cta: Joi.string().allow(''),
+      trust_signals: Joi.string().allow(''),
+      awards_accreditations: Joi.string().allow(''),
       additional_notes: Joi.string().allow(''),
-      other_primary_keywords: Joi.string().allow(''),
-      other_secondary_keywords: Joi.string().allow(''),
       // Add more fields as needed
     });
 
@@ -62,14 +64,16 @@ export default async function handler(req, res) {
         'services_products',
         'primary_usp',
         'secondary_usp',
+        'reference_content',
         'home_content',
         'about_us_content',
         'target_locations',
-        'tone',
-        'grammar',
+        'language',
+        'primary_cta',
+        'secondary_cta',
+        'trust_signals',
+        'awards_accreditations',
         'additional_notes',
-        'other_primary_keywords',
-        'other_secondary_keywords',
         // Add more fields here if needed
       ];
 
