@@ -13,6 +13,8 @@
   font-size: 12px;
   border-radius: 12px;
   cursor: pointer;
+  z-index: 900;
+
 }
 
 .pageTypeBadge {
