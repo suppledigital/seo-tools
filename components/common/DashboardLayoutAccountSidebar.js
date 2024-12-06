@@ -183,10 +183,7 @@ export default function DashboardLayoutAccountSidebar({ children }) {
     []
   );
 
-  useEffect(() => {
-    console.log('Final Navigation:', NAVIGATION);
-  }, []);
-
+ 
   return (
     <AppProvider
       navigation={NAVIGATION}

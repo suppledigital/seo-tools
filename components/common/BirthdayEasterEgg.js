@@ -5,7 +5,7 @@ import { startAllAroundConfetti } from "../../utils/confetti";
 import styles from "./BirthdayEasterEgg.module.css";
 
 const birthdays = [
-  { name: "Bishal", date: new Date(new Date().getFullYear(), 11, 5) },   // Dec 2
+  { name: "Bishal", date: new Date(new Date().getFullYear(), 11, 6) },   // Dec 2
   { name: "Bob", date: new Date(new Date().getFullYear(), 5, 15) },     // Jun 15
   { name: "Charlie", date: new Date(new Date().getFullYear(), 8, 23) }, // Sep 23
 ];
