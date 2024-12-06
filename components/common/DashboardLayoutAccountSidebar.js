@@ -1,44 +1,29 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSession, signIn, signOut } from 'next-auth/react';
-import {
-  Box,
-  Typography,
-  Stack,
-  Divider,
-  MenuList,
-  MenuItem,
-  ListItemText,
-  ListItemIcon,
-  Avatar,
-  IconButton,
-} from '@mui/material';
+import { Box, Typography, Stack, Divider, MenuList, MenuItem, ListItemText, ListItemIcon, Avatar } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import {
-  Account,
-  AccountPreview,
-  AccountPopoverFooter,
-  SignOutButton,
-} from '@toolpad/core/Account';
-import { createTheme } from '@mui/material/styles';
+import { Account, AccountPreview, AccountPopoverFooter, SignOutButton } from '@toolpad/core/Account';
+
 import HomeIcon from '@mui/icons-material/Home';
 import ArticleIcon from '@mui/icons-material/Article';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import ChatIcon from '@mui/icons-material/Chat';
 import KeyIcon from '@mui/icons-material/VpnKey';
-import Link from 'next/link';
 
 const NAVIGATION = [
   { kind: 'header', title: 'Supple Tools' },
-  { segment: '/', title: 'Home', icon: <HomeIcon /> },
-  { segment: '/content', title: 'Content Generation Tool', icon: <ArticleIcon /> },
-  { segment: '/audit', title: 'Site Audit', icon: <AssessmentIcon /> },
-  { segment: '/trello-audit', title: 'Trello Audit', icon: <ListAltIcon /> },
-  { segment: '/keywords', title: 'Keywords Tool', icon: <KeyIcon /> },
-  { segment: '/webceo-keywords', title: 'Keywords Exporter', icon: <KeyIcon /> },
-  { segment: '/chat', title: 'Chat', icon: <ChatIcon /> },
+  // Use relative segments so that toolpad can construct valid URLs from pathname
+  { segment: '', title: 'Home', icon: <HomeIcon /> },
+  { segment: 'content', title: 'Content Generation Tool', icon: <ArticleIcon /> },
+  { segment: 'audit', title: 'Site Audit', icon: <AssessmentIcon /> },
+  { segment: 'trello-audit', title: 'Trello Audit', icon: <ListAltIcon /> },
+  { segment: 'keywords', title: 'Keywords Tool', icon: <KeyIcon /> },
+  { segment: 'webceo-keywords', title: 'Keywords Exporter', icon: <KeyIcon /> },
+  { segment: 'chat', title: 'Chat', icon: <ChatIcon /> },
 ];
 
 const theme = createTheme({
@@ -59,9 +44,9 @@ function AccountSidebarPreview({ handleClick, open, mini }) {
           variant={mini ? 'condensed' : 'expanded'}
           handleClick={handleClick}
           open={open}
-          avatar={session.user.image}
-          name={session.user.name}
-          email={session.user.email}
+          avatar={session?.user?.image}
+          name={session?.user?.name}
+          email={session?.user?.email}
         />
       ) : (
         <MenuItem onClick={() => signIn('google')}>
@@ -91,7 +76,7 @@ function SidebarFooterAccountPopover() {
           <MenuList>
             <MenuItem>
               <ListItemIcon>
-                <Avatar src={session.user.image}>{session.user.name[0]}</Avatar>
+                <Avatar src={session.user.image}>{session.user.name ? session.user.name[0] : 'U'}</Avatar>
               </ListItemIcon>
               <ListItemText
                 primary={session.user.name}
@@ -112,10 +97,7 @@ function SidebarFooterAccountPopover() {
 }
 
 function SidebarFooterAccount({ mini }) {
-  const PreviewComponent = useMemo(
-    () => (props) => <AccountSidebarPreview {...props} mini={mini} />,
-    [mini]
-  );
+  const PreviewComponent = useMemo(() => (props) => <AccountSidebarPreview {...props} mini={mini} />, [mini]);
   return (
     <Account
       slots={{
@@ -131,16 +113,29 @@ SidebarFooterAccount.propTypes = {
 };
 
 export default function DashboardLayoutAccountSidebar({ children }) {
-  const { data: session, status } = useSession();
-  const [pathname, setPathname] = useState('/');
-  const router = useMemo(
-    () => ({
-      pathname,
-      searchParams: new URLSearchParams(),
-      navigate: (path) => setPathname(String(path)),
-    }),
-    [pathname]
+  const { data: session } = useSession();
+
+  // Use an absolute URL as the base for pathname
+  const [pathname, setPathname] = useState(
+    typeof window !== 'undefined' ? window.location.href : 'http://localhost:3000/'
   );
+
+  // Create a router that can handle navigation
+  const router = useMemo(() => ({
+    pathname,
+    searchParams: new URLSearchParams(),
+    navigate: (path) => {
+      // Construct a full URL using the current pathname as base
+      const baseUrl = new URL(pathname);
+      const newUrl = new URL(path, baseUrl);
+      setPathname(newUrl.href);
+
+      // Actually navigate in the browser
+      if (typeof window !== 'undefined') {
+        window.location.href = newUrl.href;
+      }
+    },
+  }), [pathname]);
 
   const authentication = useMemo(
     () => ({
@@ -158,11 +153,7 @@ export default function DashboardLayoutAccountSidebar({ children }) {
       authentication={authentication}
       session={session}
     >
-      <DashboardLayout
-        slots={{
-          sidebarFooter: SidebarFooterAccount,
-        }}
-      >
+      <DashboardLayout slots={{ sidebarFooter: SidebarFooterAccount }}>
         {children}
       </DashboardLayout>
     </AppProvider>

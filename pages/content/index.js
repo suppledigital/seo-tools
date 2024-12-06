@@ -1,4 +1,4 @@
-import { useSession, signIn } from 'next-auth/react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
@@ -24,6 +24,8 @@ import {
   Chip,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import SettingsIcon from '@mui/icons-material/Settings';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -83,9 +85,7 @@ export default function ContentHome() {
 
   const deleteProject = async () => {
     handleMenuClose();
-    const confirmed = window.confirm(
-      'Are you sure you want to delete this project? This action cannot be undone.'
-    );
+    const confirmed = window.confirm('Are you sure you want to delete this project? This action cannot be undone.');
     if (!confirmed) return;
 
     try {
@@ -184,7 +184,7 @@ export default function ContentHome() {
           <Typography variant="h4" component="h1">
             Content Projects
           </Typography>
-          {/* The settings icon can be moved or customized as needed */}
+          {/* Settings or other icons can go here if needed */}
         </Box>
 
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
@@ -209,7 +209,7 @@ export default function ContentHome() {
         <Grid container spacing={3}>
           {filteredProjects.map((project) => (
             <Grid item xs={12} sm={6} md={4} key={project.project_id}>
-              <Card>
+              <Card sx={{ position: 'relative' }}>
                 {(project.user_email === session.user.email || isAdmin) && (
                   <IconButton
                     aria-label="more"
@@ -248,13 +248,11 @@ export default function ContentHome() {
           ))}
         </Grid>
 
-        {/* Context Menu */}
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
           <MenuItem onClick={resetProjectData}>Reset Data</MenuItem>
           <MenuItem onClick={deleteProject}>Delete Project</MenuItem>
         </Menu>
 
-        {/* Add Project Dialog */}
         <Dialog open={showModal} onClose={() => setShowModal(false)}>
           <DialogTitle>Add New Project</DialogTitle>
           <DialogContent>
@@ -277,7 +275,6 @@ export default function ContentHome() {
           </DialogActions>
         </Dialog>
 
-        {/* Loading Indicator */}
         {isLoading && (
           <Box
             position="fixed"
@@ -296,7 +293,6 @@ export default function ContentHome() {
         )}
       </Container>
 
-      {/* Toast Notifications */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
