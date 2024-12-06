@@ -10,6 +10,8 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BirthdayEasterEgg from "../components/common/BirthdayEasterEgg";
+import DashboardLayoutAccountSidebar from "../components/common/DashboardLayoutAccountSidebar"; // Ensure correct path
+import ErrorBoundary from '../components/common/ErrorBoundary';
 
 config.autoAddCss = false; 
 
@@ -32,7 +34,11 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     <SessionProvider session={session}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Component {...pageProps} />
+        <ErrorBoundary>
+          <DashboardLayoutAccountSidebar>
+            <Component {...pageProps} />
+          </DashboardLayoutAccountSidebar>
+        </ErrorBoundary>
         <ToastContainer
           position="top-right"
           autoClose={5000}

@@ -6,6 +6,7 @@ import styles from './manage-prompts.module.css';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 
+
 export default function ManagePrompts() {
   const { data: session, status } = useSession();
   const [prompts, setPrompts] = useState([]);
@@ -293,7 +294,7 @@ export default function ManagePrompts() {
   }
 
   return (
-    <div className={styles.container}>
+      <div className={styles.container}>
       <h1 className={styles.title}>Manage Prompts</h1>
 
       <div className={styles.filters}>

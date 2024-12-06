@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import styles from './settings.module.css'; // Create a new CSS module for settings
+import styles from './index.module.css'; // Create a new CSS module for settings
 
 export default function Settings() {
   const { data: session, status } = useSession();
@@ -20,16 +20,16 @@ export default function Settings() {
   }
 
   return (
-    <div className={styles.container}>
+      <div className={styles.container}>
       <h1 className={styles.title}>Settings</h1>
       <div className={styles.options}>
-        <Link legacyBehavior href="/content/settings/manage-users">
+        <Link legacyBehavior href="/settings/manage-users">
           <a className={styles.optionCard}>
             <i className="fas fa-users-cog fa-2x"></i>
             <span>Manage Users</span>
           </a>
         </Link>
-        <Link legacyBehavior href="/content/settings/manage-prompts">
+        <Link legacyBehavior href="/settings/manage-prompts">
           <a className={styles.optionCard}>
             <i className="fas fa-edit fa-2x"></i>
             <span>Manage Prompts</span>

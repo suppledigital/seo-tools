@@ -35,7 +35,6 @@ export default function Home() {
   }
 
   return (
-    <DashboardLayoutAccountSidebar>
       <Container maxWidth="lg">
         <Box mt={4} mb={4}>
           <Typography variant="h4">Welcome to Supple Tools</Typography>
@@ -44,6 +43,5 @@ export default function Home() {
           </Typography>
         </Box>
       </Container>
-    </DashboardLayoutAccountSidebar>
   );
 }

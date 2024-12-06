@@ -178,7 +178,7 @@ export default function ContentHome() {
   }
 
   return (
-    <DashboardLayoutAccountSidebar>
+    <div>
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
           <Typography variant="h4" component="h1">
@@ -303,6 +303,6 @@ export default function ContentHome() {
         draggable
         pauseOnHover
       />
-    </DashboardLayoutAccountSidebar>
+      </div>
   );
 }
