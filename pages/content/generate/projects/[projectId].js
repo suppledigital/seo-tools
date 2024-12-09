@@ -190,6 +190,12 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
   
   const handleHumanizeContent = async (entry) => {
     try {
+      // Set loading state to true
+      setLoadingEntries((prev) => ({
+        ...prev,
+        [entry.entry_id]: { loading: true, message: '' },
+      }));
+  
       const response = await axios.post('/api/content/projects/humanise', {
         content: entry.generated_content,
         entry_id: entry.entry_id,
@@ -205,14 +211,21 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
             ? { ...e, humanized_content: humanizedContent }
             : e
         )
-      );      
+      );
   
       toast.success('Content humanized successfully!');
     } catch (error) {
       console.error('Error humanizing content:', error);
       toast.error('Error humanizing content.');
+    } finally {
+      // Reset loading state
+      setLoadingEntries((prev) => ({
+        ...prev,
+        [entry.entry_id]: { loading: false, message: '' },
+      }));
     }
   };
+  
   
 
 

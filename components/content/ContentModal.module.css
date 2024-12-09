@@ -78,3 +78,46 @@ span.close {
   font-size: 24px;
   cursor: pointer;
 }
+/* ContentModal.module.css */
+
+.addedParagraph {
+  background-color: #d4edda; /* Light green */
+  color: #155724; /* Dark green text */
+  padding: 4px;
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.removedParagraph {
+  background-color: #f8d7da; /* Light red */
+  color: #721c24; /* Dark red text */
+  padding: 4px;
+  border-radius: 4px;
+  margin: 4px 0;
+}
+/* ContentModal.module.css */
+
+.addedSpan {
+  background-color: #d4edda; /* Light green */
+  color: #155724; /* Dark green text */
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.removedSpan {
+  background-color: #f8d7da; /* Light red */
+  color: #721c24; /* Dark red text */
+  padding: 2px 4px;
+  border-radius: 4px;
+  text-decoration: line-through;
+}
+
+.tooltip {
+  /* Optional: Customize tooltip styles */
+}
+/* ContentModal.module.css */
+
+.addedSpan, .removedSpan {
+  display: inline-block;
+  word-break: break-word;
+}

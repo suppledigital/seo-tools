@@ -1,6 +1,6 @@
 // components/content/ContentModal.js
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -12,20 +12,33 @@ import {
   FormControlLabel,
   Box,
   Grid,
+  Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/system';
-import { diffWordsWithSpace } from 'diff';
+import { diffWords } from 'diff';
 import DOMPurify from 'dompurify';
 
-const HighlightedText = styled('span')(({ theme }) => ({
-  backgroundColor: theme.palette.error.light,
-  color: theme.palette.error.contrastText,
+// Styled components for highlighting
+const AddedSpan = styled('span')(({ theme }) => ({
+  backgroundColor: '#d4edda', // Light green
+  color: '#155724', // Dark green text
   padding: '2px 4px',
   borderRadius: '4px',
 }));
 
+const RemovedSpan = styled('span')(({ theme }) => ({
+  backgroundColor: '#f8d7da', // Light red
+  color: '#721c24', // Dark red text
+  padding: '2px 4px',
+  borderRadius: '4px',
+  textDecoration: 'line-through',
+}));
+
 export default function ContentModal({ isOpen, onClose, content, humanizedContent }) {
   const [showDifferences, setShowDifferences] = useState(false);
+  const generatedRef = useRef(null);
+  const humanizedRef = useRef(null);
+  const [isSyncingScroll, setIsSyncingScroll] = useState(false);
 
   const handleToggle = () => {
     setShowDifferences((prev) => !prev);
@@ -36,32 +49,27 @@ export default function ContentModal({ isOpen, onClose, content, humanizedConten
     return DOMPurify.sanitize(text);
   };
 
-  const formatContent = (text) => {
-    if (!text) return 'No content available.';
-    return (
-      <Typography
-        variant="body1"
-        component="div"
-        style={{ whiteSpace: 'pre-wrap' }}
-        dangerouslySetInnerHTML={{ __html: text }}
-      />
-    );
-  };
-
   const computeDifferences = () => {
     if (!content || !humanizedContent) return 'No differences available.';
 
-    // Use diffWordsWithSpace to include spaces in the diff
-    const diff = diffWordsWithSpace(content, humanizedContent);
+    // Use diffWords to compare content word by word
+    const diff = diffWords(content, humanizedContent, { ignoreCase: false });
 
     return (
-      <Typography variant="body1">
+      <Typography variant="body1" component="div">
         {diff.map((part, index) => {
           if (part.added) {
-            return <HighlightedText key={index}>{part.value}</HighlightedText>;
+            return (
+              <Tooltip key={index} title="Added">
+                <AddedSpan>{part.value}</AddedSpan>
+              </Tooltip>
+            );
           } else if (part.removed) {
-            // Optionally, show removed text differently or skip
-            return null; // Skipping removed text for simplicity
+            return (
+              <Tooltip key={index} title="Removed">
+                <RemovedSpan>{part.value}</RemovedSpan>
+              </Tooltip>
+            );
           } else {
             return <span key={index}>{part.value}</span>;
           }
@@ -70,8 +78,44 @@ export default function ContentModal({ isOpen, onClose, content, humanizedConten
     );
   };
 
+  // Synchronized scrolling
+  useEffect(() => {
+    const handleGeneratedScroll = () => {
+      if (isSyncingScroll) return;
+      setIsSyncingScroll(true);
+      if (humanizedRef.current) {
+        humanizedRef.current.scrollTop = generatedRef.current.scrollTop;
+      }
+      setIsSyncingScroll(false);
+    };
+
+    const handleHumanizedScroll = () => {
+      if (isSyncingScroll) return;
+      setIsSyncingScroll(true);
+      if (generatedRef.current) {
+        generatedRef.current.scrollTop = humanizedRef.current.scrollTop;
+      }
+      setIsSyncingScroll(false);
+    };
+
+    const genScroll = generatedRef.current;
+    const humScroll = humanizedRef.current;
+
+    if (genScroll && humScroll) {
+      genScroll.addEventListener('scroll', handleGeneratedScroll);
+      humScroll.addEventListener('scroll', handleHumanizedScroll);
+    }
+
+    return () => {
+      if (genScroll && humScroll) {
+        genScroll.removeEventListener('scroll', handleGeneratedScroll);
+        humScroll.removeEventListener('scroll', handleHumanizedScroll);
+      }
+    };
+  }, [isSyncingScroll]);
+
   return (
-    <Dialog open={isOpen} onClose={onClose} maxWidth="lg" fullWidth>
+    <Dialog open={isOpen} onClose={onClose} maxWidth="xl" fullWidth>
       <DialogTitle>Generated vs Humanized Content</DialogTitle>
       <DialogContent dividers>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -88,6 +132,7 @@ export default function ContentModal({ isOpen, onClose, content, humanizedConten
                 <strong>Generated Content</strong>
               </Typography>
               <Box
+                ref={generatedRef}
                 sx={{
                   border: '1px solid #ccc',
                   borderRadius: '4px',
@@ -95,9 +140,17 @@ export default function ContentModal({ isOpen, onClose, content, humanizedConten
                   height: '400px',
                   overflowY: 'auto',
                   backgroundColor: '#f9f9f9',
+                  whiteSpace: 'pre-wrap',
+                  lineHeight: '1.6',
+                  fontFamily: 'Arial, sans-serif',
+                  fontSize: '14px',
                 }}
               >
-                {formatContent(sanitizeContent(content))}
+                <Typography
+                  variant="body1"
+                  component="div"
+                  dangerouslySetInnerHTML={{ __html: sanitizeContent(content) }}
+                />
               </Box>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -105,6 +158,7 @@ export default function ContentModal({ isOpen, onClose, content, humanizedConten
                 <strong>Humanized Content</strong>
               </Typography>
               <Box
+                ref={humanizedRef}
                 sx={{
                   border: '1px solid #ccc',
                   borderRadius: '4px',
@@ -112,9 +166,17 @@ export default function ContentModal({ isOpen, onClose, content, humanizedConten
                   height: '400px',
                   overflowY: 'auto',
                   backgroundColor: '#f1f1f1',
+                  whiteSpace: 'pre-wrap',
+                  lineHeight: '1.6',
+                  fontFamily: 'Arial, sans-serif',
+                  fontSize: '14px',
                 }}
               >
-                {formatContent(sanitizeContent(humanizedContent))}
+                <Typography
+                  variant="body1"
+                  component="div"
+                  dangerouslySetInnerHTML={{ __html: sanitizeContent(humanizedContent) }}
+                />
               </Box>
             </Grid>
           </Grid>
@@ -131,6 +193,10 @@ export default function ContentModal({ isOpen, onClose, content, humanizedConten
                 height: '400px',
                 overflowY: 'auto',
                 backgroundColor: '#f0f0f0',
+                whiteSpace: 'pre-wrap',
+                lineHeight: '1.6',
+                fontFamily: 'Arial, sans-serif',
+                fontSize: '14px',
               }}
             >
               {computeDifferences()}

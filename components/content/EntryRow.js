@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+// EntryRow.js
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import styles from './EntryRow.module.css';
@@ -25,6 +25,7 @@ export default function EntryRow({
     handleCopyContent,
     handleEditContent,
     handleViewContent,
+    handleHumanizeContent, // Ensure this handler is passed
   } = handlers;
 
   const loadingState = loadingEntries[entry.entry_id] || { loading: false, message: '' };
@@ -64,7 +65,7 @@ export default function EntryRow({
         />
       </td>
       
-           {/* URL Cell */}
+      {/* URL Cell */}
       <td className={styles.urlCell}>
         {entry.url}
         <i
@@ -72,7 +73,6 @@ export default function EntryRow({
           onClick={() => handleUrlLookup(entry.url)}
         ></i>
         <br />
-        {/* Page Type Badge */}
         {/* Page Type Badge */}
         {classificationLoading ? (
           <span className={styles.badge}>
@@ -136,6 +136,7 @@ export default function EntryRow({
           </span>
         )}
       </td>
+
       {/* Keywords Cell */}
       <td className={styles.keywordsCell}>
         Primary: {entry.primary_keyword}
@@ -156,48 +157,52 @@ export default function EntryRow({
           onClick={(e) => handleKeywordLookup(e, entry.secondary_keyword, entry.entry_id)}
         ></i>
       </td>
+
       {/* Additional Info Cell */}
       <td className={styles.additionalInfoCell}>{renderAdditionalInfoBlocks(entry)}</td>
+
       {/* Generated Content Cell */}
       <td className={styles.generatedContentCell}>
-      {isLoading ? (
-          <i className={`fas fa-spinner fa-spin ${styles.contentSpinner}`}></i>
+        {isLoading ? (
+          <FontAwesomeIcon icon={faSpinner} spin className={styles.contentSpinner} />
         ) : entry.generated_content ? (
           <>
             <span className={styles.generatedContent}>{entry.generated_content}</span>
-              <div className={styles.contentActions}>
-                <i
-                  className={`fas fa-copy ${styles.contentActionIcon}`}
-                  title="Copy to Clipboard"
-                  onClick={() => handleCopyContent(entry.generated_content)}
-                ></i>
-                <i
-                  className={`fas fa-redo ${styles.contentActionIcon} ${styles.redoActionIcon}`}
-                  title="Regenerate"
-                  onClick={() => handleGenerateContent(entry.entry_id)}
-                ></i>
-                <i
-                  className={`fas fa-edit ${styles.contentActionIcon}`}
-                  title="Edit"
-                  onClick={() => handleEditContent(entry.entry_id)}
-                ></i>
-                <i
-                  className={`fas fa-eye ${styles.contentActionIcon}`}
-                  title="View"
-                  onClick={() => handleViewContent(entry)}
-                  ></i>
-                {/* Word Count Badge */}
-                <span className={styles.wordCountBadge} title="Word Count">
-                  {wordCount} words
-                </span>
-              </div>
-            </>
-          ) : (
-            'No content generated yet.'
-          )}
-        </td>
+            <div className={styles.contentActions}>
+              <i
+                className={`fas fa-copy ${styles.contentActionIcon}`}
+                title="Copy to Clipboard"
+                onClick={() => handleCopyContent(entry.generated_content)}
+              ></i>
+              <i
+                className={`fas fa-redo ${styles.contentActionIcon} ${styles.redoActionIcon}`}
+                title="Regenerate"
+                onClick={() => handleGenerateContent(entry.entry_id)}
+              ></i>
+              <i
+                className={`fas fa-edit ${styles.contentActionIcon}`}
+                title="Edit"
+                onClick={() => handleEditContent(entry.entry_id)}
+              ></i>
+              <i
+                className={`fas fa-eye ${styles.contentActionIcon}`}
+                title="View"
+                onClick={() => handleViewContent(entry)}
+              ></i>
+              {/* Word Count Badge */}
+              <span className={styles.wordCountBadge} title="Word Count">
+                {wordCount} words
+              </span>
+            </div>
+          </>
+        ) : (
+          'No content generated yet.'
+        )}
+      </td>
+
       {/* Actions Cell */}
       <td className={styles.actionsCell}>
+        {/* Generate Button */}
         <button
           className={styles.actionButton}
           onClick={() => handlers.handleGenerateContent(entry.entry_id)}
@@ -205,7 +210,7 @@ export default function EntryRow({
         >
           {isLoading ? (
             <>
-              <i className="fas fa-spinner fa-spin"></i> Generating...
+              <FontAwesomeIcon icon={faSpinner} spin /> Generating...
             </>
           ) : entry.generated_content ? (
             'Regenerate'
@@ -213,13 +218,21 @@ export default function EntryRow({
             'Generate'
           )}
         </button>
-        <button
-          className={styles.actionButton}
-          onClick={() => handlers.handleHumanizeContent(entry)}
-          disabled={isLoading}
-        >
-          Humanize
-        </button>
+
+        {/* Humanize Button */}
+        {isLoading ? (
+          <FontAwesomeIcon icon={faSpinner} spin className={styles.spinner} />
+        ) : (
+          <button
+            className={styles.actionButton}
+            onClick={() => handlers.handleHumanizeContent(entry)}
+            disabled={isLoading}
+          >
+            Humanize
+          </button>
+        )}
+
+        {/* Delete Button */}
         <button
           className={styles.deleteButton}
           onClick={() => handleDeleteEntry(entry.entry_id)}
@@ -227,14 +240,14 @@ export default function EntryRow({
         >
           Delete
         </button>
-        {/* Display retry message if any */}
+
+        {/* Retry Message */}
         {retryMessage && (
           <div className={styles.retryMessage}>
             {retryMessage}
           </div>
         )}
       </td>
-
     </tr>
   );
 }
