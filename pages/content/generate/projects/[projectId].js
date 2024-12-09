@@ -80,6 +80,8 @@ export default function ProjectPage({ initialData }) {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState('');
+  const [modalHumanizedContent, setModalHumanizedContent] = useState('');
+
   // Sidebar State
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [sidebarContent, setSidebarContent] = useState(null);
@@ -157,6 +159,7 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
     },
   ];
 
+
   const handleExportToGoogleDocs = async () => {
     setIsExporting(true);  // Show the modal with the progress bar
     setExportedDocumentUrl('');  // Clear any previous document URL
@@ -184,6 +187,32 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
     }
   };
   
+  
+  const handleHumanizeContent = async (entry) => {
+    try {
+      const response = await axios.post('/api/content/projects/humanise', {
+        content: entry.generated_content,
+        entry_id: entry.entry_id,
+      });
+      console.log(response.data);
+  
+      const { humanizedContent } = response.data;
+  
+      // Update the entry with humanized content
+      setEntries((prevEntries) =>
+        prevEntries.map((e) =>
+          e.entry_id === entry.entry_id
+            ? { ...e, humanized_content: humanizedContent }
+            : e
+        )
+      );      
+  
+      toast.success('Content humanized successfully!');
+    } catch (error) {
+      console.error('Error humanizing content:', error);
+      toast.error('Error humanizing content.');
+    }
+  };
   
 
 
@@ -472,10 +501,14 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
     //console.log('Edit content for entry:', entryId);
   };
 
-  const handleViewContent = (content) => {
-    setModalContent(content);
+  const handleViewContent = (entry) => {
+    setModalContent(entry.generated_content || 'No generated content available.');
+    console.log(entry.generated_content);
+    setModalHumanizedContent(entry.humanized_content || 'No humanized content available.');
+    console.log(entry.humanized_content);
     setIsModalOpen(true);
   };
+  
 
   const handleUrlLookup = (url) => {
     // Placeholder for future functionality
@@ -1266,7 +1299,8 @@ const getRandomValues = (valuesArray, numberOfValues) => {
     setSidebarContent,
     handleSmartAnalysis,
     setLoadingAnalysisResults,
-    handleShiftClickSelection
+    handleShiftClickSelection,
+    handleHumanizeContent
   };
 
   if (!project) {
@@ -1375,7 +1409,9 @@ const getRandomValues = (valuesArray, numberOfValues) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         content={modalContent}
+        humanizedContent={modalHumanizedContent}
       />
+      
       {/* Configure Project Modal */}
       <ConfigureProjectModal
         isVisible={isConfigModalOpen}
@@ -1480,6 +1516,7 @@ const getRandomValues = (valuesArray, numberOfValues) => {
   icon={<SpaceDashboardIcon />}
   onClose={handleClose}
   onOpen={handleOpen}
+  
   open={open}
 >
   {actions.map((action, index) => (
@@ -1487,6 +1524,7 @@ const getRandomValues = (valuesArray, numberOfValues) => {
       key={action.name}
       icon={action.icon}
       tooltipTitle={`${action.group}: ${action.name}`}
+      
       onClick={action.onClick}
     />
   ))}

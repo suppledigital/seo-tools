@@ -21,6 +21,7 @@ export default async function handler(req, res) {
           'SELECT * FROM entries WHERE project_id = ?',
           [projectId]
         );
+        console.log([entryRows]);
         return res.status(200).json({ project, entries: entryRows });
       }
 

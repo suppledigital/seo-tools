@@ -184,8 +184,8 @@ export default function EntryRow({
                 <i
                   className={`fas fa-eye ${styles.contentActionIcon}`}
                   title="View"
-                  onClick={() => handleViewContent(entry.generated_content)}
-                ></i>
+                  onClick={() => handleViewContent(entry)}
+                  ></i>
                 {/* Word Count Badge */}
                 <span className={styles.wordCountBadge} title="Word Count">
                   {wordCount} words
@@ -212,6 +212,13 @@ export default function EntryRow({
           ) : (
             'Generate'
           )}
+        </button>
+        <button
+          className={styles.actionButton}
+          onClick={() => handlers.handleHumanizeContent(entry)}
+          disabled={isLoading}
+        >
+          Humanize
         </button>
         <button
           className={styles.deleteButton}
