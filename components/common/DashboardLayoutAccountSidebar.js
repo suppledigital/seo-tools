@@ -45,6 +45,8 @@ const NAVIGATION = [
     icon: <ArticleIcon />,
     children: [
       { segment: 'generate', title: 'Content Generator', icon: <ArticleIcon /> },
+      { segment: 'train', title: 'Content Training', icon: <ArticleIcon /> },
+
     ],
   },
   {
