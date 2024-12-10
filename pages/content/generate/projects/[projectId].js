@@ -594,7 +594,7 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
 
   // pages/projects/[projectId].js
 
-const fetchSerpResults = async (keyword, country, yearMonth = '') => {
+const fetchSerpResults1 = async (keyword, country, yearMonth = '') => {
   setLoadingSerpResults(true); // Move this here if not already set in SerpResults
   try {
     const response = await axios.post('/api/content/semrush/organic-results', {
@@ -602,6 +602,30 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
       country,
       yearMonth, // Include yearMonth parameter
     });
+    setSidebarContent((prevContent) => ({
+      ...prevContent,
+      serpResults: response.data,
+    }));
+  } catch (error) {
+    console.error('Error fetching SERP results:', error);
+    alert(
+      `Error fetching SERP results: ${
+        error.response?.data?.message || error.message || 'Unknown error'
+      }`
+    );
+  } finally {
+    setLoadingSerpResults(false);
+  }
+};
+const fetchSerpResults = async (keyword, country, yearMonth = '') => {
+  setLoadingSerpResults(true); // Move this here if not already set in SerpResults
+  try {
+    const response = await axios.post('/api/content/seranking/serp-results', {
+      keyword,
+      country,
+      yearMonth, // Include yearMonth parameter
+    });
+    console.log(response);
     setSidebarContent((prevContent) => ({
       ...prevContent,
       serpResults: response.data,

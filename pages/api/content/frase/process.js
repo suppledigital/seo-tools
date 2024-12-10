@@ -14,7 +14,7 @@ export default async function handler(req, res) {
           lang: 'en',
           country: 'au',
           count: 20,
-          include_full_text: false
+          include_full_text: true
         },
         { headers: { token: fraseToken } }
       );

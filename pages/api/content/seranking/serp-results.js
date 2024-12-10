@@ -68,7 +68,7 @@ export default async function handler(req, res) {
 
       //console.log('Engine ID:', engine_id);
       //console.log('Keyword:', keyword);
-      //console.log('Task Response Data:', taskResponse.data);
+      console.log('Task Response Data:', taskResponse.data);
 
       const taskId = taskResponse.data[0]?.task_id || taskResponse.data.task_id;
 
@@ -101,6 +101,8 @@ export default async function handler(req, res) {
         } else if (resultResponse.data.results) {
           // Results are ready
           res.status(200).json(resultResponse.data.results);
+          console.log('Response Data:', resultResponse.data);
+
           return;
         } else if (resultResponse.data.status === 'failed') {
           console.error('Task failed:', resultResponse.data);
