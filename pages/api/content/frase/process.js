@@ -18,6 +18,19 @@ export default async function handler(req, res) {
         },
         { headers: { token: fraseToken } }
       );
+      const data = response.data;
+
+      console.log(data);
+      // Check if 'items' exists and has elements
+      if (data.items && data.items.length > 0) {
+        data.items.forEach((item, index) => {
+          console.log(`Result ${index + 1}:`);
+          console.log(`URL: ${item.url}`);
+          console.log(`Content: ${item.clean_text}\n`);
+        });
+      } else {
+        console.log('No items found in the response.');
+      }
 
       res.status(200).json(response.data);
     } catch (error) {
