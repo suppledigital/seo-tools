@@ -2,8 +2,7 @@
 
 import pool from '../../../../../lib/db';
 import axios from 'axios';
-import { appendLog } from '../../../../../lib/logs'; // Adjust path as needed
-
+import { appendLog } from '../../../../../lib/logs'; // Adjust path if needed
 
 export default async function handler(req, res) {
   const { projectId } = req.query;
@@ -18,23 +17,16 @@ export default async function handler(req, res) {
 
     try {
       // Fetch the entry data
-     // appendLog(entry_id, 'Fetching entry from DB...');
       const [entryRows] = await pool.query('SELECT * FROM entries WHERE entry_id = ?', [entry_id]);
       const entry = entryRows[0];
-     // appendLog(entry_id, `Entry fetched: ${JSON.stringify(entry)}`);
-
-      //console.log(entry);
 
       if (!entry) {
         return res.status(404).json({ message: 'Entry not found.' });
       }
 
       // Fetch the project data
-     // appendLog(entry_id, 'Fetching project from DB...');
       const [projectRows] = await pool.query('SELECT * FROM projects WHERE project_id = ?', [projectId]);
       const project = projectRows[0];
-     // appendLog(entry_id, `Project fetched: ${JSON.stringify(project)}`);
-
 
       if (!project) {
         return res.status(404).json({ message: 'Project not found.' });
@@ -50,9 +42,7 @@ export default async function handler(req, res) {
         return res.status(404).json({ message: 'No prompt found for this Page Type and Content Type combination.' });
       }
 
-      const promptTemplate = promptRows[0].prompt_text;
-   //   console.log("Original Prompt Template:", promptTemplate);
-    //  appendLog(entry_id, `Original Prompt Template: ${promptTemplate}`);
+      let promptTemplate = promptRows[0].prompt_text;
 
       // Fetch global variables with their prompt_text
       const [globalVarRows] = await pool.query(
@@ -60,52 +50,50 @@ export default async function handler(req, res) {
       );
 
       const globalVariables = {};
-
-      // Iterate over global variables and assign their prompt_text directly
       for (const row of globalVarRows) {
         const varName = row.variable_name; // e.g., '{url}'
         const varValue = row.prompt_text ? row.prompt_text.trim() : '';
-
-        if (varValue) {
-          globalVariables[varName] = varValue;
-        } else {
-          console.warn(`No value found for variable "${varName}". Using empty string as fallback.`);
-          globalVariables[varName] = '';
-        }
+        globalVariables[varName] = varValue;
       }
 
-     // console.log('Global Variables:', globalVariables);
-console.log("-----");
       // Replace placeholders in the prompt with actual data, handling nested placeholders
-      const prompt = replacePlaceholders(promptTemplate, project, entry, globalVariables);
-    //  console.log("Final Prompt after Replacement:", prompt);
-      appendLog(entry_id, `Final Prompt after Replacement: ${prompt}`);
+      promptTemplate = replacePlaceholders(promptTemplate, project, entry, globalVariables);
 
+      //appendLog(entry_id, `Final Prompt after Replacement: ${promptTemplate}`);
+
+      // Extract system prompt from %%...%%
+      let systemPrompt = '';
+      const systemRegex = /%%([\s\S]*?)%%/;
+      const match = promptTemplate.match(systemRegex);
+      if (match) {
+        systemPrompt = match[1].trim();
+        promptTemplate = promptTemplate.replace(systemRegex, '').trim();
+      }
+
+      // Log system and user prompt before calling runPrompt
+      appendLog(entry_id, `System Prompt: ${systemPrompt || '(none)'}`);
+      appendLog(entry_id, `Final User Prompt: ${promptTemplate}`);
 
       // Call the AI API to generate content
-      const aiResponse = await runPrompt(prompt);
+      const aiResponse = await runPrompt(systemPrompt, promptTemplate);
 
       if (!aiResponse) {
         return res.status(500).json({ message: 'Error generating content from AI.' });
       }
 
       // Save the generated content to the database
-      await pool.query('UPDATE entries SET generated_content = ? WHERE entry_id = ?', [
-        aiResponse, // aiResponse is now a string
-        entry_id,
-      ]);
+      await pool.query('UPDATE entries SET generated_content = ? WHERE entry_id = ?', [aiResponse, entry_id]);
 
       // Respond with the AI-generated content
       res.status(200).json({ data: aiResponse });
     } catch (error) {
-      appendLog(entry_id, `Error: ${error.message}`);
-
+      appendLog(req.body.entry_id, `Error: ${error.message}`);
       console.error('Error generating content:', error);
       res.status(500).json({ message: 'Internal server error while generating content.' });
     }
   } else {
     res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
 
@@ -136,7 +124,6 @@ function recursiveReplacePlaceholders(template, replacements, maxIterations = 2)
     iteration++;
   }
 
-  // After replacements, check for any unreplaced placeholders
   const unreplaced = prompt.match(placeholderPattern);
   if (unreplaced) {
     console.warn('Unreplaced placeholders found in prompt:', unreplaced);
@@ -145,9 +132,7 @@ function recursiveReplacePlaceholders(template, replacements, maxIterations = 2)
   return prompt;
 }
 
-// Updated replacePlaceholders function
 function replacePlaceholders(template, project, entry, globalVariables = {}) {
-  // Prepare the replacements object with project and entry data
   const replacements = {
     '{url}': entry.url || '',
     '{business_name}': project.business_name || '',
@@ -171,8 +156,6 @@ function replacePlaceholders(template, project, entry, globalVariables = {}) {
     '{other_secondary_keywords}': project.other_secondary_keywords || '',
     '{page_type}': entry.page_type || '',
     '{content_type}': entry.content_type || '',
-
-
     '{existing_content}': entry.existing_content || '',
     '{primary_keyword}': entry.primary_keyword || '',
     '{secondary_keyword}': entry.secondary_keyword || '',
@@ -183,53 +166,43 @@ function replacePlaceholders(template, project, entry, globalVariables = {}) {
     '{existing_product_info}': entry.existing_product_info || '',
     '{additional_keywords}': Array.isArray(entry.additional_keywords)
       ? entry.additional_keywords.join(', ')
-      : entry.additional_keywords || '',
-    // Add more placeholders and their replacements as needed
-
-
+      : entry.additional_keywords || ''
   };
 
-  // **Merge Global Variables Correctly**
-  Object.entries(globalVariables).forEach(([key, value]) => {
+  // Merge global variables
+  for (const [key, value] of Object.entries(globalVariables)) {
     replacements[`{${key}}`] = value || '';
-  });
+  }
 
-  //console.log('Replacements:', replacements);
-
-  // **Perform Recursive Replacement**
   const finalPrompt = recursiveReplacePlaceholders(template, replacements);
-
   return finalPrompt;
 }
 
-// Helper function to call the AI API (Anthropic's Claude)
-async function runPrompt(prompt) {
+async function runPrompt(systemPrompt, userPrompt) {
   const apiUrl = 'https://api.anthropic.com/v1/messages';
   const apiKey = process.env.CLAUDE_API_KEY;
 
   const data = {
-   // model: 'claude-3-5-opus-20241022', // Replace with the model you have access to
     model: 'claude-3-opus-20240229',
+    max_tokens: 4096,
+    temperature: 1.0,
+    system: systemPrompt, // Set system prompt at top-level if present
     messages: [
       {
         role: 'user',
-        content: prompt,
-      },
+        content: userPrompt
+      }
     ],
-    //max_tokens: 8000,
-    max_tokens: 4096,
-    temperature: 1.0,
   };
 
   const headers = {
     'Content-Type': 'application/json',
     'X-API-Key': apiKey,
-    'anthropic-version': '2023-06-01', // Update to the version you're using
+    'anthropic-version': '2023-06-01',
   };
 
   try {
     const response = await axios.post(apiUrl, data, { headers });
-
     const assistantMessage = response.data;
 
     if (!assistantMessage || !assistantMessage.content) {
@@ -237,20 +210,16 @@ async function runPrompt(prompt) {
       return null;
     }
 
-    // Check if content is an array
     if (Array.isArray(assistantMessage.content)) {
-      // Concatenate all text parts
       const text = assistantMessage.content.map(part => part.text).join('\n');
-      return text;
+      return text.trim();
     }
 
-    // If content is a string
     if (typeof assistantMessage.content === 'string') {
-      return assistantMessage.content;
+      return assistantMessage.content.trim();
     }
 
-    // Unexpected structure
-    console.error('Unexpected content structure:', assistantMessage.content);
+    console.error('Unexpected content structure from Claude response:', assistantMessage.content);
     return null;
   } catch (error) {
     console.error('Error calling Claude API:', error.response ? error.response.data : error);

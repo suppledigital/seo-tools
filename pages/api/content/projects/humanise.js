@@ -24,24 +24,24 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Prompt with id=34 not found' });
     }
     let promptTemplate = promptRows[0].prompt_text;
-    appendLog(entry_id, `Prompt Template: ${promptTemplate}`);
+    //appendLog(entry_id, `Prompt Template: ${promptTemplate}`);
 
-    appendLog(entry_id, 'Fetching entry and project data...');
+    //appendLog(entry_id, 'Fetching entry and project data...');
     const [entryRows] = await pool.query('SELECT * FROM entries WHERE entry_id = ? LIMIT 1', [entry_id]);
     if (entryRows.length === 0) {
-      appendLog(entry_id, 'Entry not found.');
+     // appendLog(entry_id, 'Entry not found.');
       return res.status(404).json({ error: 'Entry not found' });
     }
     const entry = entryRows[0];
 
     const [projectRows] = await pool.query('SELECT * FROM projects WHERE project_id = ?', [entry.project_id]);
     if (projectRows.length === 0) {
-      appendLog(entry_id, 'Project not found.');
+     // appendLog(entry_id, 'Project not found.');
       return res.status(404).json({ error: 'Project not found' });
     }
     const project = projectRows[0];
 
-    appendLog(entry_id, 'Fetching global variables...');
+    //appendLog(entry_id, 'Fetching global variables...');
     const [globalVarRows] = await pool.query(
       "SELECT variable_name, prompt_text FROM prompts WHERE prompt_type = 'Global Variable'"
     );
@@ -54,7 +54,7 @@ export default async function handler(req, res) {
 
     const { generated_content } = entry;
     promptTemplate = promptTemplate.replace('{text}', generated_content || '');
-    appendLog(entry_id, `Prompt after replacing {text}: ${promptTemplate}`);
+    //appendLog(entry_id, `Prompt after replacing {text}: ${promptTemplate}`);
 
     let systemPrompt = '';
     const systemRegex = /%%([\s\S]*?)%%/;
@@ -62,8 +62,8 @@ export default async function handler(req, res) {
     if (match) {
       systemPrompt = match[1].trim();
       promptTemplate = promptTemplate.replace(systemRegex, '').trim();
-      appendLog(entry_id, `System Prompt Extracted: ${systemPrompt}`);
-      appendLog(entry_id, `User Prompt after system extraction: ${promptTemplate}`);
+     // appendLog(entry_id, `System Prompt Extracted: ${systemPrompt}`);
+     // appendLog(entry_id, `User Prompt after system extraction: ${promptTemplate}`);
     }
 
     const combinedData = buildReplacementsMap(project, entry, globalVariables);
@@ -75,7 +75,7 @@ export default async function handler(req, res) {
 
     appendLog(entry_id, 'Calling AI API for humanization...');
     const humanizedContent = await runPrompt(systemPrompt, promptTemplate);
-    appendLog(entry_id, `AI Response (Humanized Content): ${humanizedContent}`);
+   // appendLog(entry_id, `AI Response (Humanized Content): ${humanizedContent}`);
 
     if (!humanizedContent) {
       appendLog(entry_id, 'Error humanizing content.');
