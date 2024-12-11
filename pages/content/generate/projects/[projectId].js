@@ -67,6 +67,10 @@ export default function ProjectPage({ initialData }) {
   const router = useRouter();
   const { data: session, status } = useSession();
 
+
+// Now you can safely access session.user
+const permissionLevel = session?.user?.permissions_level || 'user';
+
   const { projectId } = router.query;
   const [project, setProject] = useState(initialData.project);
   const [entries, setEntries] = useState(initialData.entries || []);
@@ -121,7 +125,7 @@ export default function ProjectPage({ initialData }) {
 const [isExporting, setIsExporting] = useState(false);
 const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
 
-  const permissionLevel = session.user.permissions_level || 'user';
+
 
   const [logsVisible, setLogsVisible] = useState(false);
   const [consoleLogs, setConsoleLogs] = useState([]);
@@ -131,8 +135,10 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
   // For resizing
   const [consoleWidth, setConsoleWidth] = useState(400);
   const [consoleHeight, setConsoleHeight] = useState(200);
-  
   let logsIntervalRef = useRef(null);
+
+  
+   
   
   const fetchLogsForEntry = async (entryId) => {
     const response = await axios.get(`/api/content/entries/logs?entry_id=${entryId}`);
