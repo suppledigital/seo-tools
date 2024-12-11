@@ -3,7 +3,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import axios from 'axios';
-import { getOrganicResults } from '../../../lib/semrush'; // Adjust the path as needed
+import { getOrganicResults } from '../../../../lib/semrush'; // Adjust the path as needed
 
 const keywordsFilePath = path.resolve('./data/keywords.json');
 const txtFolderPath = path.resolve('./public/txt');
