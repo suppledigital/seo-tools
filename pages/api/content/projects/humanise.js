@@ -1,7 +1,7 @@
 // pages/api/content/projects/humanise.js
-
 import pool from '../../../../lib/db';
 import axios from 'axios';
+import { appendLog } from '../../../../lib/logs'; // Adjust path if needed
 
 const MAX_ITERATIONS = 5;
 
@@ -17,73 +17,84 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Fetch prompt_text for id=34
+    appendLog(entry_id, 'Fetching prompt with id=34...');
     const [promptRows] = await pool.query('SELECT prompt_text FROM prompts WHERE id = 34 LIMIT 1');
     if (promptRows.length === 0) {
+      appendLog(entry_id, 'No prompt found with id=34.');
       return res.status(404).json({ error: 'Prompt with id=34 not found' });
     }
     let promptTemplate = promptRows[0].prompt_text;
+    appendLog(entry_id, `Prompt Template: ${promptTemplate}`);
 
-    // Fetch the entry and project data
+    appendLog(entry_id, 'Fetching entry and project data...');
     const [entryRows] = await pool.query('SELECT * FROM entries WHERE entry_id = ? LIMIT 1', [entry_id]);
     if (entryRows.length === 0) {
+      appendLog(entry_id, 'Entry not found.');
       return res.status(404).json({ error: 'Entry not found' });
     }
     const entry = entryRows[0];
 
     const [projectRows] = await pool.query('SELECT * FROM projects WHERE project_id = ?', [entry.project_id]);
     if (projectRows.length === 0) {
+      appendLog(entry_id, 'Project not found.');
       return res.status(404).json({ error: 'Project not found' });
     }
     const project = projectRows[0];
 
-    // Fetch global variables
+    appendLog(entry_id, 'Fetching global variables...');
     const [globalVarRows] = await pool.query(
       "SELECT variable_name, prompt_text FROM prompts WHERE prompt_type = 'Global Variable'"
     );
 
-    // Convert global variables to a map
     let globalVariables = {};
     for (const row of globalVarRows) {
       const varKey = row.variable_name.startsWith('{') ? row.variable_name : `{${row.variable_name}}`;
       globalVariables[varKey] = row.prompt_text || '';
     }
 
-    // Insert generated_content by replacing {text}
     const { generated_content } = entry;
     promptTemplate = promptTemplate.replace('{text}', generated_content || '');
+    appendLog(entry_id, `Prompt after replacing {text}: ${promptTemplate}`);
 
-    // Extract system prompt from %%...%%
     let systemPrompt = '';
     const systemRegex = /%%([\s\S]*?)%%/;
     const match = promptTemplate.match(systemRegex);
     if (match) {
       systemPrompt = match[1].trim();
       promptTemplate = promptTemplate.replace(systemRegex, '').trim();
+      appendLog(entry_id, `System Prompt Extracted: ${systemPrompt}`);
+      appendLog(entry_id, `User Prompt after system extraction: ${promptTemplate}`);
     }
 
-    // Iterative replacement of placeholders
     const combinedData = buildReplacementsMap(project, entry, globalVariables);
     systemPrompt = iterativePlaceholderReplacement(systemPrompt, combinedData, MAX_ITERATIONS);
     promptTemplate = iterativePlaceholderReplacement(promptTemplate, combinedData, MAX_ITERATIONS);
 
-    // Run prompt with Anthropic
+    appendLog(entry_id, `Final System Prompt: ${systemPrompt}`);
+    appendLog(entry_id, `Final User Prompt: ${promptTemplate}`);
+
+    appendLog(entry_id, 'Calling AI API for humanization...');
     const humanizedContent = await runPrompt(systemPrompt, promptTemplate);
+    appendLog(entry_id, `AI Response (Humanized Content): ${humanizedContent}`);
+
     if (!humanizedContent) {
+      appendLog(entry_id, 'Error humanizing content.');
       return res.status(500).json({ error: 'Error humanizing content with Claude.' });
     }
 
-    // Update the database
     const sql = 'UPDATE entries SET humanized_content = ? WHERE entry_id = ?';
     const values = [humanizedContent, entry_id];
     const [result] = await pool.query(sql, values);
 
     if (result.affectedRows === 0) {
+      appendLog(entry_id, 'Failed to update entry with humanized content.');
       return res.status(404).json({ error: 'Entry not found or not updated' });
     }
 
+    appendLog(entry_id, 'Successfully updated humanized content in DB.');
     res.status(200).json({ status: 'success', humanizedContent });
   } catch (error) {
+    appendLog(entry_id, `Error: ${error.message}`);
     console.error('Error processing humanized content:', error);
     res.status(500).json({ error: 'An error occurred while processing the content' });
   }
@@ -126,7 +137,6 @@ function buildReplacementsMap(project, entry, globalVariables) {
       : entry.additional_keywords || ''
   };
 
-  // Merge global variables
   for (const [key, value] of Object.entries(globalVariables)) {
     replacements[key] = value;
   }
@@ -158,11 +168,6 @@ function iterativePlaceholderReplacement(text, replacements, maxIterations) {
     iteration++;
   }
 
-  const remaining = text.match(placeholderPattern);
-  if (remaining) {
-    console.warn('Unresolved placeholders after max iterations:', remaining);
-  }
-
   return text;
 }
 
@@ -170,18 +175,11 @@ async function runPrompt(systemPrompt, userPrompt) {
   const apiUrl = 'https://api.anthropic.com/v1/messages';
   const apiKey = process.env.CLAUDE_API_KEY;
 
-  // Log the request data
-  console.log('---- Anthropic API Request ----');
-  console.log('Model: claude-3-opus-20240229');
-  console.log('System Prompt:', systemPrompt);
-  console.log('User Prompt:', userPrompt);
-  console.log('-------------------------------');
-
   const data = {
     model: 'claude-3-opus-20240229',
     max_tokens: 2048,
     temperature: 1.0,
-    system: systemPrompt, // Pass system at top-level
+    system: systemPrompt,
     messages: [
       {
         role: 'user',

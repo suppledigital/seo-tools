@@ -2,6 +2,8 @@
 
 import pool from '../../../../../lib/db';
 import axios from 'axios';
+import { appendLog } from '../../../../../lib/logs'; // Adjust path as needed
+
 
 export default async function handler(req, res) {
   const { projectId } = req.query;
@@ -16,17 +18,23 @@ export default async function handler(req, res) {
 
     try {
       // Fetch the entry data
+     // appendLog(entry_id, 'Fetching entry from DB...');
       const [entryRows] = await pool.query('SELECT * FROM entries WHERE entry_id = ?', [entry_id]);
       const entry = entryRows[0];
-      console.log(entry);
+     // appendLog(entry_id, `Entry fetched: ${JSON.stringify(entry)}`);
+
+      //console.log(entry);
 
       if (!entry) {
         return res.status(404).json({ message: 'Entry not found.' });
       }
 
       // Fetch the project data
+     // appendLog(entry_id, 'Fetching project from DB...');
       const [projectRows] = await pool.query('SELECT * FROM projects WHERE project_id = ?', [projectId]);
       const project = projectRows[0];
+     // appendLog(entry_id, `Project fetched: ${JSON.stringify(project)}`);
+
 
       if (!project) {
         return res.status(404).json({ message: 'Project not found.' });
@@ -43,7 +51,8 @@ export default async function handler(req, res) {
       }
 
       const promptTemplate = promptRows[0].prompt_text;
-      console.log("Original Prompt Template:", promptTemplate);
+   //   console.log("Original Prompt Template:", promptTemplate);
+    //  appendLog(entry_id, `Original Prompt Template: ${promptTemplate}`);
 
       // Fetch global variables with their prompt_text
       const [globalVarRows] = await pool.query(
@@ -69,8 +78,9 @@ export default async function handler(req, res) {
 console.log("-----");
       // Replace placeholders in the prompt with actual data, handling nested placeholders
       const prompt = replacePlaceholders(promptTemplate, project, entry, globalVariables);
-      console.log("Final Prompt after Replacement:", prompt);
-      
+    //  console.log("Final Prompt after Replacement:", prompt);
+      appendLog(entry_id, `Final Prompt after Replacement: ${prompt}`);
+
 
       // Call the AI API to generate content
       const aiResponse = await runPrompt(prompt);
@@ -88,6 +98,8 @@ console.log("-----");
       // Respond with the AI-generated content
       res.status(200).json({ data: aiResponse });
     } catch (error) {
+      appendLog(entry_id, `Error: ${error.message}`);
+
       console.error('Error generating content:', error);
       res.status(500).json({ message: 'Internal server error while generating content.' });
     }
@@ -182,7 +194,7 @@ function replacePlaceholders(template, project, entry, globalVariables = {}) {
     replacements[`{${key}}`] = value || '';
   });
 
-  console.log('Replacements:', replacements);
+  //console.log('Replacements:', replacements);
 
   // **Perform Recursive Replacement**
   const finalPrompt = recursiveReplacePlaceholders(template, replacements);

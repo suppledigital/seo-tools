@@ -13,7 +13,9 @@ export default function EntriesTable({
   selectedEntries,
   setSelectedEntries,
   lastSelectedEntryId,
-  setLastSelectedEntryId
+  setLastSelectedEntryId,
+  permissionLevel,
+  onShowLogs
 }) {
   const {
     handleBadgeClick,
@@ -62,7 +64,7 @@ export default function EntriesTable({
       </thead>
       <tbody>
         {sortedEntries.map((entry) => (
-          <EntryRow
+            <EntryRow
             key={entry.entry_id}
             entry={entry}
             handlers={handlers}
@@ -72,6 +74,8 @@ export default function EntriesTable({
             setSelectedEntries={setSelectedEntries}
             lastSelectedEntryId={lastSelectedEntryId}
             setLastSelectedEntryId={setLastSelectedEntryId}
+            permissionLevel={permissionLevel}
+            onShowLogs={onShowLogs}
           />
         ))}
       </tbody>

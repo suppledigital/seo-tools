@@ -48,6 +48,9 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Avatar from '@mui/material/Avatar';
+import CloseIcon from '@mui/icons-material/Close';
+import OpenInFullIcon from '@mui/icons-material/OpenInFull'; 
+import ExitFullscreenIcon from '@mui/icons-material/FullscreenExit'; 
 
 
 // Import custom components
@@ -118,9 +121,74 @@ export default function ProjectPage({ initialData }) {
 const [isExporting, setIsExporting] = useState(false);
 const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
 
+  const permissionLevel = session.user.permissions_level || 'user';
 
-
-
+  const [logsVisible, setLogsVisible] = useState(false);
+  const [consoleLogs, setConsoleLogs] = useState([]);
+  const [selectedLogEntryId, setSelectedLogEntryId] = useState(null);
+  const [expanded, setExpanded] = useState(false);
+  
+  // For resizing
+  const [consoleWidth, setConsoleWidth] = useState(400);
+  const [consoleHeight, setConsoleHeight] = useState(200);
+  
+  let logsIntervalRef = useRef(null);
+  
+  const fetchLogsForEntry = async (entryId) => {
+    const response = await axios.get(`/api/content/entries/logs?entry_id=${entryId}`);
+    setConsoleLogs(response.data.logs || []);
+  };
+  
+  // Start polling logs when logsVisible is true
+  useEffect(() => {
+    if (logsVisible && selectedLogEntryId) {
+      // Fetch immediately
+      fetchLogsForEntry(selectedLogEntryId);
+      // Start interval polling every 3 seconds
+      logsIntervalRef.current = setInterval(() => {
+        fetchLogsForEntry(selectedLogEntryId);
+      }, 3000);
+    }
+  
+    return () => {
+      // Cleanup: clear interval if logsVisible is turned off
+      if (logsIntervalRef.current) {
+        clearInterval(logsIntervalRef.current);
+        logsIntervalRef.current = null;
+      }
+    };
+  }, [logsVisible, selectedLogEntryId]);
+  
+  // Resizing logic
+  const resizeRef = useRef({ resizing: false, startX: 0, startY: 0, startWidth: 0, startHeight: 0 });
+  
+  const onMouseDown = (e) => {
+    e.preventDefault();
+    resizeRef.current = {
+      resizing: true,
+      startX: e.clientX,
+      startY: e.clientY,
+      startWidth: consoleWidth,
+      startHeight: consoleHeight,
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  };
+  
+  const onMouseMove = (e) => {
+    if (!resizeRef.current.resizing) return;
+    const deltaX = e.clientX - resizeRef.current.startX;
+    const deltaY = e.clientY - resizeRef.current.startY;
+    setConsoleWidth(Math.max(200, resizeRef.current.startWidth + deltaX));
+    setConsoleHeight(Math.max(100, resizeRef.current.startHeight + deltaY));
+  };
+  
+  const onMouseUp = (e) => {
+    resizeRef.current.resizing = false;
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+  
   const sidebarRef = useRef(null);
 
   const actions = [
@@ -1421,16 +1489,85 @@ const getRandomValues = (valuesArray, numberOfValues) => {
 
 
       
-          <EntriesTable
-            entries={entries}
-            handlers={handlers}
-            loadingEntries={loadingEntries}
-            classificationLoading={classificationLoading}
-            selectedEntries={selectedEntries}
-            setSelectedEntries={setSelectedEntries}
-            lastSelectedEntryId={lastSelectedEntryId}
-            setLastSelectedEntryId={setLastSelectedEntryId}
+      <EntriesTable
+        entries={entries}
+        handlers={handlers}
+        loadingEntries={loadingEntries}
+        classificationLoading={classificationLoading}
+        selectedEntries={selectedEntries}
+        setSelectedEntries={setSelectedEntries}
+        lastSelectedEntryId={lastSelectedEntryId}
+        setLastSelectedEntryId={setLastSelectedEntryId}
+        permissionLevel={permissionLevel}
+        onShowLogs={(entryId) => {
+          setSelectedLogEntryId(entryId);
+          fetchLogsForEntry(entryId);
+          setLogsVisible(true);
+        }}
+      />
+
+{logsVisible && (
+      <div 
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          width: expanded ? '80%' : `${consoleWidth}px`,
+          height: expanded ? '60%' : `${consoleHeight}px`,
+          background: '#333',
+          color: '#fff',
+          overflowY: 'auto',
+          borderRadius: '5px',
+          padding: '10px',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <div 
+          style={{
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            marginBottom: '5px'
+          }}
+        >
+          <span>Console Logs (Entry ID: {selectedLogEntryId})</span>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <IconButton 
+              onClick={() => setExpanded(!expanded)}
+              style={{ color: '#fff', padding: '4px' }}
+            >
+              {expanded ? <ExitFullscreenIcon /> : <OpenInFullIcon />}
+            </IconButton>
+            <IconButton
+              onClick={() => setLogsVisible(false)}
+              style={{ color: '#fff', padding: '4px' }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </div>
+        </div>
+        <pre style={{whiteSpace: 'pre-wrap', fontSize: '12px', flex: '1 1 auto'}}>
+          {consoleLogs.join('\n')}
+        </pre>
+        {/* Resize handle at bottom-right corner */}
+        {!expanded && (
+          <div
+            style={{
+              width: '20px',
+              height: '20px',
+              background: '#444',
+              cursor: 'se-resize',
+              alignSelf: 'flex-end'
+            }}
+            onMouseDown={onMouseDown}
           />
+        )}
+      </div>
+    )}
+
+
         </div>
       )}
       {/* Modals */}
@@ -1647,6 +1784,10 @@ export async function getServerSideProps(context) {
       },
     };
   }
+
+
+
+
   const pool = (await import('../../../../lib/db')).default;
 
   // Query the database directly
@@ -1685,10 +1826,12 @@ export async function getServerSideProps(context) {
         return entry;
       });
     }
+    const permissionLevel = session.user.permissions_level || 'user';
 
     return {
       props: {
         initialData: { project, entries },
+        permissionLevel
       },
     };
   } catch (error) {

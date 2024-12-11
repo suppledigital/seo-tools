@@ -12,6 +12,8 @@ export default function EntryRow({
   setSelectedEntries,
   lastSelectedEntryId,
   setLastSelectedEntryId,
+  permissionLevel,
+  onShowLogs
 }) {
   const {
     handleBadgeClick,
@@ -201,51 +203,34 @@ export default function EntryRow({
       </td>
 
       {/* Actions Cell */}
-      <td className={styles.actionsCell}>
-        {/* Generate Button */}
+       <td className={styles.actionsCell}>
         <button
           className={styles.actionButton}
           onClick={() => handlers.handleGenerateContent(entry.entry_id)}
           disabled={isLoading}
         >
-          {isLoading ? (
-            <>
-              <FontAwesomeIcon icon={faSpinner} spin /> Generating...
-            </>
-          ) : entry.generated_content ? (
-            'Regenerate'
-          ) : (
-            'Generate'
-          )}
+          {isLoading ? 'Generating...' : entry.generated_content ? 'Regenerate' : 'Generate'}
         </button>
 
-        {/* Humanize Button */}
-        {isLoading ? (
-          <FontAwesomeIcon icon={faSpinner} spin className={styles.spinner} />
-        ) : (
-          <button
-            className={styles.actionButton}
-            onClick={() => handlers.handleHumanizeContent(entry)}
-            disabled={isLoading}
-          >
-            Humanize
-          </button>
-        )}
-
-        {/* Delete Button */}
         <button
-          className={styles.deleteButton}
-          onClick={() => handleDeleteEntry(entry.entry_id)}
+          className={styles.actionButton}
+          onClick={() => handlers.handleHumanizeContent(entry)}
           disabled={isLoading}
         >
+          Humanize
+        </button>
+
+        <button className={styles.deleteButton} onClick={() => handleDeleteEntry(entry.entry_id)}>
           Delete
         </button>
 
-        {/* Retry Message */}
-        {retryMessage && (
-          <div className={styles.retryMessage}>
-            {retryMessage}
-          </div>
+        {permissionLevel === 'admin' && (
+          <i
+            className="fas fa-code"
+            title="Show Console"
+            style={{ marginLeft: '8px', cursor: 'pointer' }}
+            onClick={() => onShowLogs(entry.entry_id)}
+          ></i>
         )}
       </td>
     </tr>
