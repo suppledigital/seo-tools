@@ -1,5 +1,5 @@
 // pages/api/mining/keywords.js
-import { promises as fs } from 'fs';
+/*import { promises as fs } from 'fs';
 import path from 'path';
 
 const keywordsFilePath = path.resolve('./data/keywords.json');
@@ -19,3 +19,4 @@ export default async function handler(req, res) {
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
+*/
