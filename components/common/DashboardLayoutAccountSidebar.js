@@ -35,8 +35,11 @@ const NAVIGATION = [
     title: 'Keywords',
     icon: <KeyIcon />,
     children: [
+      { segment: 'overview', title: 'Overview', icon: <KeyIcon /> },
+      { segment: 'importer', title: 'Importer', icon: <KeyIcon /> },
       { segment: 'internal', title: 'Keywords Tool', icon: <KeyIcon /> },
       { segment: 'webceo-keywords', title: 'Keywords Exporter', icon: <KeyIcon /> },
+
     ],
   },
   {
@@ -171,7 +174,7 @@ export default function DashboardLayoutAccountSidebar({ children }) {
       pathname: routerNext.pathname,
       searchParams: new URLSearchParams(routerNext.query),
       navigate: (path) => {
-        const newPath = path ? `/${path}` : '/';
+        const newPath = path ? `${path}` : '/';
         routerNext.push(newPath);
       },
     }),
