@@ -1,4 +1,3 @@
-// pages/api/content/projects/task-status.js
 import pool from '../../../../lib/db';
 
 export default async function handler(req, res) {
@@ -40,15 +39,21 @@ export default async function handler(req, res) {
       }
     }
 
-    // Fetch the updated_at field from entries to return
+    // Fetch the updated_at, rephrasy_score_humanise, and rephrasy_score_generate fields from entries
     const [entryRows] = await pool.query(
-      'SELECT updated_at FROM entries WHERE project_id = ? AND entry_id = ?',
+      `SELECT updated_at, rephrasy_score_humanise, rephrasy_score_generate 
+       FROM entries WHERE project_id = ? AND entry_id = ?`,
       [project_id, entry_id]
     );
 
     let updated_at = null;
+    let rephrasy_score_humanise = null;
+    let rephrasy_score_generate = null;
+
     if (entryRows.length > 0) {
       updated_at = entryRows[0].updated_at;
+      rephrasy_score_humanise = entryRows[0].rephrasy_score_humanise;
+      rephrasy_score_generate = entryRows[0].rephrasy_score_generate;
     }
 
     return res.status(200).json({
@@ -56,7 +61,9 @@ export default async function handler(req, res) {
       task_status: status,
       result: status === 'Completed' ? result : null,
       error: status === 'Failed' ? error : null,
-      updated_at: updated_at ? updated_at : null
+      updated_at: updated_at ? updated_at : null,
+      rephrasy_score_humanise: rephrasy_score_humanise,
+      rephrasy_score_generate: rephrasy_score_generate,
     });
   } catch (error) {
     console.error('Error in task-status API:', error.message);

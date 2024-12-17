@@ -311,3 +311,12 @@
 .lastUpdated{
   color:#8f8f8f;
 }
+.error{
+  background-color:rgb(241, 73, 73);
+}
+.warning{
+  background-color:rgb(255, 186, 59);
+}
+.okay{
+  background-color: rgb(105, 175, 105);;
+}

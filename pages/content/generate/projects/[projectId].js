@@ -169,7 +169,7 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
 
           if (response.status === 200 && response.data) {
             // Extract updated_at from response
-            const { task_status: newStatus, result, error, updated_at } = response.data;
+            const { task_status: newStatus, result, error, updated_at, rephrasy_score_generate, rephrasy_score_humanise } = response.data;
 
             setEntries((prevEntries) =>
               prevEntries.map((e) => {
@@ -192,6 +192,14 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
                   // Update updated_at if present from the response
                   if (updated_at) {
                     updatedEntry.updated_at = updated_at;
+                  }
+                  // Update updated_at if present from the response
+                  if (rephrasy_score_humanise) {
+                    updatedEntry.rephrasy_score_humanise = rephrasy_score_humanise;
+                  }
+                  // Update updated_at if present from the response
+                  if (rephrasy_score_generate) {
+                    updatedEntry.rephrasy_score_generate = rephrasy_score_generate;
                   }
 
                   return updatedEntry;

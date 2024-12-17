@@ -37,6 +37,15 @@ export default function EntryRow({
     handleViewContent,
     handleHumanizeContent, // Ensure this handler is passed
   } = handlers;
+
+// Helper function to determine score class
+const getScoreClass = (score) => {
+  if (score > 75) return styles.error;
+  if (score >= 50) return styles.warning;
+  return styles.okay;
+};
+
+
 // Convert the UTC date to Melbourne timezone
 const utcDate = new Date(`${entry.updated_at}Z`); // Add 'Z' to enforce UTC interpretation
 const melbourneDate = utcToZonedTime(utcDate, melbourneTimeZone); // Convert to Melbourne timezone
@@ -197,8 +206,11 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
               <span className={styles.wordCountBadge} title="Word Count">
                 {wordCount} words
               </span>
-              <span className={styles.wordCountBadge} title="AI Detection">
-                AI: {entry.rephrasy_score_generate} 
+              <span
+                className={`${styles.wordCountBadge} ${getScoreClass(entry.rephrasy_score_generate)}`}
+                title="AI Detection Score"
+              >
+                AI: {entry.rephrasy_score_generate}
               </span>
               <div className={styles.lastUpdated}>
               <small>Last Updated: {formattedMelbourneDate}</small>
@@ -256,8 +268,11 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
               <span className={styles.wordCountBadge} title="Word Count">
                 {humanisedWordCount} words
               </span>
-              <span className={styles.wordCountBadge} title="AI Detection">
-                AI: {entry.rephrasy_score_humanise} 
+              <span
+                className={`${styles.wordCountBadge} ${getScoreClass(entry.rephrasy_score_humanise)}`}
+                title="AI Detection Score"
+              >
+                AI: {entry.rephrasy_score_humanise}
               </span>
               <div className={styles.lastUpdated}>
               <small>Last Updated: {formattedMelbourneDate}</small>
