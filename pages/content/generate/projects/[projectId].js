@@ -1641,7 +1641,7 @@ const renderAdditionalInfoBlocks = (entry) => {
     <div className={styles.projects}>
       <Container maxWidth="xlg" sx={{ mt: 1, mb: 1 }}>
         {/* Header */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h9" component="h3">
             Project: {project.project_name}
           </Typography>

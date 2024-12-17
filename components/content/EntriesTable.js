@@ -58,8 +58,8 @@ export default function EntriesTable({
           <th>URL</th>
           <th>Keywords</th>
           <th>Additional Info</th>
-          <th>Generated Content</th>
-          <th>Humanised Content</th>
+          <th className={styles.generatedContent}>Generated Content</th>
+          <th className={styles.humanisedContent}>Humanised Content</th>
           <th>Actions</th>
         </tr>
       </thead>

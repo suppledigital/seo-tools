@@ -30,6 +30,7 @@ export default function AdvancedActions({
   const [overrideExisting, setOverrideExisting] = useState(true);
   const [assignRandomly, setAssignRandomly] = useState(false);
   const [numberOfRandomValues, setNumberOfRandomValues] = useState(1);
+  const [manualMode, setManualMode] = useState(false); // New state for manual entry mode
 
   const allInfoItems = [
     { key: 'word_count', label: 'Word Count' },
@@ -221,7 +222,7 @@ export default function AdvancedActions({
           response.data.phraseQuestions.map((kw) => ({ ...kw, source: 'Question' }))
         );
       }
-      // Handle topic_cluster similarly
+      // Handle topic_cluster similarly if needed
     } catch (error) {
       console.error('Error fetching ideas:', error);
       alert('Error fetching ideas.');
@@ -230,7 +231,7 @@ export default function AdvancedActions({
 
   const handleApplyBulkAction = async () => {
     let actionValue = null;
-  
+
     if (bulkActionField === 'page_type') {
       actionValue = pageTypeValue;
     } else if (bulkActionField === 'content_type') {
@@ -242,13 +243,21 @@ export default function AdvancedActions({
       ) {
         // Prepare valuesArray based on additionalInfoType
         let valuesArray = [];
-  
+
         if (['lsi_terms', 'paa_terms'].includes(additionalInfoType)) {
-          if (selectedSuggestions.length === 0) {
-            alert('Please select suggestions to assign.');
+          if (selectedSuggestions.length === 0 && !manualMode) {
+            alert('Please select suggestions to assign or add manually.');
             return;
           }
-          valuesArray = selectedSuggestions.map((suggestion) => suggestion.keyword);
+          if (manualMode) {
+            // If manual mode is on, use additionalInfoValue (textarea) instead of suggestions
+            valuesArray = additionalInfoValue
+              .split(/[\n,]+/)
+              .map((val) => val.trim())
+              .filter((val) => val);
+          } else {
+            valuesArray = selectedSuggestions.map((suggestion) => suggestion.keyword);
+          }
         } else if (additionalInfoType === 'brand_terms') {
           valuesArray = additionalInfoValue
             .split(/[\n,]+/)
@@ -259,7 +268,7 @@ export default function AdvancedActions({
             return;
           }
         }
-  
+
         // Prepare data for random assignment
         actionValue = {
           [additionalInfoType]: {
@@ -270,14 +279,30 @@ export default function AdvancedActions({
           },
         };
       } else if (['lsi_terms', 'paa_terms', 'topic_cluster'].includes(additionalInfoType)) {
-        // When not assigning randomly, use selected suggestions
-        if (selectedSuggestions.length === 0) {
-          alert('Please select suggestions to assign.');
-          return;
+        // When not assigning randomly, use selected suggestions or manual input
+        let chosenValues = [];
+        if (manualMode) {
+          // Use the manual input from textarea
+          chosenValues = additionalInfoValue
+            .split(/[\n,]+/)
+            .map((val) => val.trim())
+            .filter((val) => val);
+          if (chosenValues.length === 0) {
+            alert('Please type your keywords.');
+            return;
+          }
+        } else {
+          // Use selected suggestions
+          if (selectedSuggestions.length === 0) {
+            alert('Please select suggestions to assign.');
+            return;
+          }
+          chosenValues = selectedSuggestions.map((s) => s.keyword);
         }
+
         actionValue = {
           [additionalInfoType]: {
-            suggestions: selectedSuggestions.map((s) => s.keyword),
+            suggestions: chosenValues,
             overrideExisting: overrideExisting,
           },
         };
@@ -286,9 +311,9 @@ export default function AdvancedActions({
         actionValue = { [additionalInfoType]: additionalInfoValue };
       }
     }
-  
+
     await applyBulkAction(bulkActionType, bulkActionField, actionValue);
-  
+
     // Reset state
     setShowBulkActionOptions(false);
     setBulkActionField('');
@@ -302,10 +327,8 @@ export default function AdvancedActions({
     setKeywordForIdeas('');
     setAssignRandomly(false);
     setNumberOfRandomValues(1);
+    setManualMode(false);
   };
-  
-
-  
 
   return (
     <div className={styles.advancedActions}>
@@ -320,14 +343,12 @@ export default function AdvancedActions({
           <div className={styles.selectionActions}>
             {selectionCriteriaList.map((criteriaObj, index) => (
               <div key={index} className={styles.individualSelectContainer}>
-                {/* Display Logical Operator for Criteria After the First */}
                 {index > 0 && (
                   <span className={styles.logicalOperatorLabel}>
                     {criteriaObj.logicalOperator}
                   </span>
                 )}
 
-                {/* Criteria Type Dropdown */}
                 <select
                   value={criteriaObj.criteria}
                   onChange={(e) => handleCriteriaChange(index, 'criteria', e.target.value)}
@@ -340,13 +361,10 @@ export default function AdvancedActions({
                   <option value="select_all">Select All</option>
                 </select>
 
-                {/* Criteria-Specific Operator Dropdown */}
                 {['url', 'keyword'].includes(criteriaObj.criteria) && (
                   <select
                     value={criteriaObj.criteriaOperator}
-                    onChange={(e) =>
-                      handleCriteriaChange(index, 'criteriaOperator', e.target.value)
-                    }
+                    onChange={(e) => handleCriteriaChange(index, 'criteriaOperator', e.target.value)}
                   >
                     <option value="">--Select Operator--</option>
                     <option value="contains">Contains</option>
@@ -354,7 +372,6 @@ export default function AdvancedActions({
                   </select>
                 )}
 
-                {/* Value Input or Selection */}
                 {['page_type', 'content_type'].includes(criteriaObj.criteria) && (
                   <select
                     value={criteriaObj.value}
@@ -388,14 +405,12 @@ export default function AdvancedActions({
                   />
                 )}
 
-                {/* Operator Links for Adding New Criteria */}
                 {index === selectionCriteriaList.length - 1 && (
                   <div className={styles.operatorLinks}>
                     <a
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        // Validate current criterion before adding a new one
                         const currentCriteria = selectionCriteriaList[index];
                         const isCriteriaValid =
                           currentCriteria.criteria &&
@@ -478,7 +493,6 @@ export default function AdvancedActions({
                   value={bulkActionField}
                   onChange={(e) => {
                     setBulkActionField(e.target.value);
-                    // Reset related values when changing the field
                     setPageTypeValue('');
                     setContentTypeValue('');
                     setAdditionalInfoType('');
@@ -489,6 +503,7 @@ export default function AdvancedActions({
                     setKeywordForIdeas('');
                     setAssignRandomly(false);
                     setNumberOfRandomValues(1);
+                    setManualMode(false);
                   }}
                 >
                   <option value="">Select Field</option>
@@ -498,7 +513,6 @@ export default function AdvancedActions({
                 </select>
               </div>
 
-              {/* For Page Type */}
               {bulkActionField === 'page_type' && bulkActionType === 'modify' && (
                 <div>
                   <label>New Page Type:</label>
@@ -522,7 +536,6 @@ export default function AdvancedActions({
                 </div>
               )}
 
-              {/* For Content Type */}
               {bulkActionField === 'content_type' && bulkActionType === 'modify' && (
                 <div>
                   <label>New Content Type:</label>
@@ -540,7 +553,6 @@ export default function AdvancedActions({
                 </div>
               )}
 
-              {/* For Additional Info */}
               {bulkActionField === 'additional_info' && (
                 <div>
                   <label>Additional Info Type:</label>
@@ -555,6 +567,7 @@ export default function AdvancedActions({
                       setKeywordForIdeas('');
                       setAssignRandomly(false);
                       setNumberOfRandomValues(1);
+                      setManualMode(false);
                     }}
                   >
                     <option value="">Select Info Type</option>
@@ -565,7 +578,6 @@ export default function AdvancedActions({
                     ))}
                   </select>
 
-                  {/* Word Count Input and Slider */}
                   {additionalInfoType === 'word_count' && (
                     <div>
                       <label>Word Count:</label>
@@ -588,7 +600,6 @@ export default function AdvancedActions({
                     </div>
                   )}
 
-                  {/* PAA, LSI, Topic Cluster */}
                   {['lsi_terms', 'paa_terms', 'topic_cluster'].includes(additionalInfoType) && (
                     <div>
                       <label>
@@ -597,61 +608,88 @@ export default function AdvancedActions({
                       <button
                         className={styles.generateButton}
                         onClick={() => {
-                          // Show generate ideas input
                           setShowGenerateIdeas(true);
+                          setManualMode(false);
                         }}
                       >
                         <i className="fas fa-brain"></i> Generate Ideas
                       </button>
+                      <span style={{ marginLeft: '10px' }}>
+                        <a
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowGenerateIdeas(true);
+                            setManualMode(true);
+                            setSuggestions([]);
+                            setSelectedSuggestions([]);
+                            setAdditionalInfoValue(''); // clear previous text
+                          }}
+                        >
+                          Add manually
+                        </a>
+                      </span>
                       {showGenerateIdeas && (
                         <div className={styles.generateIdeasSection}>
-                          <label>Enter Keyword for Ideas:</label>
-                          <input
-                            type="text"
-                            value={keywordForIdeas}
-                            onChange={(e) => setKeywordForIdeas(e.target.value)}
-                          />
-                          <button onClick={handleGetIdeas}>Get Ideas</button>
-
-                          {suggestions.length > 0 && (
-                            <div className={styles.suggestionsList}>
-                              <h4>Suggestions:</h4>
-                              <label>
-                                <input
-                                  type="checkbox"
-                                  checked={selectedSuggestions.length === suggestions.length}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      setSelectedSuggestions(suggestions);
-                                    } else {
-                                      setSelectedSuggestions([]);
-                                    }
-                                  }}
-                                />
-                                Select All
-                              </label>
-                              {suggestions.map((suggestion, index) => (
-                                <label key={index}>
-                                  <input
-                                    type="checkbox"
-                                    checked={selectedSuggestions.includes(suggestion)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        setSelectedSuggestions([
-                                          ...selectedSuggestions,
-                                          suggestion,
-                                        ]);
-                                      } else {
-                                        setSelectedSuggestions(
-                                          selectedSuggestions.filter((s) => s !== suggestion)
-                                        );
-                                      }
-                                    }}
-                                  />
-                                  {suggestion.keyword} ({suggestion.source})
-                                </label>
-                              ))}
-                            </div>
+                          {!manualMode ? (
+                            <>
+                              <label>Enter Keyword for Ideas:</label>
+                              <input
+                                type="text"
+                                value={keywordForIdeas}
+                                onChange={(e) => setKeywordForIdeas(e.target.value)}
+                              />
+                              <button onClick={handleGetIdeas}>Get Ideas</button>
+                              {suggestions.length > 0 && (
+                                <div className={styles.suggestionsList}>
+                                  <h4>Suggestions:</h4>
+                                  <label>
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedSuggestions.length === suggestions.length}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setSelectedSuggestions(suggestions);
+                                        } else {
+                                          setSelectedSuggestions([]);
+                                        }
+                                      }}
+                                    />
+                                    Select All
+                                  </label>
+                                  {suggestions.map((suggestion, index) => (
+                                    <label key={index}>
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedSuggestions.includes(suggestion)}
+                                        onChange={(e) => {
+                                          if (e.target.checked) {
+                                            setSelectedSuggestions([
+                                              ...selectedSuggestions,
+                                              suggestion,
+                                            ]);
+                                          } else {
+                                            setSelectedSuggestions(
+                                              selectedSuggestions.filter((s) => s !== suggestion)
+                                            );
+                                          }
+                                        }}
+                                      />
+                                      {suggestion.keyword} ({suggestion.source})
+                                    </label>
+                                  ))}
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <label>Type your keywords here (comma or newline separated):</label>
+                              <textarea
+                                rows="4"
+                                value={additionalInfoValue}
+                                onChange={(e) => setAdditionalInfoValue(e.target.value)}
+                              ></textarea>
+                            </>
                           )}
 
                           <div className={styles.overrideOptions}>
@@ -673,16 +711,15 @@ export default function AdvancedActions({
                             </label>
                           </div>
 
-                          {/* Assign Randomly Option */}
                           <div className={styles.randomiseOptions}>
-                          <label>
-                            <input
-                              type="checkbox"
-                              checked={assignRandomly}
-                              onChange={(e) => setAssignRandomly(e.target.checked)}
-                            />
-                            Assign randomly to selected entries
-                          </label>
+                            <label>
+                              <input
+                                type="checkbox"
+                                checked={assignRandomly}
+                                onChange={(e) => setAssignRandomly(e.target.checked)}
+                              />
+                              Assign randomly to selected entries
+                            </label>
                           </div>
 
                           {assignRandomly && (
@@ -706,7 +743,6 @@ export default function AdvancedActions({
                     </div>
                   )}
 
-                  {/* LSI Terms, PAA Terms, Brand Terms without Generate Ideas */}
                   {['lsi_terms', 'paa_terms', 'brand_terms'].includes(additionalInfoType) &&
                     !['lsi_terms', 'paa_terms', 'topic_cluster'].includes(additionalInfoType) && (
                       <div>
@@ -720,7 +756,6 @@ export default function AdvancedActions({
                           onChange={(e) => setAdditionalInfoValue(e.target.value)}
                         ></textarea>
 
-                        {/* Assign Randomly Option */}
                         <label>
                           <input
                             type="checkbox"
@@ -749,7 +784,6 @@ export default function AdvancedActions({
                       </div>
                     )}
 
-                  {/* Other Additional Info Types */}
                   {['existing_content', 'existing_product_info'].includes(additionalInfoType) && (
                     <div>
                       <label>
@@ -783,6 +817,7 @@ export default function AdvancedActions({
                     setKeywordForIdeas('');
                     setAssignRandomly(false);
                     setNumberOfRandomValues(1);
+                    setManualMode(false);
                   }}
                 >
                   Cancel

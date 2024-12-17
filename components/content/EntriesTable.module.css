@@ -21,6 +21,9 @@
   border-bottom: 1px solid #ddd;
   padding: 8px;
 }
+.generatedContent, .humanisedContent{
+  width:20%;
+}
 
 
 

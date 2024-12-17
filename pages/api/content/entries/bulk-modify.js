@@ -12,59 +12,52 @@ export default async function handler(req, res) {
 
     try {
       if (field === 'additional_info') {
-        // Handle additional info updates
-        // 'value' is an object like { lsi_terms: { suggestions: [...], overrideExisting: true } }
-        // or { word_count: "750" }
-
         const additionalInfoKey = Object.keys(value)[0];
         const additionalInfoData = value[additionalInfoKey];
 
-        // Define which fields require complex handling
+        // Fields that typically deal with lists of keywords
         const listFields = ['lsi_terms', 'paa_terms', 'topic_cluster'];
 
         if (listFields.includes(additionalInfoKey)) {
-          // Handle fields with suggestions and overrideExisting
+          // Expecting something like: { suggestions: [...], overrideExisting: true/false }
           const { suggestions, overrideExisting } = additionalInfoData;
 
-          if (!suggestions || typeof overrideExisting === 'undefined') {
+          if (!Array.isArray(suggestions) || typeof overrideExisting === 'undefined') {
             throw new Error(`Invalid payload structure for ${additionalInfoKey}`);
           }
 
           for (const entry_id of entry_ids) {
-            // Fetch existing value
             const [rows] = await pool.query(
               'SELECT ?? FROM entries WHERE entry_id = ?',
               [additionalInfoKey, entry_id]
             );
 
             let existingValue = rows[0] ? rows[0][additionalInfoKey] : '';
-            let existingKeywords = existingValue ? existingValue.split(', ') : [];
-            let newKeywords = suggestions.map((sugg) => sugg.keyword);
+            let existingKeywords = existingValue ? existingValue.split(', ').map(s => s.trim()).filter(Boolean) : [];
+
+            // Since suggestions is now an array of strings, not objects
+            let newKeywords = suggestions;
 
             let updatedKeywords;
-
-            if (!overrideExisting && existingValue) {
-              // Append to existing value
+            if (!overrideExisting && existingKeywords.length > 0) {
               updatedKeywords = [...existingKeywords, ...newKeywords];
             } else {
-              // Override existing value
               updatedKeywords = newKeywords;
             }
 
             // Remove duplicates
             updatedKeywords = Array.from(new Set(updatedKeywords));
-
             // Join keywords into a comma-separated string
             let newValue = updatedKeywords.join(', ');
 
-            // Update the entry
             await pool.query(
               'UPDATE entries SET ?? = ? WHERE entry_id = ?',
               [additionalInfoKey, newValue, entry_id]
             );
           }
         } else {
-          // Handle simple key-value fields like word_count, existing_content, etc.
+          // For simple fields like word_count, existing_content, etc.
+          // additionalInfoData is just a string or a simple value
           for (const entry_id of entry_ids) {
             await pool.query(
               'UPDATE entries SET ?? = ? WHERE entry_id = ?',
@@ -73,13 +66,10 @@ export default async function handler(req, res) {
           }
         }
       } else {
-        // For other fields, we can update directly
-        // Prepare placeholders for entry_ids
+        // For page_type, content_type, or other direct fields
         const entryIdsPlaceholders = entry_ids.map(() => '?').join(', ');
-
         let sql = `UPDATE entries SET ${field} = ? WHERE entry_id IN (${entryIdsPlaceholders})`;
         let params = [value, ...entry_ids];
-
         await pool.query(sql, params);
       }
 
