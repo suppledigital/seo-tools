@@ -136,14 +136,87 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
   const [consoleWidth, setConsoleWidth] = useState(400);
   const [consoleHeight, setConsoleHeight] = useState(200);
   let logsIntervalRef = useRef(null);
+  const [polling, setPolling] = useState(true); // Control polling
 
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const pendingTasks = entries.filter(
+        (entry) => 
+          (entry.task_status === 'Queued' || entry.task_status === 'Processing') && 
+          (entry.task_id_generate || entry.task_id_humanise)
+      );
+
+      if (pendingTasks.length === 0) {
+        clearInterval(interval);
+        return;
+      }
+
+      for (const entry of pendingTasks) {
+        let taskIdToPoll = null;
+
+        if (entry.task_id_humanise && (entry.task_status === 'Queued' || entry.task_status === 'Processing')) {
+          taskIdToPoll = entry.task_id_humanise;
+        } else if (entry.task_id_generate && (entry.task_status === 'Queued' || entry.task_status === 'Processing')) {
+          taskIdToPoll = entry.task_id_generate;
+        }
+
+        if (!taskIdToPoll) continue;
+
+        try {
+          const response = await axios.get('/api/content/projects/task-status', {
+            params: { taskId: taskIdToPoll },
+          });
+
+          if (response.status === 200 && response.data) {
+            // Extract updated_at from response
+            const { task_status: newStatus, result, error, updated_at } = response.data;
+
+            setEntries((prevEntries) =>
+              prevEntries.map((e) => {
+                if (e.entry_id === entry.entry_id) {
+                  let updatedEntry = { ...e, task_status: newStatus };
+
+                  if (newStatus === 'Completed') {
+                    if (taskIdToPoll === e.task_id_humanise) {
+                      updatedEntry.humanized_content = result;
+                      toast.success(`Content humanized for entry ${entry.entry_id}.`);
+                    } else if (taskIdToPoll === e.task_id_generate) {
+                      updatedEntry.generated_content = result;
+                      toast.success(`Content generated for entry ${entry.entry_id}.`);
+                    }
+                  } else if (newStatus === 'Failed') {
+                    updatedEntry.error_message = error;
+                    toast.error(`Task failed for entry ${entry.entry_id}: ${error}`);
+                  }
+
+                  // Update updated_at if present from the response
+                  if (updated_at) {
+                    updatedEntry.updated_at = updated_at;
+                  }
+
+                  return updatedEntry;
+                }
+                return e;
+              })
+            );
+          }
+        } catch (error) {
+          console.error('Error polling task status:', error);
+          toast.error('Error polling task status.');
+        }
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [entries]);
   
-   
   
-  const fetchLogsForEntry = async (entryId) => {
-    const response = await axios.get(`/api/content/entries/logs?entry_id=${entryId}`);
-    setConsoleLogs(response.data.logs || []);
-  };
+  
+    // Example function to fetch logs (if needed)
+    const fetchLogsForEntry = async (entryId) => {
+      const response = await axios.get(`/api/content/entries/logs?entry_id=${entryId}`);
+      setConsoleLogs(response.data.logs || []);
+    };
   
   // Start polling logs when logsVisible is true
   useEffect(() => {
@@ -262,7 +335,7 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
   };
   
   
-  const handleHumanizeContent = async (entry) => {
+ /* const handleHumanizeContent = async (entry) => {
     try {
       // Set loading state to true
       setLoadingEntries((prev) => ({
@@ -299,8 +372,38 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
       }));
     }
   };
+  */
+    const handleHumanizeContent = async (entryId) => {
+    try {
+      const response = await axios.post('/api/content/projects/humanise', {
+        project_id: projectId,
+        entry_id: entryId,
+        task_type: 'humanise-content',
+      });
+  
+      if (response.data.success) {
+        toast.success('Content humanization started.');
+  
+        const newTaskId = response.data.task_id;
+  
+        setEntries((prevEntries) =>
+          prevEntries.map((e) =>
+            e.entry_id === entryId
+              ? { ...e, task_id_humanise: newTaskId, task_status: 'Queued' }
+              : e
+          )
+        );
+      } else {
+        toast.error('Failed to start content humanization.');
+      }
+    } catch (error) {
+      console.error('Error starting content humanization:', error);
+      toast.error('Error starting content humanization.');
+    }
+  };
   
   
+
 
 
   const handleForceGenerateAllContent = async () => {
@@ -814,7 +917,7 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
   
 
   // Update handleGenerateContent to accept a second parameter for bulk generation
-  const handleGenerateContent = async (entryId, isBulk = false, force = false) => {
+  /*const handleGenerateContent = async (entryId, isBulk = false, force = false) => {
     // Set loading state to true for this entry
     setLoadingEntries((prevState) => ({
       ...prevState,
@@ -940,8 +1043,103 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
         [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
       }));
     }
-  };
+  };*/
+  const [taskStatuses, setTaskStatuses] = useState({});
+
+
+  const enqueueTask = async (taskType, entryId) => {
+    const apiEndpoint = process.env.NEXT_PUBLIC_PROCESS_TASK_API_ENDPOINT;
   
+    try {
+      const response = await axios.post(apiEndpoint, {
+        task_type: taskType,
+        project_id: projectId,
+        entry_id: entryId,
+      });
+  
+      const { task_id } = response.data;
+  
+      // Update entries with task_id_generate or task_id_humanise accordingly
+      const updatedEntries = entries.map((entry) => {
+        if (entry.entry_id === entryId) {
+          if (taskType === 'generate-content') {
+            return { ...entry, task_id_generate: task_id, last_task_generate_failed: false };
+          } else if (taskType === 'humanise-content') {
+            return { ...entry, task_id_humanise: task_id, last_task_humanise_failed: false };
+          }
+        }
+        return entry;
+      });
+  
+      setEntries(updatedEntries);
+      return task_id;
+    } catch (error) {
+      // Detailed Error Logging
+      if (error.response) {
+        // Server responded with a status other than 2xx
+        console.error('Response Error:', error.response.data);
+        toast.error(`Error enqueuing task: ${error.response.data.message || 'Server Error'}`);
+      } else if (error.request) {
+        // Request was made but no response received
+        console.error('No Response:', error.request);
+        toast.error('No response from the server. Please check your network connection or try again later.');
+      } else {
+        // Something happened in setting up the request
+        console.error('Error:', error.message);
+        toast.error(`Error: ${error.message}`);
+      }
+      return null;
+    }
+  };
+
+  
+    // Function to fetch task status
+    
+    const fetchTaskStatus = async (taskId) => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_STATUS_API_ENDPOINT}/${taskId}`);
+        return response.data;
+      } catch (error) {
+        console.error(`Error fetching task status for ${taskId}:`, error);
+        return null;
+      }
+    };
+  
+    
+
+    // Modify handleGenerateContent to enqueue a task instead of processing synchronously
+    const handleGenerateContent = async (entryId) => {
+      try {
+        const response = await axios.post('/api/content/projects/generate-content', {
+          project_id: projectId,
+          entry_id: entryId,
+          task_type: 'generate-content',
+        });
+    
+        if (response.data.success) {
+          toast.success('Content generation started.');
+    
+          // Extract the new task_id from the response
+          const newTaskId = response.data.task_id;
+    
+          // Update the entry with the new task_id and set status to Queued
+          setEntries((prevEntries) =>
+            prevEntries.map((e) =>
+              e.entry_id === entryId
+                ? { ...e, task_id_generate: newTaskId, task_status: 'Queued' }
+                : e
+            )
+          );
+        } else {
+          toast.error('Failed to start content generation.');
+        }
+      } catch (error) {
+        console.error('Error starting content generation:', error);
+        toast.error('Error starting content generation.');
+      }
+    };
+    
+    
   
   const getCompulsoryFields = (pageType, contentType) => {
     const compulsoryFields = [
@@ -1318,67 +1516,80 @@ const getRandomValues = (valuesArray, numberOfValues) => {
 
 
 
-  const renderAdditionalInfoBlocks = (entry) => {
-    const compulsoryItems = getCompulsoryInfoItems(entry);
+const renderAdditionalInfoBlocks = (entry) => {
+  const compulsoryItems = getCompulsoryInfoItems(entry);
 
-    const allInfoItems = [
-      { key: 'word_count', label: 'Word Count' },
-      { key: 'lsi_terms', label: 'LSI Terms' },
-      { key: 'paa_terms', label: 'PAA Terms' },
-      { key: 'topic_cluster', label: 'Topic Cluster' },
-      { key: 'existing_content', label: 'Existing Content' },
-      { key: 'existing_product_info', label: 'Existing Product Info' },
-      { key: 'brand_terms', label: 'Brand Terms' },
-    ];
+  const allInfoItems = [
+    { key: 'word_count', label: 'Word Count' },
+    { key: 'lsi_terms', label: 'LSI Terms' },
+    { key: 'paa_terms', label: 'PAA Terms' },
+    { key: 'topic_cluster', label: 'Topic Cluster' },
+    { key: 'existing_content', label: 'Existing Content' },
+    { key: 'existing_product_info', label: 'Existing Product Info' },
+    { key: 'brand_terms', label: 'Brand Terms' },
+  ];
 
-    // Only show 'word_count' by default, plus compulsory items and items that have been added (with value)
-    const infoItemsToDisplay = allInfoItems.filter(
-      (item) =>
-        item.key === 'word_count' ||
-        compulsoryItems.includes(item.key) ||
-        hasValue(entry[item.key])
-    );
+  // Only show 'word_count' by default, plus compulsory items and items that have been added (with value)
+  const infoItemsToDisplay = allInfoItems.filter(
+    (item) =>
+      item.key === 'word_count' ||
+      compulsoryItems.includes(item.key) ||
+      hasValue(entry[item.key])
+  );
 
-    return (
-      <>
-        {infoItemsToDisplay.map((item) => (
+  return (
+    <>
+      {infoItemsToDisplay.map((item) => {
+        const value = entry[item.key];
+
+        // Check if the value is unset
+        const isValueUnset =
+          value === null || // Null check
+          value === undefined || // Undefined check
+          (typeof value === 'string' && value.trim() === '') || // Empty string check
+          (item.key === 'word_count' && value === 0); // Explicit check for word_count === 0
+
+
+        return (
           <span
             key={item.key}
             className={`${styles.infoBlock} ${
-              hasValue(entry[item.key])
-                ? styles.set
-                : compulsoryItems.includes(item.key)
-                ? styles.required
+              isValueUnset && compulsoryItems.includes(item.key)
+                ? styles.required // Apply required class if compulsory and unset
+                : hasValue(value)
+                ? styles.set // Apply set class if value is valid
                 : ''
             }`}
             onClick={() =>
-              handleInfoBlockClick(entry.entry_id, item.key, entry[item.key], item.label)
+              handleInfoBlockClick(entry.entry_id, item.key, value, item.label)
             }
-            title={entry[item.key] || ''}
+            title={value || ''}
           >
             {item.label}
           </span>
-        ))}
-        {/* Add info block */}
-        <span className={styles.addBlock} onClick={() => handleAddBlockClick(entry.entry_id)}>
-          +
-        </span>
-        {showAdditionalInfoDropdown && selectedEntryId === entry.entry_id && (
-          <div className={styles.additionalInfoDropdown}>
-            {additionalInfoOptions.map((option) => (
-              <div
-                key={option.key}
-                className={styles.dropdownItem}
-                onClick={() => handleAddInfoSelect(option.key)}
-              >
-                {option.label}
-              </div>
-            ))}
-          </div>
-        )}
-      </>
-    );
-  };
+        );
+      })}
+      {/* Add info block */}
+      <span className={styles.addBlock} onClick={() => handleAddBlockClick(entry.entry_id)}>
+        +
+      </span>
+      {showAdditionalInfoDropdown && selectedEntryId === entry.entry_id && (
+        <div className={styles.additionalInfoDropdown}>
+          {additionalInfoOptions.map((option) => (
+            <div
+              key={option.key}
+              className={styles.dropdownItem}
+              onClick={() => handleAddInfoSelect(option.key)}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+};
+
 
 
 
@@ -1424,29 +1635,12 @@ const getRandomValues = (valuesArray, numberOfValues) => {
         {/* Header */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
           <Typography variant="h9" component="h3">
-          Project: {project.project_name}
+            Project: {project.project_name}
           </Typography>
-          <Box display="flex" alignItems="center">
-            <Typography variant="subtitle1" mr={2}>
-              Welcome, {session?.user?.name || session?.user?.email}
-            </Typography>
-            <IconButton onClick={() => router.push('/content/settings')}>
-              <SettingsIcon />
-            </IconButton>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={() => signOut()}
-              size="small"
-              sx={{ ml: 2 }}
-            >
-              Sign Out
-            </Button>
-          </Box>
+  
         </Box>
       </Container>
       
-    
       {!project.initialised ? (
         <>
           <p>Please paste your data below to initialize the project.</p>
@@ -1464,118 +1658,87 @@ const getRandomValues = (valuesArray, numberOfValues) => {
             applyBulkAction={applyBulkAction}
           />
           
-         {/*} <div className={styles.actionButtons}>
-            <button className={styles.startButton} onClick={handleStartClassifications}>
-              Auto Classify Page Type
-            </button>
-            <button
-              className={styles.configureButton}
-              onClick={() => setIsConfigModalOpen(true)}
-            >
-              Configure Project
-            </button>
-            <button className={styles.generateAllButton} onClick={handleGenerateAllContent}>
-              Generate All Content
-            </button>
-          </div>*}
 
-
-           {/* Add Project Button */}
-        {/*<Fab
-         size="medium"
-        variant="extended"
-          color="primary"
-          aria-label="add"
-          onClick={() => handleGenerateAllContent}
-          sx={{ position: 'fixed', bottom: 16, right: 16 }}
-        >
-          <PlayArrowIcon /> 
-          Generate All Content
-        </Fab>*/}
-
-
-      
-      <EntriesTable
-        entries={entries}
-        handlers={handlers}
-        loadingEntries={loadingEntries}
-        classificationLoading={classificationLoading}
-        selectedEntries={selectedEntries}
-        setSelectedEntries={setSelectedEntries}
-        lastSelectedEntryId={lastSelectedEntryId}
-        setLastSelectedEntryId={setLastSelectedEntryId}
-        permissionLevel={permissionLevel}
-        onShowLogs={(entryId) => {
-          setSelectedLogEntryId(entryId);
-          fetchLogsForEntry(entryId);
-          setLogsVisible(true);
-        }}
-      />
-
-{logsVisible && (
-      <div 
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          width: expanded ? '80%' : `${consoleWidth}px`,
-          height: expanded ? '60%' : `${consoleHeight}px`,
-          background: '#333',
-          color: '#fff',
-          overflowY: 'auto',
-          borderRadius: '5px',
-          padding: '10px',
-          zIndex: 9999,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <div 
-          style={{
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            marginBottom: '5px'
-          }}
-        >
-          <span>Console Logs (Entry ID: {selectedLogEntryId})</span>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <IconButton 
-              onClick={() => setExpanded(!expanded)}
-              style={{ color: '#fff', padding: '4px' }}
-            >
-              {expanded ? <ExitFullscreenIcon /> : <OpenInFullIcon />}
-            </IconButton>
-            <IconButton
-              onClick={() => setLogsVisible(false)}
-              style={{ color: '#fff', padding: '4px' }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </div>
-        </div>
-        <pre style={{whiteSpace: 'pre-wrap', fontSize: '12px', flex: '1 1 auto'}}>
-          {consoleLogs.join('\n')}
-        </pre>
-        {/* Resize handle at bottom-right corner */}
-        {!expanded && (
-          <div
-            style={{
-              width: '20px',
-              height: '20px',
-              background: '#444',
-              cursor: 'se-resize',
-              alignSelf: 'flex-end'
+          <EntriesTable
+            entries={entries}
+            handlers={handlers}
+            loadingEntries={loadingEntries}
+            classificationLoading={classificationLoading}
+            selectedEntries={selectedEntries}
+            setSelectedEntries={setSelectedEntries}
+            lastSelectedEntryId={lastSelectedEntryId}
+            setLastSelectedEntryId={setLastSelectedEntryId}
+            permissionLevel={permissionLevel}
+            onShowLogs={(entryId) => {
+              setSelectedLogEntryId(entryId);
+              fetchLogsForEntry(entryId);
+              setLogsVisible(true);
             }}
-            onMouseDown={onMouseDown}
           />
-        )}
-      </div>
-    )}
 
-
+          {logsVisible && (
+            <div 
+              style={{
+                position: 'fixed',
+                bottom: '20px',
+                right: '20px',
+                width: expanded ? '80%' : `${consoleWidth}px`,
+                height: expanded ? '60%' : `${consoleHeight}px`,
+                background: '#333',
+                color: '#fff',
+                overflowY: 'auto',
+                borderRadius: '5px',
+                padding: '10px',
+                zIndex: 9999,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <div 
+                style={{
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  marginBottom: '5px'
+                }}
+              >
+                <span>Console Logs (Entry ID: {selectedLogEntryId})</span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <IconButton 
+                    onClick={() => setExpanded(!expanded)}
+                    style={{ color: '#fff', padding: '4px' }}
+                  >
+                    {expanded ? <ExitFullscreenIcon /> : <OpenInFullIcon />}
+                  </IconButton>
+                  <IconButton
+                    onClick={() => setLogsVisible(false)}
+                    style={{ color: '#fff', padding: '4px' }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </div>
+              </div>
+              <pre style={{whiteSpace: 'pre-wrap', fontSize: '12px', flex: '1 1 auto'}}>
+                {consoleLogs.join('\n')}
+              </pre>
+              {/* Resize handle at bottom-right corner */}
+              {!expanded && (
+                <div
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                    background: '#444',
+                    cursor: 'se-resize',
+                    alignSelf: 'flex-end'
+                  }}
+                  onMouseDown={onMouseDown}
+                />
+              )}
+            </div>
+          )}
         </div>
       )}
+
       {/* Modals */}
       <InfoModal
         isVisible={infoModalVisible}
@@ -1631,146 +1794,136 @@ const getRandomValues = (valuesArray, numberOfValues) => {
           handlers={handlers}
         />
       )}
+
       {/* Bulk Action Modal */}
-{bulkActionModalVisible && (
-  <div className={styles.modal}>
-    <div className={styles.modalContent}>
-      <span
-        className={styles.close}
-        onClick={() => setBulkActionModalVisible(false)}
+      {bulkActionModalVisible && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <span
+              className={styles.close}
+              onClick={() => setBulkActionModalVisible(false)}
+            >
+              &times;
+            </span>
+            <h2>{bulkActionType === 'modify' ? 'Bulk Modify' : 'Bulk Reset'}</h2>
+            <div>
+              <label>Field:</label>
+              <select
+                value={bulkActionField}
+                onChange={(e) => setBulkActionField(e.target.value)}
+              >
+                <option value="">Select Field</option>
+                <option value="page_type">Page Type</option>
+                <option value="content_type">Content Type</option>
+                <option value="additional_info">Additional Info</option>
+                {/* Add more fields as needed */}
+              </select>
+            </div>
+            {bulkActionType === 'modify' && bulkActionField && bulkActionField !== 'additional_info' && (
+              <div>
+                <label>New Value:</label>
+                <input
+                  type="text"
+                  value={bulkActionValue}
+                  onChange={(e) => setBulkActionValue(e.target.value)}
+                />
+              </div>
+            )}
+            {/* For Additional Info, allow selecting which info to update */}
+            {bulkActionType === 'modify' && bulkActionField === 'additional_info' && (
+              <div>
+                <label>Additional Info Type:</label>
+                <select
+                  value={bulkActionValue}
+                  onChange={(e) => setBulkActionValue(e.target.value)}
+                >
+                  <option value="">Select Info Type</option>
+                  <option value="word_count">Word Count</option>
+                  <option value="lsi_terms">LSI Terms</option>
+                  {/* Add more options as needed */}
+                </select>
+              </div>
+            )}
+            <button className={styles.saveButton} onClick={() => applyBulkAction(bulkActionType, bulkActionField, bulkActionValue)}>
+              Apply
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* SpeedDial FAB */}
+      <Backdrop open={open} />
+      <SpeedDial
+        ariaLabel="Actions"
+        sx={{ position: 'fixed', bottom: 16, left: '50%', transform: 'translateX(-50%)' }}
+        icon={<SpaceDashboardIcon />}
+        onClose={handleClose}
+        onOpen={handleOpen}
+        open={open}
       >
-        &times;
-      </span>
-      <h2>{bulkActionType === 'modify' ? 'Bulk Modify' : 'Bulk Reset'}</h2>
-      <div>
-        <label>Field:</label>
-        <select
-          value={bulkActionField}
-          onChange={(e) => setBulkActionField(e.target.value)}
-        >
-          <option value="">Select Field</option>
-          <option value="page_type">Page Type</option>
-          <option value="content_type">Content Type</option>
-          <option value="additional_info">Additional Info</option>
-          {/* Add more fields as needed */}
-        </select>
-      </div>
-      {bulkActionType === 'modify' && bulkActionField && bulkActionField !== 'additional_info' && (
-        <div>
-          <label>New Value:</label>
-          <input
-            type="text"
-            value={bulkActionValue}
-            onChange={(e) => setBulkActionValue(e.target.value)}
+        {actions.map((action, index) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            tooltipTitle={`${action.group}: ${action.name}`}
+            onClick={action.onClick}
           />
-        </div>
-      )}
-      {/* For Additional Info, allow selecting which info to update */}
-      {bulkActionType === 'modify' && bulkActionField === 'additional_info' && (
-        <div>
-          <label>Additional Info Type:</label>
-          <select
-            value={bulkActionValue}
-            onChange={(e) => setBulkActionValue(e.target.value)}
-          >
-            <option value="">Select Info Type</option>
-            <option value="word_count">Word Count</option>
-            <option value="lsi_terms">LSI Terms</option>
-            {/* Add more options as needed */}
-          </select>
-        </div>
-      )}
-      <button className={styles.saveButton} onClick={applyBulkAction}>
-        Apply
-      </button>
-    </div>
-  </div>
-
-  
-)}
-{/* SpeedDial FAB */}
-<Backdrop open={open} />
-<SpeedDial
-  ariaLabel="Actions"
-  sx={{ position: 'fixed', bottom: 16, left: '50%', transform: 'translateX(-50%)' }}
-  icon={<SpaceDashboardIcon />}
-  onClose={handleClose}
-  onOpen={handleOpen}
-  
-  open={open}
->
-  {actions.map((action, index) => (
-    <SpeedDialAction
-      key={action.name}
-      icon={action.icon}
-      tooltipTitle={`${action.group}: ${action.name}`}
+        ))}
+      </SpeedDial>
       
-      onClick={action.onClick}
-    />
-  ))}
-</SpeedDial>
-{/* Export Progress Modal */}
-<Modal
-  open={isExporting}
-  onClose={() => setIsExporting(false)}
-  aria-labelledby="export-modal-title"
-  aria-describedby="export-modal-description"
->
-  <Box
-    sx={{
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: 400,
-      bgcolor: 'background.paper',
-      borderRadius: 2,
-      boxShadow: 24,
-      p: 4,
-      textAlign: 'center',
-    }}
-  >
-    <Typography id="export-modal-title" variant="h6" component="h2" gutterBottom>
-      {exportedDocumentUrl ? 'Export Complete' : 'Exporting to Google Docs'}
-    </Typography>
-    {!exportedDocumentUrl ? (
-      <>
-        <LinearProgress sx={{ mt: 2, mb: 2 }} />
-        <Typography id="export-modal-description" variant="body1">
-          Please wait while we export your content.
-        </Typography>
-      </>
-    ) : (
-      <>
-        <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
-          Your content has been successfully exported.
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => window.open(exportedDocumentUrl, '_blank')}
-          startIcon={<OpenInNewIcon />}
-          sx={{ mb: 2 }}
+      {/* Export Progress Modal */}
+      <Modal
+        open={isExporting}
+        onClose={() => setIsExporting(false)}
+        aria-labelledby="export-modal-title"
+        aria-describedby="export-modal-description"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: 24,
+            p: 4,
+            textAlign: 'center',
+          }}
         >
-          Open Document
-        </Button>
-        <Button variant="outlined" onClick={() => setIsExporting(false)}>
-          Close
-        </Button>
-      </>
-    )}
-  </Box>
-</Modal>
-
-
-
+          <Typography id="export-modal-title" variant="h6" component="h2" gutterBottom>
+            {exportedDocumentUrl ? 'Export Complete' : 'Exporting to Google Docs'}
+          </Typography>
+          {!exportedDocumentUrl ? (
+            <>
+              <LinearProgress sx={{ mt: 2, mb: 2 }} />
+              <Typography id="export-modal-description" variant="body1">
+                Please wait while we export your content.
+              </Typography>
+            </>
+          ) : (
+            <>
+              <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
+                Your content has been successfully exported.
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => window.open(exportedDocumentUrl, '_blank')}
+                startIcon={<OpenInNewIcon />}
+                sx={{ mb: 2 }}
+              >
+                Open Document
+              </Button>
+              <Button variant="outlined" onClick={() => setIsExporting(false)}>
+                Close
+              </Button>
+            </>
+          )}
+        </Box>
+      </Modal>
     </div>
-
-    
-
-    
-
-
   );
 }
 
@@ -1791,25 +1944,16 @@ export async function getServerSideProps(context) {
     };
   }
 
-
-
-
   const pool = (await import('../../../../lib/db')).default;
 
-  // Query the database directly
   try {
-    const [projectRows] = await pool.query('SELECT * FROM projects WHERE project_id = ?', [
-      projectId,
-    ]);
+    const [projectRows] = await pool.query('SELECT * FROM projects WHERE project_id = ?', [projectId]);
     const project = projectRows[0];
 
     if (!project) {
-      return {
-        notFound: true,
-      };
+      return { notFound: true };
     }
 
-    // Convert Date objects to strings
     if (project.created_at instanceof Date) {
       project.created_at = project.created_at.toISOString();
     }
@@ -1819,9 +1963,7 @@ export async function getServerSideProps(context) {
 
     let entries = [];
     if (project.initialised) {
-      const [entryRows] = await pool.query('SELECT * FROM entries WHERE project_id = ?', [
-        projectId,
-      ]);
+      const [entryRows] = await pool.query('SELECT * FROM entries WHERE project_id = ?', [projectId]);
       entries = entryRows.map((entry) => {
         if (entry.created_at instanceof Date) {
           entry.created_at = entry.created_at.toISOString();
@@ -1831,7 +1973,39 @@ export async function getServerSideProps(context) {
         }
         return entry;
       });
+
+      // For each entry that has a task_id_generate, fetch the task status
+      for (let i = 0; i < entries.length; i++) {
+        const e = entries[i];
+        if (e.task_id_generate) {
+          const [taskRows] = await pool.query(
+            'SELECT status, result, error FROM tasks WHERE task_id = ? LIMIT 1',
+            [e.task_id_generate]
+          );
+
+          if (taskRows.length > 0) {
+            const { status, result, error } = taskRows[0];
+            e.task_status = status; // 'Queued', 'Processing', 'Completed', or 'Failed'
+            // If Completed, ensure generated_content is in sync
+            if (status === 'Completed' && result && !e.generated_content) {
+              e.generated_content = result;
+            }
+            // If Failed, store error in entry if you want
+            if (status === 'Failed' && error) {
+              e.error_message = error;
+            }
+          } else {
+            // No task found for that task_id (shouldn't happen if we just got it from entries)
+            e.task_status = null;
+          }
+        } else {
+          // No task, maybe previously completed or never started
+          // If generated_content is present, consider it Completed
+          e.task_status = e.generated_content ? 'Completed' : null;
+        }
+      }
     }
+
     const permissionLevel = session.user.permissions_level || 'user';
 
     return {
@@ -1842,8 +2016,6 @@ export async function getServerSideProps(context) {
     };
   } catch (error) {
     console.error('Error fetching project data:', error);
-    return {
-      notFound: true,
-    };
+    return { notFound: true };
   }
 }

@@ -164,6 +164,17 @@
   text-align: center;
 }
 
+.errorMessage {
+  display: inline-block;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+/* Optional: Add some hover effects */
+.errorMessage:hover {
+  opacity: 0.8;
+}
+
 /* Action Buttons */
 .actionButton {
   padding: 8px 12px;
@@ -295,4 +306,8 @@
 
 .selectedRow {
   background-color: #f1f1f1;
+}
+
+.lastUpdated{
+  color:#8f8f8f;
 }

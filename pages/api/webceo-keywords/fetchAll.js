@@ -1,6 +1,6 @@
 // pages/api/webceo-keywords/fetchAll.js
 import { fetchProjects, fetchLandingPages, fetchRankings } from '../../../utils/webceo';
-import { createExcelFile } from '../../../utils/excel';
+import { createCsvFile } from '../../../utils/excel';
 import path from 'path';
 import pLimit from 'p-limit';
 
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
               const fileName = `${sanitizedProjectName}_${Date.now()}.xlsx`; // Append timestamp for uniqueness
               const filePath = path.join(process.cwd(), 'public', 'excel', fileName);
 
-              await createExcelFile(data, filePath);
+              await createCsvFile(data, filePath);
 
               console.log(`Excel file created for "${projectName}" at: ${filePath}`);
 

@@ -1,4 +1,3 @@
-// pages/keywords/overview/index.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
@@ -6,17 +5,10 @@ import {
   Tab,
   Typography,
   Box,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
   Skeleton,
+  Paper,
 } from '@mui/material';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
+import { DataGrid } from '@mui/x-data-grid';
 
 const OverviewPage = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -25,14 +17,64 @@ const OverviewPage = () => {
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [loadingKeywords, setLoadingKeywords] = useState(false);
 
+  const projectColumns = [
+    { field: 'project_name', headerName: 'Project Name', flex: 1, sortable: true, filterable: true },
+    { field: 'number_of_keywords', headerName: 'Number of Keywords', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'today_avg', headerName: 'Today Avg', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'yesterday_avg', headerName: 'Yesterday Avg', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'total_up', headerName: 'Total Up', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'total_down', headerName: 'Total Down', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'top5', headerName: 'Top 5', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'top10', headerName: 'Top 10', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'top30', headerName: 'Top 30', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'visibility', headerName: 'Visibility', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'visibility_percent', headerName: 'Visibility %', flex: 1, type: 'number', sortable: true, filterable: true },
+  ];
+
+  const keywordColumns = [
+    { field: 'project_name', headerName: 'Project Name', flex: 1, sortable: true, filterable: true },
+    { field: 'search_engine_name', headerName: 'Search Engine', flex: 1, sortable: true, filterable: true },
+    { field: 'keyword', headerName: 'Keyword', flex: 1, sortable: true, filterable: true },
+    { field: 'current_ranking', headerName: 'Current Ranking', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'previous_ranking', headerName: 'Previous Ranking', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'pos', headerName: 'Pos', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'change_value', headerName: 'Change', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'is_map', headerName: 'Is Map', flex: 1, type: 'boolean', sortable: true, filterable: true },
+    { field: 'map_position', headerName: 'Map Pos', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'volume', headerName: 'Volume', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'competition', headerName: 'Competition', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'suggested_bid', headerName: 'Suggested Bid', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'cpc', headerName: 'CPC', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'results', headerName: 'Results', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'kei', headerName: 'KEI', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'total_sum', headerName: 'Total Sum', flex: 1, type: 'number', sortable: true, filterable: true },
+    {
+      field: 'ranking_url',
+      headerName: 'Ranking URL',
+      flex: 2,
+      sortable: true,
+      filterable: true,
+      renderCell: (params) =>
+        params.value ? (
+          <a href={params.value} target="_blank" rel="noopener noreferrer">
+            {params.value}
+          </a>
+        ) : (
+          '-'
+        ),
+    },
+  ];
+
   useEffect(() => {
     if (tabValue === 1) {
-      // Fetch projects when "Show Projects" tab is selected
+      // Fetch projects
       setLoadingProjects(true);
       axios
         .get('/api/keywords/seranking/overviewProjects')
         .then((res) => {
-          setProjects(res.data.projects || []);
+          // Add an id field for DataGrid
+          const data = res.data.projects.map((p) => ({ id: p.project_id, ...p }));
+          setProjects(data);
           setLoadingProjects(false);
         })
         .catch((err) => {
@@ -40,12 +82,13 @@ const OverviewPage = () => {
           setLoadingProjects(false);
         });
     } else {
-      // Fetch keywords when "Show Keywords" tab is selected
+      // Fetch keywords
       setLoadingKeywords(true);
       axios
         .get('/api/keywords/seranking/overviewKeywords')
         .then((res) => {
-          setKeywords(res.data.keywords || []);
+          const data = res.data.keywords.map((k) => ({ id: k.keyword_id, ...k }));
+          setKeywords(data);
           setLoadingKeywords(false);
         })
         .catch((err) => {
@@ -58,14 +101,6 @@ const OverviewPage = () => {
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
-
-  // Prepare data for chart
-  // For simplicity, we just show a comparison of today_avg vs yesterday_avg for all projects
-  const chartData = projects.map(proj => ({
-    name: proj.project_name,
-    today_avg: proj.today_avg || 0,
-    yesterday_avg: proj.yesterday_avg || 0,
-  }));
 
   return (
     <Box p={3}>
@@ -80,62 +115,23 @@ const OverviewPage = () => {
 
       {/* Show Keywords Tab */}
       {tabValue === 0 && (
-        <Box mt={3}>
+        <Box mt={3} height={600}>
           {loadingKeywords ? (
             <Skeleton variant="rectangular" height={200} />
           ) : (
-            <Paper>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Project Name</TableCell>
-                    <TableCell>Search Engine</TableCell>
-                    <TableCell>Keyword</TableCell>
-                    <TableCell>Pos</TableCell>
-                    <TableCell>Change</TableCell>
-                    <TableCell>Volume</TableCell>
-                    <TableCell>Competition</TableCell>
-                    <TableCell>Suggested Bid</TableCell>
-                    <TableCell>KEI</TableCell>
-                    <TableCell>Total Sum</TableCell>
-                    <TableCell>Is Map</TableCell>
-                    <TableCell>Map Position</TableCell>
-                    <TableCell>Ranking URL</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {keywords.map((kw) => (
-                    <TableRow key={kw.keyword_id}>
-                      <TableCell>{kw.project_name}</TableCell>
-                      <TableCell>{kw.search_engine_name}</TableCell>
-                      <TableCell>{kw.keyword}</TableCell>
-                      <TableCell>{kw.pos !== null ? kw.pos : '-'}</TableCell>
-                      <TableCell>{kw.change_value !== null ? kw.change_value : '-'}</TableCell>
-                      <TableCell>{kw.volume !== null ? kw.volume : '-'}</TableCell>
-                      <TableCell>{kw.competition !== null ? kw.competition : '-'}</TableCell>
-                      <TableCell>{kw.suggested_bid !== null ? kw.suggested_bid : '-'}</TableCell>
-                      <TableCell>{kw.kei !== null ? kw.kei : '-'}</TableCell>
-                      <TableCell>{kw.total_sum !== null ? kw.total_sum : '-'}</TableCell>
-                      <TableCell>{kw.is_map !== null ? (kw.is_map === 1 ? 'Yes' : 'No') : '-'}</TableCell>
-                      <TableCell>{kw.map_position !== null ? kw.map_position : '-'}</TableCell>
-                      <TableCell>
-                        {kw.ranking_url ? (
-                          <a href={kw.ranking_url} target="_blank" rel="noopener noreferrer">
-                            {kw.ranking_url}
-                          </a>
-                        ) : (
-                          '-'
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {keywords.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={13}>No keywords available.</TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+            <Paper style={{ height: '100%', width: '100%' }}>
+              <DataGrid
+                rows={keywords}
+                columns={keywordColumns}
+                pageSize={25}
+                rowsPerPageOptions={[25, 50, 100]}
+                filterMode="client"
+                sortingMode="client"
+                disableColumnMenu={false}
+                disableDensitySelector
+                disableColumnSelector={false}
+                autoHeight={false}
+              />
             </Paper>
           )}
         </Box>
@@ -143,71 +139,24 @@ const OverviewPage = () => {
 
       {/* Show Projects Tab */}
       {tabValue === 1 && (
-        <Box mt={3}>
+        <Box mt={3} height={600}>
           {loadingProjects ? (
             <Skeleton variant="rectangular" height={200} />
           ) : (
-            <>
-              <Paper sx={{ mb: 3 }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Project Name</TableCell>
-                      <TableCell>Number of Keywords</TableCell>
-                      <TableCell>Today Avg</TableCell>
-                      <TableCell>Yesterday Avg</TableCell>
-                      <TableCell>Total Up</TableCell>
-                      <TableCell>Total Down</TableCell>
-                      <TableCell>Top 5</TableCell>
-                      <TableCell>Top 10</TableCell>
-                      <TableCell>Top 30</TableCell>
-                      <TableCell>Visibility</TableCell>
-                      <TableCell>Visibility %</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {projects.map((proj) => (
-                      <TableRow key={proj.project_id}>
-                        <TableCell>{proj.project_name}</TableCell>
-                        <TableCell>{proj.number_of_keywords}</TableCell>
-                        <TableCell>{proj.today_avg !== null ? proj.today_avg : '-'}</TableCell>
-                        <TableCell>{proj.yesterday_avg !== null ? proj.yesterday_avg : '-'}</TableCell>
-                        <TableCell>{proj.total_up !== null ? proj.total_up : '-'}</TableCell>
-                        <TableCell>{proj.total_down !== null ? proj.total_down : '-'}</TableCell>
-                        <TableCell>{proj.top5 !== null ? proj.top5 : '-'}</TableCell>
-                        <TableCell>{proj.top10 !== null ? proj.top10 : '-'}</TableCell>
-                        <TableCell>{proj.top30 !== null ? proj.top30 : '-'}</TableCell>
-                        <TableCell>{proj.visibility !== null ? proj.visibility : '-'}</TableCell>
-                        <TableCell>{proj.visibility_percent !== null ? proj.visibility_percent : '-'}</TableCell>
-                      </TableRow>
-                    ))}
-                    {projects.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={11}>No projects available.</TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </Paper>
-
-              {/* Chart comparing today_avg and yesterday_avg */}
-              <Typography variant="h5" gutterBottom>Average Position Comparison</Typography>
-              <Paper sx={{ p: 2 }}>
-                <Box width="100%" height={300}>
-                  <ResponsiveContainer>
-                    <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="today_avg" stroke="#8884d8" name="Today Avg" />
-                      <Line type="monotone" dataKey="yesterday_avg" stroke="#82ca9d" name="Yesterday Avg" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </Box>
-              </Paper>
-            </>
+            <Paper style={{ height: '100%', width: '100%' }}>
+              <DataGrid
+                rows={projects}
+                columns={projectColumns}
+                pageSize={25}
+                rowsPerPageOptions={[25, 50, 100]}
+                filterMode="client"
+                sortingMode="client"
+                disableColumnMenu={false}
+                disableDensitySelector
+                disableColumnSelector={false}
+                autoHeight={false}
+              />
+            </Paper>
           )}
         </Box>
       )}

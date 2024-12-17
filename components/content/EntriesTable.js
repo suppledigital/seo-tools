@@ -58,13 +58,14 @@ export default function EntriesTable({
           <th>URL</th>
           <th>Keywords</th>
           <th>Additional Info</th>
-          <th>Prompt</th>
+          <th>Generated Content</th>
+          <th>Humanised Content</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {sortedEntries.map((entry) => (
-            <EntryRow
+          <EntryRow
             key={entry.entry_id}
             entry={entry}
             handlers={handlers}
