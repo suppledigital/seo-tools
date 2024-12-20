@@ -96,34 +96,60 @@ export default async function handler(req, res) {
 
       // Fetch positions
       const today = dayjs().format('YYYY-MM-DD');
+      const date_from = dayjs().subtract(2, 'month').format('YYYY-MM-DD'); // 2 months ago
+      const date_to = today; // today's date
       for (const se of seList) {
         // Check pause/stop again if needed
         await checkPauseStop(statusId);
         
         const positionsData = await getKeywordPositions(project_id, {
-         
+          date_from,
+          date_to,
           site_engine_id: se.site_engine_id
         });
 
-        // After getting positionsData
         for (const engineData of positionsData) {
           for (const kwData of engineData.keywords) {
             if (kwData.positions && kwData.positions.length > 0) {
-              const posEntry = kwData.positions[0];
-              await updateKeywordData({
+              // Sort positions by date descending to get the latest first
+              kwData.positions.sort((a, b) => b.date.localeCompare(a.date));
+              const posEntryLatest = kwData.positions[0]; // most recent
+              const pos = posEntryLatest.pos;
+        
+              let change = 0;
+              let previous_ranking = null;
+
+              if (kwData.positions.length > 1) {
+                const posEntrySecondLatest = kwData.positions[1];
+                const posPrevious = posEntrySecondLatest.pos;
+                // change = pos_current - pos_previous
+                change = pos - posPrevious;
+                previous_ranking = posPrevious;
+              } else {
+                // Only one date available
+                change = 0;
+                previous_ranking = null;
+              }        
+        
+              // Pass pos and change to updateKeywordData, it will derive previous_ranking correctly
+            // Actually, to ensure correct previous_ranking calculation (pos - change = previous_ranking),
+            // we have set change = pos - posPrevious,
+            // so previous_ranking = pos - change = pos - (pos - posPrevious) = posPrevious
+            // Perfect!
+            await updateKeywordData({
                 keyword_id: kwData.id,
-                // From posEntry
-                pos: posEntry.pos,
-                change: posEntry.change,
-                is_map: posEntry.is_map,
-                map_position: posEntry.map_position,
-                paid_position: posEntry.paid_position, // If you also want to store paid_position
-                // From kwData
+                project_id,
+                search_engine_id: se.site_engine_id,
+                pos,
+                change,
+                is_map: posEntryLatest.is_map,
+                map_position: posEntryLatest.map_position,
+                paid_position: posEntryLatest.paid_position,
                 volume: kwData.volume,
                 competition: kwData.competition,
                 suggested_bid: kwData.suggested_bid,
-                cpc: kwData.cpc,              // added cpc
-                results: kwData.results,      // added results
+                cpc: kwData.cpc,
+                results: kwData.results,
                 kei: kwData.kei,
                 total_sum: kwData.total_sum,
                 landing_pages: kwData.landing_pages,
@@ -140,7 +166,7 @@ export default async function handler(req, res) {
     }
 
     await updateImportStatus({ status_message: 'Import completed successfully.' }, statusId);
-    res.status(200).json({ message: 'Import completed successfully.' });
+    res.status(200).json({ message: 'Import completed successfully.', statusId });
   } catch (error) {
     console.error('Error during import:', error);
     if (statusId) {

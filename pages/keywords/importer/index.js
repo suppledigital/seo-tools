@@ -31,7 +31,7 @@ const ImporterPage = () => {
 
   const fetchStatus = async () => {
     if (!statusId) return;
-    const res = await axios.get('/api/keywords/seranking/status');
+    const res = await axios.get(`/api/keywords/seranking/status?id=${statusId}`);
     if (res.data) {
       setStatusMessage(res.data.status_message || '');
       setProcessedProjects(res.data.processed_projects || 0);
@@ -60,16 +60,17 @@ const ImporterPage = () => {
     try {
       const res = await axios.post('/api/keywords/seranking/import');
       setStatusMessage(res.data.message || 'Import completed successfully.');
-      // If your import initialization returns statusId, store it:
-      // Adjust import.js to return statusId in response if needed
-      // setStatusId(res.data.statusId);
-
-      if (res.data.message === 'Import completed successfully.') {
-        setIsImporting(false);
+  
+      if (res.data.statusId) {
+        setStatusId(res.data.statusId); // Store the statusId returned by the server
       } else {
-        // If you don't have statusId from import route directly, fetch from status route:
+        // If for some reason statusId not returned, fallback
         const statusRes = await axios.get('/api/keywords/seranking/status');
         if (statusRes.data.id) setStatusId(statusRes.data.id);
+      }
+  
+      if (res.data.message === 'Import completed successfully.') {
+        setIsImporting(false);
       }
     } catch (error) {
       console.error('Error importing data:', error);

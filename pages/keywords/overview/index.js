@@ -9,16 +9,32 @@ import {
   Paper,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import NextLink from 'next/link';
+import { Link } from '@mui/material';
+
 
 const OverviewPage = () => {
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(1);
   const [projects, setProjects] = useState([]);
   const [keywords, setKeywords] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [loadingKeywords, setLoadingKeywords] = useState(false);
 
   const projectColumns = [
-    { field: 'project_name', headerName: 'Project Name', flex: 1, sortable: true, filterable: true },
+    {
+      field: 'project_name',
+      headerName: 'Project Name',
+      flex: 1,
+      sortable: true,
+      filterable: true,
+      renderCell: (params) => (
+        <NextLink href={`overview/${encodeURIComponent(params.value)}`} passHref>
+          <Link underline="hover" color="primary">
+            {params.value}
+          </Link>
+        </NextLink>
+      )
+    },
     { field: 'number_of_keywords', headerName: 'Number of Keywords', flex: 1, type: 'number', sortable: true, filterable: true },
     { field: 'today_avg', headerName: 'Today Avg', flex: 1, type: 'number', sortable: true, filterable: true },
     { field: 'yesterday_avg', headerName: 'Yesterday Avg', flex: 1, type: 'number', sortable: true, filterable: true },
@@ -37,16 +53,16 @@ const OverviewPage = () => {
     { field: 'keyword', headerName: 'Keyword', flex: 1, sortable: true, filterable: true },
     { field: 'current_ranking', headerName: 'Current Ranking', flex: 1, type: 'number', sortable: true, filterable: true },
     { field: 'previous_ranking', headerName: 'Previous Ranking', flex: 1, type: 'number', sortable: true, filterable: true },
-    { field: 'pos', headerName: 'Pos', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'pos', headerName: 'Pos', flex: 1, type: 'number', sortable: true, filterable: true, hide: true },
     { field: 'change_value', headerName: 'Change', flex: 1, type: 'number', sortable: true, filterable: true },
-    { field: 'is_map', headerName: 'Is Map', flex: 1, type: 'boolean', sortable: true, filterable: true },
-    { field: 'map_position', headerName: 'Map Pos', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'is_map', headerName: 'Is Map', flex: 1, type: 'boolean', sortable: true, filterable: true, hide: true },
+    { field: 'map_position', headerName: 'Map Pos', flex: 1, type: 'number', sortable: true, filterable: true, hide: true },
     { field: 'volume', headerName: 'Volume', flex: 1, type: 'number', sortable: true, filterable: true },
     { field: 'competition', headerName: 'Competition', flex: 1, type: 'number', sortable: true, filterable: true },
-    { field: 'suggested_bid', headerName: 'Suggested Bid', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'suggested_bid', headerName: 'Suggested Bid', flex: 1, type: 'number', sortable: true, filterable: true, hide: true },
     { field: 'cpc', headerName: 'CPC', flex: 1, type: 'number', sortable: true, filterable: true },
-    { field: 'results', headerName: 'Results', flex: 1, type: 'number', sortable: true, filterable: true },
-    { field: 'kei', headerName: 'KEI', flex: 1, type: 'number', sortable: true, filterable: true },
+    { field: 'results', headerName: 'Results', flex: 1, type: 'number', sortable: true, filterable: true, hide: true },
+    { field: 'kei', headerName: 'KEI', flex: 1, type: 'number', sortable: true, filterable: true, hide: true },
     { field: 'total_sum', headerName: 'Total Sum', flex: 1, type: 'number', sortable: true, filterable: true },
     {
       field: 'ranking_url',
@@ -120,7 +136,7 @@ const OverviewPage = () => {
             <Skeleton variant="rectangular" height={200} />
           ) : (
             <Paper style={{ height: '100%', width: '100%' }}>
-              <DataGrid
+             <DataGrid
                 rows={keywords}
                 columns={keywordColumns}
                 pageSize={25}
@@ -131,7 +147,20 @@ const OverviewPage = () => {
                 disableDensitySelector
                 disableColumnSelector={false}
                 autoHeight={false}
+                initialState={{
+                  columns: {
+                    columnVisibilityModel: {
+                      pos: false,           // Hide `pos` column by default
+                      is_map: false,        // Hide `is_map` column by default
+                      map_position: false,  // Hide `map_position` column by default
+                      suggested_bid: false, // Hide `suggested_bid` column by default
+                      results: false,
+                      kei: false
+                    }
+                  }
+                }}
               />
+
             </Paper>
           )}
         </Box>
@@ -148,7 +177,7 @@ const OverviewPage = () => {
                 rows={projects}
                 columns={projectColumns}
                 pageSize={25}
-                rowsPerPageOptions={[25, 50, 100]}
+                rowsPerPageOptions={[25, 50, 100,500, 1000]}
                 filterMode="client"
                 sortingMode="client"
                 disableColumnMenu={false}

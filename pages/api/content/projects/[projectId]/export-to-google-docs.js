@@ -41,9 +41,14 @@ export default async function handler(req, res) {
 
     for (const entry of entries) {
       const contentItems = [
-        { text: `Page ${pageNumber}\n`, bold: true },
-        { text: `Meta Title: ${entry.meta_title || ''}\n`, italic: true },
-        { text: `Meta Description: ${entry.meta_description || ''}\n\n`, italic: true },
+        {
+          text: `Page ${pageNumber}\n`,
+          bold: true,
+          heading: 'HEADING_1', // Apply Heading 1 style
+        },
+        { text: `URL: ${entry.url}\n`, bold: true },
+       // { text: `Meta Title: ${entry.meta_title || ''}\n`, italic: true },
+       // { text: `Meta Description: ${entry.meta_description || ''}\n\n`, italic: true },
         { text: `Page Type: ${entry.page_type || ''}\n` },
         { text: `Content Type: ${entry.content_type || ''}\n\n` },
         { text: `Keywords:\n` },
@@ -53,7 +58,7 @@ export default async function handler(req, res) {
       ];
 
       // Process the generated content
-      const contentLines = (entry.generated_content || '').split('\n');
+      const contentLines = (entry.humanized_content || '').split('\n');
       let i = 0;
       while (i < contentLines.length) {
         let line = contentLines[i];
@@ -126,6 +131,8 @@ export default async function handler(req, res) {
         if (item.bold || item.italic || item.bullet) {
           const textStyleFields = [];
           const textStyle = {};
+          const paragraphStyle = {};
+
 
           if (item.bold) {
             textStyle.bold = true;
@@ -134,6 +141,19 @@ export default async function handler(req, res) {
           if (item.italic) {
             textStyle.italic = true;
             textStyleFields.push('italic');
+          }
+          if (item.heading) {
+            paragraphStyle.namedStyleType = item.heading;
+            requests.push({
+              updateParagraphStyle: {
+                range: {
+                  startIndex: startIndex,
+                  endIndex: endIndex - 1, // Exclude the newline
+                },
+                paragraphStyle: paragraphStyle,
+                fields: 'namedStyleType',
+              },
+            });
           }
 
           if (textStyleFields.length > 0) {

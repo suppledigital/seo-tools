@@ -64,7 +64,7 @@ export default async function handler(req, res) {
     // Don't await the axios call
   axios.post(processTaskEndpoint, payload, {
     headers: { 'Content-Type': 'application/json' },
-    timeout: 1000 // or shorter
+    timeout: 5000 // or shorter
   }).catch(err => {
     console.error("Failed to call process-task endpoint:", err.message);
   });
