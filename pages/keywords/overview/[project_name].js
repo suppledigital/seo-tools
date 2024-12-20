@@ -368,7 +368,7 @@ export default function ProjectOverviewPage() {
     }],
   };
 
-  const pieOptions = { responsive:false, plugins:{legend:{position:'bottom'}} };
+  const pieOptions = { responsive:true,   plugins:{legend:{position:'bottom'}} };
 
   return (
     <Box p={3}>
@@ -573,8 +573,8 @@ export default function ProjectOverviewPage() {
 
             <Paper sx={{flex:1,p:2}}>
               <Typography variant="h5" gutterBottom>Position Distribution</Typography>
-              <Box width={300} height={300}>
-                <Pie data={pieData} options={{responsive:false, plugins:{legend:{position:'bottom'}}}}/>
+              <Box width={400} height={400}>
+                <Pie data={pieData} options={{responsive:true, plugins:{legend:{position:'bottom'},height:700,}}}/>
               </Box>
             </Paper>
           </Box>
