@@ -60,6 +60,7 @@ import ContentModal from '../../../../components/content/ContentModal';
 import Sidebar from '../../../../components/content/Sidebar';
 import AdvancedActions from '../../../../components/content/AdvancedActions';
 import ConfigureProjectModal from '../../../../components/content/ConfigureProjectModal';
+import AdvancedFabActions from '../../../../components/common/AdvancedFabActions';
 
 
 
@@ -414,7 +415,7 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
 
 
 
-  const handleForceGenerateAllContent = async () => {
+  /*const handleForceGenerateAllContent = async () => {
     const entriesToProcess = entries; // Process all entries, regardless of generated_content
     const totalEntries = entriesToProcess.length;
     const batchSize = 20;
@@ -440,7 +441,7 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
     }
   
     toast.success('Force generation process completed.');
-  };
+  };*/
   
 
   useEffect(() => {
@@ -855,74 +856,99 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
   };
 
 
-  const handleGenerateAllContent = async () => {
-    const entriesToProcess = entries.filter((entry) => !entry.generated_content);
-    const totalEntries = entriesToProcess.length;
-    const batchSize = 20;
+  // Update handleGenerateAllContent to use isBulk = true, force = false
+const handleGenerateAllContent = async () => {
+  const entriesToProcess = entries.filter((entry) => !entry.generated_content);
+  const totalEntries = entriesToProcess.length;
+  const batchSize = 10;
 
-    for (let i = 0; i < totalEntries; i += batchSize) {
-      const batchEntries = entriesToProcess.slice(i, i + batchSize);
+  for (let i = 0; i < totalEntries; i += batchSize) {
+    const batchEntries = entriesToProcess.slice(i, i + batchSize);
 
-      // Initialize retries count
-      const retries = {};
-      batchEntries.forEach((entry) => {
-        retries[entry.entry_id] = 0;
-        // Set loading state
+    // Initialize retries count
+    const retries = {};
+    batchEntries.forEach((entry) => {
+      retries[entry.entry_id] = 0;
+      // Set loading state
+      setLoadingEntries((prevState) => ({
+        ...prevState,
+        [entry.entry_id]: { loading: true, message: '' },
+      }));
+    });
+
+    const promises = batchEntries.map((entry) => generateContentWithRetry(entry, retries, true, false));
+
+    await Promise.all(promises);
+  }
+
+  toast.success('Generation process completed.');
+};
+
+// Update handleForceGenerateAllContent to use force = true
+const handleForceGenerateAllContent = async () => {
+  const entriesToProcess = entries; // Process all entries, regardless of generated_content
+  const totalEntries = entriesToProcess.length;
+  const batchSize = 20;
+
+  for (let i = 0; i < totalEntries; i += batchSize) {
+    const batchEntries = entriesToProcess.slice(i, i + batchSize);
+
+    // Initialize retries count
+    const retries = {};
+    batchEntries.forEach((entry) => {
+      retries[entry.entry_id] = 0;
+      setLoadingEntries((prevState) => ({
+        ...prevState,
+        [entry.entry_id]: { loading: true, message: '' },
+      }));
+    });
+
+    const promises = batchEntries.map((entry) => generateContentWithRetry(entry, retries, true, true));
+
+    await Promise.all(promises);
+  }
+
+  toast.success('Force generation process completed.');
+};
+
+// Update generateContentWithRetry to pass isBulk and force
+const generateContentWithRetry = async (entry, retries, isBulk = false, force = false) => {
+  const maxRetries = 3;
+  while (retries[entry.entry_id] < maxRetries) {
+    try {
+      await handleGenerateContent(entry.entry_id, isBulk, force);
+      break; // On success, break out of the loop
+    } catch (error) {
+      retries[entry.entry_id] += 1;
+      if (retries[entry.entry_id] < maxRetries) {
         setLoadingEntries((prevState) => ({
           ...prevState,
-          [entry.entry_id]: { loading: true, message: '' },
+          [entry.entry_id]: {
+            loading: true,
+            message: `Retrying ${retries[entry.entry_id]} time(s)`,
+          },
         }));
-      });
-
-      const promises = batchEntries.map((entry) => generateContentWithRetry(entry, retries));
-
-      // Wait for all promises in the batch to complete
-      await Promise.all(promises);
-    }
-
-    toast.success('Generation process completed.');
-  };
-
-  const generateContentWithRetry = async (entry, retries, force = false) => {
-    const maxRetries = 3;
-    while (retries[entry.entry_id] < maxRetries) {
-      try {
-        await handleGenerateContent(entry.entry_id, true, force); // Pass 'force' to handleGenerateContent
-        // On success, break out of the loop
-        break;
-      } catch (error) {
-        retries[entry.entry_id] += 1;
-        if (retries[entry.entry_id] < maxRetries) {
-          // Update loadingEntries with retry message
-          setLoadingEntries((prevState) => ({
-            ...prevState,
-            [entry.entry_id]: {
-              loading: true,
-              message: `Retrying ${retries[entry.entry_id]} time(s)`,
-            },
-          }));
-        } else {
-          // Mark as failed after max retries
-          setLoadingEntries((prevState) => ({
-            ...prevState,
-            [entry.entry_id]: {
-              loading: false,
-              message: 'Failed after 3 retries',
-            },
-          }));
-        }
+      } else {
+        setLoadingEntries((prevState) => ({
+          ...prevState,
+          [entry.entry_id]: {
+            loading: false,
+            message: 'Failed after 3 retries',
+          },
+        }));
       }
     }
-    // Set loading to false after processing
-    setLoadingEntries((prevState) => ({
-      ...prevState,
-      [entry.entry_id]: {
-        ...prevState[entry.entry_id],
-        loading: false,
-      },
-    }));
-  };
-  
+  }
+
+  // After processing, set loading to false
+  setLoadingEntries((prevState) => ({
+    ...prevState,
+    [entry.entry_id]: {
+      ...prevState[entry.entry_id],
+      loading: false,
+    },
+  }));
+};
 
   // Update handleGenerateContent to accept a second parameter for bulk generation
   /*const handleGenerateContent = async (entryId, isBulk = false, force = false) => {
@@ -1116,7 +1142,7 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
     
 
     // Modify handleGenerateContent to enqueue a task instead of processing synchronously
-    const handleGenerateContent = async (entryId) => {
+    /*const handleGenerateContent = async (entryId) => {
       try {
         const response = await axios.post('/api/content/projects/generate-content', {
           project_id: projectId,
@@ -1146,8 +1172,111 @@ const fetchSerpResults = async (keyword, country, yearMonth = '') => {
         toast.error('Error starting content generation.');
       }
     };
-    
-    
+    */
+   
+    // Reintroduce logic in handleGenerateContent to handle force and isBulk
+const handleGenerateContent = async (entryId, isBulk = false, force = false) => {
+  // Set loading state to true for this entry
+  setLoadingEntries((prevState) => ({
+    ...prevState,
+    [entryId]: { loading: true, message: prevState[entryId]?.message || '' },
+  }));
+
+  const entry = entries.find((e) => e.entry_id === entryId);
+
+  // If not forcing and isBulk is true, and content already exists, skip generation
+  if (!force && isBulk && entry.generated_content) {
+    setLoadingEntries((prevState) => ({
+      ...prevState,
+      [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
+    }));
+    return;
+  }
+
+  // Ensure that both page_type and content_type are set
+  if (!entry.page_type || !entry.content_type) {
+    if (!isBulk) {
+      toast.error('Please select both Page Type and Content Type for this entry.');
+    }
+    setLoadingEntries((prevState) => ({
+      ...prevState,
+      [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
+    }));
+    return;
+  }
+
+  // Get compulsory fields based on page_type and content_type
+  const compulsoryFields = getCompulsoryFields(entry.page_type, entry.content_type);
+  for (const { field, type } of compulsoryFields) {
+    const value = entry[field];
+
+    if (type === 'string') {
+      if (!value || typeof value !== 'string' || !value.trim()) {
+        if (!isBulk) {
+          toast.error(`Please provide ${field.replace('_', ' ')} for this entry.`);
+        }
+        setLoadingEntries((prevState) => ({
+          ...prevState,
+          [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
+        }));
+        return;
+      }
+    } else if (type === 'number') {
+      if (value === undefined || value === null || typeof value !== 'number') {
+        if (!isBulk) {
+          toast.error(`Please provide a valid ${field.replace('_', ' ')} for this entry.`);
+        }
+        setLoadingEntries((prevState) => ({
+          ...prevState,
+          [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
+        }));
+        return;
+      }
+      if (value <= 0) {
+        if (!isBulk) {
+          toast.error(`${field.replace('_', ' ')} must be a positive number.`);
+        }
+        setLoadingEntries((prevState) => ({
+          ...prevState,
+          [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
+        }));
+        return;
+      }
+    }
+  }
+  try {
+    // Enqueue generate-content task
+    const response = await axios.post('/api/content/projects/generate-content', {
+      project_id: projectId,
+      entry_id: entryId,
+      task_type: 'generate-content',
+    });
+
+    if (response.data.success) {
+      toast.success('Content generation started.');
+      const newTaskId = response.data.task_id;
+      setEntries((prevEntries) =>
+        prevEntries.map((e) =>
+          e.entry_id === entryId
+            ? { ...e, task_id_generate: newTaskId, task_status: 'Queued' }
+            : e
+        )
+      );
+    } else {
+      toast.error('Failed to start content generation.');
+    }
+  } catch (error) {
+    console.error('Error starting content generation:', error);
+    toast.error('Error starting content generation.');
+    throw error; // Re-throw for retry logic if needed
+  } finally {
+    // Reset loading state
+    setLoadingEntries((prevState) => ({
+      ...prevState,
+      [entryId]: { loading: false, message: prevState[entryId]?.message || '' },
+    }));
+  }
+};
   
   const getCompulsoryFields = (pageType, contentType) => {
     const compulsoryFields = [
@@ -1858,6 +1987,7 @@ const renderAdditionalInfoBlocks = (entry) => {
           </div>
         </div>
       )}
+      <AdvancedFabActions/>
 
       {/* SpeedDial FAB */}
       <Backdrop open={open} />

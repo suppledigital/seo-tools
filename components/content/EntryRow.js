@@ -40,8 +40,8 @@ export default function EntryRow({
 
 // Helper function to determine score class
 const getScoreClass = (score) => {
-  if (score > 75) return styles.error;
-  if (score >= 50) return styles.warning;
+  if (score > 25) return styles.error;
+  if (score >= 15) return styles.warning;
   return styles.okay;
 };
 
