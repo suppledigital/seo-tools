@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
   try {
     const keywords = await getAllKeywordsForProject(project_id);
-    if (keywords.length === 0) {
+    if (!keywords.length) {
       return res.status(400).json({ message: 'No keywords found for project' });
     }
 
@@ -24,10 +24,11 @@ export default async function handler(req, res) {
       body: JSON.stringify(payload),
     });
 
+    // response should have { total: number_of_keywords_rechecked }
     res.status(200).json(response);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error', error: err.message });
   }
 }
 
@@ -36,10 +37,5 @@ async function getAllKeywordsForProject(project_id) {
     'SELECT keyword_id, search_engine_id AS site_engine_id FROM keywords WHERE project_id=?', 
     [project_id]
   );
-
-  // Ensure keyword_id and site_engine_id are numbers
-  return rows.map(r => ({
-    site_engine_id: Number(r.site_engine_id),
-    keyword_id: Number(r.keyword_id)
-  }));
+  return rows.map(r => ({ site_engine_id: Number(r.site_engine_id), keyword_id: Number(r.keyword_id) }));
 }
