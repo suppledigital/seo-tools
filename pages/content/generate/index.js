@@ -24,6 +24,7 @@ import {
   Chip,
   List,
   ListItem,
+  Link
 } from '@mui/material';
 import { PageContainer } from '@toolpad/core/PageContainer';
 import { AppProvider } from '@toolpad/core/AppProvider';
@@ -52,7 +53,7 @@ export default function ContentHome() {
   const isAdmin = session?.user?.permissions_level === 'admin';
 
   // New state to track view mode: "grid" or "list"
-  const [viewMode, setViewMode] = useState('grid');
+  const [viewMode, setViewMode] = useState('list');
 
   const handleViewModeChange = (event, newViewMode) => {
     if (newViewMode !== null) {
@@ -293,7 +294,7 @@ export default function ContentHome() {
                 <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
                   <Box display="flex" alignItems="center">
                     <Typography variant="body1" sx={{ ml: 2, fontWeight: 500 }}>
-                      {project.project_name}
+                      <Link onClick={() => handleProjectClick(project.project_id)}>{project.project_name}</Link>
                     </Typography>
                     <Chip
                       size="small"
