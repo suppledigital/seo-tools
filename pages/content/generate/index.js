@@ -22,11 +22,18 @@ import {
   MenuItem,
   Avatar,
   Chip,
+  List,
+  ListItem,
 } from '@mui/material';
+import { PageContainer } from '@toolpad/core/PageContainer';
+import { AppProvider } from '@toolpad/core/AppProvider';
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DashboardLayoutAccountSidebar from '../../../components/common/DashboardLayoutAccountSidebar';
@@ -43,6 +50,15 @@ export default function ContentHome() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const isAdmin = session?.user?.permissions_level === 'admin';
+
+  // New state to track view mode: "grid" or "list"
+  const [viewMode, setViewMode] = useState('grid');
+
+  const handleViewModeChange = (event, newViewMode) => {
+    if (newViewMode !== null) {
+      setViewMode(newViewMode);
+    }
+  };
 
   useEffect(() => {
     const handleRouteChangeComplete = () => {
@@ -179,13 +195,9 @@ export default function ContentHome() {
 
   return (
     <div>
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-          <Typography variant="h4" component="h1">
-            Content Projects
-          </Typography>
-          {/* Settings or other icons can go here if needed */}
-        </Box>
+      <Container fixed sx={{ mt: 4, mb: 4 }}>
+        <PageContainer>Content Projects</PageContainer>
+          
 
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
           <TextField
@@ -195,58 +207,126 @@ export default function ContentHome() {
             value={searchQuery}
             onChange={handleSearch}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            sx={{ ml: 2, whiteSpace: 'nowrap' }}
-            onClick={() => setShowModal(true)}
-          >
-            Add Project
-          </Button>
+
+          {/* View mode toggle + Add Project button */}
+          <Box display="flex" alignItems="center" ml={2}>
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={handleViewModeChange}
+            >
+              <ToggleButton value="grid">
+                <ViewModuleIcon />
+              </ToggleButton>
+              <ToggleButton value="list">
+                <ViewListIcon />
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              sx={{ ml: 2, whiteSpace: 'nowrap' }}
+              onClick={() => setShowModal(true)}
+            >
+              Add Project
+            </Button>
+          </Box>
         </Box>
 
-        <Grid container spacing={3}>
-          {filteredProjects.map((project) => (
-            <Grid item xs={12} sm={6} md={4} key={project.project_id}>
-              <Card sx={{ position: 'relative' }}>
-                {(project.user_email === session.user.email || isAdmin) && (
-                  <IconButton
-                    aria-label="more"
-                    aria-controls="long-menu"
-                    aria-haspopup="true"
-                    onClick={(e) => handleMenuOpen(e, project.project_id)}
-                    sx={{ position: 'absolute', top: 8, right: 8 }}
-                  >
-                    <MoreVertIcon />
-                  </IconButton>
-                )}
-                <CardContent>
-                  <Typography variant="h6" gutterBottom noWrap>
-                    {project.project_name}
-                  </Typography>
-                  <Box display="flex" alignItems="center" mt={1}>
+        {/* Conditionally render Grid or List */}
+        {viewMode === 'grid' ? (
+          <Grid container spacing={3}>
+            {filteredProjects.map((project) => (
+              <Grid item xs={12} sm={6} md={3} key={project.project_id}>
+                <Card sx={{ position: 'relative' }}>
+                  {(project.user_email === session.user.email || isAdmin) && (
+                    <IconButton
+                      aria-label="more"
+                      aria-controls="long-menu"
+                      aria-haspopup="true"
+                      onClick={(e) => handleMenuOpen(e, project.project_id)}
+                      sx={{ position: 'absolute', top: 8, right: 8 }}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                  )}
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom noWrap>
+                      {project.project_name}
+                    </Typography>
+                    <Box display="flex" alignItems="center" mt={1}>
+                      <Chip
+                        size="small"
+                        avatar={<Avatar>{getInitials(project.name)}</Avatar>}
+                        label={project.name || project.user_email}
+                      />
+                    </Box>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => handleProjectClick(project.project_id)}
+                      endIcon={<OpenInNewIcon />}
+                    >
+                      Open
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <List>
+            {filteredProjects.map((project) => (
+              <ListItem
+                key={project.project_id}
+                sx={{
+                  mb: 1,
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: 1,
+                  '&:hover': { backgroundColor: '#ededed' },
+                }}
+              >
+                <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
+                  <Box display="flex" alignItems="center">
+                    <Typography variant="body1" sx={{ ml: 2, fontWeight: 500 }}>
+                      {project.project_name}
+                    </Typography>
                     <Chip
                       size="small"
                       avatar={<Avatar>{getInitials(project.name)}</Avatar>}
                       label={project.name || project.user_email}
+                      sx={{ ml: 2 }}
                     />
                   </Box>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={() => handleProjectClick(project.project_id)}
-                    endIcon={<OpenInNewIcon />}
-                  >
-                    Open
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                  <Box>
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => handleProjectClick(project.project_id)}
+                      endIcon={<OpenInNewIcon />}
+                    >
+                      Open
+                    </Button>
+                    {(project.user_email === session.user.email || isAdmin) && (
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(e) => handleMenuOpen(e, project.project_id)}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                    )}
+                  </Box>
+                </Box>
+              </ListItem>
+            ))}
+          </List>
+        )}
 
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
           <MenuItem onClick={resetProjectData}>Reset Data</MenuItem>
@@ -303,6 +383,7 @@ export default function ContentHome() {
         draggable
         pauseOnHover
       />
-      </div>
+   </div>
+
   );
 }
