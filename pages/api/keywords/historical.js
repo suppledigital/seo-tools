@@ -16,6 +16,8 @@ export default async function handler(req, res) {
       date_to,
       site_engine_id: search_engine_id || null
     });
+  //  console.log(JSON.stringify(positionsData));
+
 
     // positionsData: array of { site_engine_id, keywords: [{id, name, positions: [...]}, ...] }
     // For simplicity, let's flatten this to a simple array of historical records:
@@ -31,10 +33,13 @@ export default async function handler(req, res) {
             date: posEntry.date,
             pos: posEntry.pos,
             change: posEntry.change,
+            ranking_url: posEntry.url
           });
         }
       }
     }
+   // console.log(JSON.stringify(historicalRecords));
+
 
     return res.status(200).json(historicalRecords);
   } catch (err) {

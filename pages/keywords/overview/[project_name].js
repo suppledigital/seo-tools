@@ -9,6 +9,7 @@ import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import { useRouter } from 'next/router';
 import dayjs from 'dayjs';
+import styles from './[project_name].module.css';
 
 import {
   Chart as ChartJS,
@@ -47,7 +48,8 @@ const keywordColumnsBrief = [
         </Box>
       );
     }
-  }
+  },
+  { field: 'ranking_url', headerName: 'Ranking URL', flex: 1 },
 ];
 
 const MetricBox = ({ title, value }) => (
@@ -206,14 +208,25 @@ export default function ProjectOverviewPage() {
     const allKeywords = [...new Set(data.map(d => d.keyword))].sort();
 
     const columns = [
-      { field: 'keyword', headerName: 'Keyword', flex: 1, minWidth: 150 }
-    ].concat(dates.map(date => ({
-      field: date,
-      headerName: date,
-      type: 'number',
-      flex: 1,
-      minWidth: 120
-    })));
+        { field: 'keyword', headerName: 'Keyword', flex: 1, minWidth: 150 }
+      ].concat(dates.map(date => ({
+        field: date,
+        headerName: date,
+        type: 'number',
+        flex: 1,
+        minWidth: 120,
+        // Add getCellClassName to color individual cells
+        getCellClassName: (params) => {
+          const rank = params.value ?? 0;
+          if (rank > 0 && rank <= 3) return 'rank-1-3';
+          if (rank >=4 && rank <=10) return 'rank-4-10';
+          if (rank >=11 && rank <=15) return 'rank-11-15';
+          if (rank >=16 && rank <=20) return 'rank-15-20';
+          // rank 0 or >20
+          return 'rank-21-plus';
+        }
+      })));
+      
 
     const rows = allKeywords.map(keyword => {
       const row = { id: keyword, keyword };

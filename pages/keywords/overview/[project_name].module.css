@@ -1,0 +1,16 @@
+.rank_1_3 {
+    background-color: rgba(123, 193, 91, .6) !important;
+  }
+  .rank_4_10 {
+    background-color: rgba(123, 193, 91, .35) !important;
+  }
+  .rank_11_15 {
+    background-color: rgba(123, 193, 91, .15) !important;
+  }
+  .rank_15_20 {
+    background-color: rgba(239, 105, 38, .35) !important;
+  }
+  .rank_21_plus {
+    background-color: rgba(239, 105, 38, .6) !important;
+  }
+  

@@ -117,10 +117,13 @@
 }
 
 /* Generated Content Cell */
-.generatedContentCell {
+.generatedContentCell,.humanisedContentCell{
   max-width: 300px;
   height: 10px;
   overflow-y: hidden;
+}
+.humanisedContentCell{
+  background-color:rgb(231, 241, 231)
 }
 .generatedContent::-webkit-scrollbar-track-piece {
   background: #091e420f;
@@ -210,16 +213,7 @@
 
 /* EntryRow.module.css */
 
-.wordCountBadge {
-  display: inline-block;
-  background-color: #6c757d; /* Bootstrap secondary color */
-  color: white;
-  border-radius: 12px;
-  padding: 2px 8px;
-  font-size: 0.75rem;
-  margin-left: 8px; /* Space between the View icon and badge */
-  vertical-align: middle;
-}
+
 .retryMessage {
   color: #ff9800;
   font-size: 0.9em;
@@ -280,13 +274,14 @@
 
 .wordCountBadge {
   /* Word count badge styles */
-  background-color: #17a2b8;
-  color: white;
+
   padding: 2px 6px;
   border-radius: 12px;
   font-size: 0.8em;
   margin-left: 8px;
+  border:1px solid #17a2b8;
 }
+
 
 .lookupIcon {
   margin-left: 4px;
@@ -312,11 +307,16 @@
   color:#8f8f8f;
 }
 .error{
+  border: 1px solid rgb(241, 73, 73);
   background-color:rgb(241, 73, 73);
 }
 .warning{
   background-color:rgb(255, 186, 59);
+  border: 1px solid rgb(255, 186, 59);
+  
 }
 .okay{
-  background-color: rgb(105, 175, 105);;
+  border: 1px solid rgb(105, 175, 105);
+  background-color:unset;
+  color:unset
 }

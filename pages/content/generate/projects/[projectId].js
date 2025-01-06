@@ -141,83 +141,86 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const pendingTasks = entries.filter(
-        (entry) => 
-          (entry.task_status === 'Queued' || entry.task_status === 'Processing') && 
-          (entry.task_id_generate || entry.task_id_humanise)
+      const pendingEntries = entries.filter((entry) =>
+        ['Queued','Processing'].includes(entry.task_status_generate) ||
+        ['Queued','Processing'].includes(entry.task_status_humanise)
       );
-
-      if (pendingTasks.length === 0) {
+      if (pendingEntries.length === 0) {
         clearInterval(interval);
         return;
       }
-
-      for (const entry of pendingTasks) {
-        let taskIdToPoll = null;
-
-        if (entry.task_id_humanise && (entry.task_status === 'Queued' || entry.task_status === 'Processing')) {
-          taskIdToPoll = entry.task_id_humanise;
-        } else if (entry.task_id_generate && (entry.task_status === 'Queued' || entry.task_status === 'Processing')) {
-          taskIdToPoll = entry.task_id_generate;
+  
+      // Collect all taskIds from generate + humanise
+      const taskIds = [];
+      for (const entry of pendingEntries) {
+        if (entry.task_id_generate && 
+           (entry.task_status_generate === 'Queued' || entry.task_status_generate === 'Processing')) {
+          taskIds.push(entry.task_id_generate);
         }
-
-        if (!taskIdToPoll) continue;
-
-        try {
-          const response = await axios.get('/api/content/projects/task-status', {
-            params: { taskId: taskIdToPoll },
-          });
-
-          if (response.status === 200 && response.data) {
-            // Extract updated_at from response
-            const { task_status: newStatus, result, error, updated_at, rephrasy_score_generate, rephrasy_score_humanise } = response.data;
-
-            setEntries((prevEntries) =>
-              prevEntries.map((e) => {
-                if (e.entry_id === entry.entry_id) {
-                  let updatedEntry = { ...e, task_status: newStatus };
-
-                  if (newStatus === 'Completed') {
-                    if (taskIdToPoll === e.task_id_humanise) {
-                      updatedEntry.humanized_content = result;
-                      toast.success(`Content humanized for entry ${entry.entry_id}.`);
-                    } else if (taskIdToPoll === e.task_id_generate) {
-                      updatedEntry.generated_content = result;
-                      toast.success(`Content generated for entry ${entry.entry_id}.`);
-                    }
-                  } else if (newStatus === 'Failed') {
-                    updatedEntry.error_message = error;
-                    toast.error(`Task failed for entry ${entry.entry_id}: ${error}`);
-                  }
-
-                  // Update updated_at if present from the response
-                  if (updated_at) {
-                    updatedEntry.updated_at = updated_at;
-                  }
-                  // Update updated_at if present from the response
-                  if (rephrasy_score_humanise) {
-                    updatedEntry.rephrasy_score_humanise = rephrasy_score_humanise;
-                  }
-                  // Update updated_at if present from the response
-                  if (rephrasy_score_generate) {
-                    updatedEntry.rephrasy_score_generate = rephrasy_score_generate;
-                  }
-
-                  return updatedEntry;
-                }
-                return e;
-              })
-            );
-          }
-        } catch (error) {
-          console.error('Error polling task status:', error);
-          toast.error('Error polling task status.');
+        if (entry.task_id_humanise &&
+           (entry.task_status_humanise === 'Queued' || entry.task_status_humanise === 'Processing')) {
+          taskIds.push(entry.task_id_humanise);
         }
       }
-    }, 5000);
-
+  
+      try {
+        const response = await axios.post('/api/content/projects/bulk-task-status', { taskIds });
+        const statuses = response.data;
+        // statuses: { [taskId]: { task_type, status, result, error, updated_at, ... } }
+  
+        setEntries((prevEntries) =>
+          prevEntries.map((entry) => {
+            let changed = false;
+            let updated = { ...entry };
+  
+            if (entry.task_id_generate && statuses[entry.task_id_generate]) {
+              const info = statuses[entry.task_id_generate];
+              if (info.task_type === 'generate-content') {
+                if (info.status !== entry.task_status_generate) {
+                  updated.task_status_generate = info.status;
+                  changed = true;
+                }
+                if (info.status === 'Completed' && info.result) {
+                  updated.generated_content = info.result;
+                  changed = true;
+                }
+                if (info.status === 'Failed' && info.error) {
+                  updated.error_message = info.error;
+                  changed = true;
+                }
+              }
+            }
+  
+            if (entry.task_id_humanise && statuses[entry.task_id_humanise]) {
+              const info = statuses[entry.task_id_humanise];
+              if (info.task_type === 'humanise-content') {
+                if (info.status !== entry.task_status_humanise) {
+                  updated.task_status_humanise = info.status;
+                  changed = true;
+                }
+                if (info.status === 'Completed' && info.result) {
+                  updated.humanized_content = info.result;
+                  changed = true;
+                }
+                if (info.status === 'Failed' && info.error) {
+                  updated.error_message = info.error;
+                  changed = true;
+                }
+              }
+            }
+  
+            return changed ? updated : entry;
+          })
+        );
+      } catch (error) {
+        console.error('Bulk poll error:', error);
+      }
+    }, 15000);
+  
     return () => clearInterval(interval);
   }, [entries]);
+  
+  
   
   
   
@@ -286,16 +289,22 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
       onClick: () => { setIsConfigModalOpen(true); handleClose(); },
       group: 'Setup',
     },
-    {
-      icon: <GroupIcon />,
-      name: 'Auto Classify Page Type',
-      onClick: () => { handleStartClassifications(); handleClose(); },
-      group: 'Setup',
-    },
+    //{
+    //  icon: <GroupIcon />,
+   //   name: 'Auto Classify Page Type',
+    //  onClick: () => { handleStartClassifications(); handleClose(); },
+    //  group: 'Setup',
+   // },
     {
       icon: <PlayArrowIcon />,
       name: 'Generate All',
       onClick: () => { handleGenerateAllContent(); handleClose(); },
+      group: 'Generate',
+    },
+    {
+      icon: <GroupIcon />, // or any icon you prefer
+      name: 'Humanise All',
+      onClick: () => { handleHumaniseAllContent(); handleClose(); },
       group: 'Generate',
     },
     {
@@ -883,6 +892,34 @@ const handleGenerateAllContent = async () => {
 
   toast.success('Generation process completed.');
 };
+const handleHumaniseAllContent = async () => {
+  const entriesToProcess = entries.filter((entry) => !entry.humanized_content);
+  const totalEntries = entriesToProcess.length;
+  const batchSize = 10;
+
+  for (let i = 0; i < totalEntries; i += batchSize) {
+    const batchEntries = entriesToProcess.slice(i, i + batchSize);
+
+    const retries = {};
+    batchEntries.forEach((entry) => {
+      retries[entry.entry_id] = 0;
+      setLoadingEntries((prev) => ({
+        ...prev,
+        [entry.entry_id]: { loading: true, message: '' },
+      }));
+    });
+
+    const promises = batchEntries.map((entry) =>
+      humaniseContentWithRetry(entry, retries, true, false)
+    );
+
+    await Promise.all(promises);
+  }
+
+  toast.success('Humanise process completed.');
+};
+
+
 
 // Update handleForceGenerateAllContent to use force = true
 const handleForceGenerateAllContent = async () => {
@@ -949,6 +986,42 @@ const generateContentWithRetry = async (entry, retries, isBulk = false, force = 
     },
   }));
 };
+const humaniseContentWithRetry = async (entry, retries, isBulk = false, force = false) => {
+  const maxRetries = 3;
+  while (retries[entry.entry_id] < maxRetries) {
+    try {
+      await handleHumanizeContent(entry.entry_id, isBulk, force);
+      break; 
+    } catch (error) {
+      retries[entry.entry_id] += 1;
+      if (retries[entry.entry_id] < maxRetries) {
+        setLoadingEntries((prev) => ({
+          ...prev,
+          [entry.entry_id]: {
+            loading: true,
+            message: `Retrying ${retries[entry.entry_id]} time(s)`,
+          },
+        }));
+      } else {
+        setLoadingEntries((prev) => ({
+          ...prev,
+          [entry.entry_id]: {
+            loading: false,
+            message: 'Failed after 3 retries',
+          },
+        }));
+      }
+    }
+  }
+  setLoadingEntries((prev) => ({
+    ...prev,
+    [entry.entry_id]: {
+      ...prev[entry.entry_id],
+      loading: false,
+    },
+  }));
+};
+
 
   // Update handleGenerateContent to accept a second parameter for bulk generation
   /*const handleGenerateContent = async (entryId, isBulk = false, force = false) => {
@@ -2066,32 +2139,27 @@ const renderAdditionalInfoBlocks = (entry) => {
 }
 
 // Fetch data on the server side
+
 export async function getServerSideProps(context) {
   const { projectId } = context.params;
-
-  // Retrieve the session on the server side
   const session = await getSession(context);
-
-  // If there's no session, redirect to the login page
   if (!session) {
     return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
+      redirect: { destination: '/', permanent: false },
     };
   }
 
   const pool = (await import('../../../../lib/db')).default;
 
   try {
-    const [projectRows] = await pool.query('SELECT * FROM projects WHERE project_id = ?', [projectId]);
+    const [projectRows] = await pool.query(
+      'SELECT * FROM projects WHERE project_id = ?',
+      [projectId]
+    );
     const project = projectRows[0];
-
     if (!project) {
       return { notFound: true };
     }
-
     if (project.created_at instanceof Date) {
       project.created_at = project.created_at.toISOString();
     }
@@ -2101,7 +2169,10 @@ export async function getServerSideProps(context) {
 
     let entries = [];
     if (project.initialised) {
-      const [entryRows] = await pool.query('SELECT * FROM entries WHERE project_id = ?', [projectId]);
+      const [entryRows] = await pool.query(
+        'SELECT * FROM entries WHERE project_id = ?',
+        [projectId]
+      );
       entries = entryRows.map((entry) => {
         if (entry.created_at instanceof Date) {
           entry.created_at = entry.created_at.toISOString();
@@ -2112,35 +2183,54 @@ export async function getServerSideProps(context) {
         return entry;
       });
 
-      // For each entry that has a task_id_generate, fetch the task status
-      for (let i = 0; i < entries.length; i++) {
-        const e = entries[i];
-        if (e.task_id_generate) {
+      // For each entry, if there's a task_id_generate or task_id_humanise,
+      // fetch the corresponding task from the "tasks" table and set an in-memory status.
+      for (const e of entries) {
+        // For Humanise
+        if (e.task_id_humanise) {
           const [taskRows] = await pool.query(
-            'SELECT status, result, error FROM tasks WHERE task_id = ? LIMIT 1',
-            [e.task_id_generate]
+            'SELECT task_type, status, result, error FROM tasks WHERE task_id = ? LIMIT 1',
+            [ e.task_id_humanise ]
           );
-
-          if (taskRows.length > 0) {
-            const { status, result, error } = taskRows[0];
-            e.task_status = status; // 'Queued', 'Processing', 'Completed', or 'Failed'
-            // If Completed, ensure generated_content is in sync
-            if (status === 'Completed' && result && !e.generated_content) {
-              e.generated_content = result;
-            }
-            // If Failed, store error in entry if you want
-            if (status === 'Failed' && error) {
-              e.error_message = error;
+          if (taskRows.length > 0 && taskRows[0].task_type === 'humanise-content') {
+            e.task_status_humanise = taskRows[0].status;
+            if (taskRows[0].status === 'Completed' && taskRows[0].result && !e.humanized_content) {
+              e.humanized_content = taskRows[0].result;
             }
           } else {
-            // No task found for that task_id (shouldn't happen if we just got it from entries)
-            e.task_status = null;
+            // No matching row or not 'humanise-content'
+            // If 'humanized_content' is present, treat as completed
+            // else treat as no content
+            if (e.humanized_content) {
+              e.task_status_humanise = 'Completed';
+            } else {
+              e.task_status_humanise = null;
+            }
           }
-        } else {
-          // No task, maybe previously completed or never started
-          // If generated_content is present, consider it Completed
-          e.task_status = e.generated_content ? 'Completed' : null;
         }
+
+        // For Generate
+        if (e.task_id_generate) {
+          const [taskRows] = await pool.query(
+            'SELECT task_type, status, result, error FROM tasks WHERE task_id = ? LIMIT 1',
+            [ e.task_id_generate ]
+          );
+          if (taskRows.length > 0 && taskRows[0].task_type === 'generate-content') {
+            e.task_status_generate = taskRows[0].status;
+            if (taskRows[0].status === 'Completed' && taskRows[0].result && !e.generated_content) {
+              e.generated_content = taskRows[0].result;
+            }
+          } else {
+            // No matching row or not 'generate-content'
+            if (e.generated_content) {
+              e.task_status_generate = 'Completed';
+            } else {
+              e.task_status_generate = null;
+            }
+          }
+        }
+
+       
       }
     }
 
@@ -2149,7 +2239,7 @@ export async function getServerSideProps(context) {
     return {
       props: {
         initialData: { project, entries },
-        permissionLevel
+        permissionLevel,
       },
     };
   } catch (error) {

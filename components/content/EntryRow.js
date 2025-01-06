@@ -1,15 +1,13 @@
 // components/content/EntryRow.js
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faExclamationCircle, faDeleteLeft, faRecycle } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faExclamationCircle, faDeleteLeft, faRecycle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import styles from './EntryRow.module.css';
 import CircularProgress from '@mui/material/CircularProgress';
-import Tooltip from '@mui/material/Tooltip'; // Import Tooltip for better UX
-
+import Tooltip from '@mui/material/Tooltip';
 import { utcToZonedTime, format } from 'date-fns-tz';
 
-const melbourneTimeZone = 'Australia/Melbourne'; // Set the timezone explicitly
-
+const melbourneTimeZone = 'Australia/Melbourne';
 
 export default function EntryRow({
   entry,
@@ -35,21 +33,21 @@ export default function EntryRow({
     handleCopyContent,
     handleEditContent,
     handleViewContent,
-    handleHumanizeContent, // Ensure this handler is passed
+    handleHumanizeContent
   } = handlers;
 
-// Helper function to determine score class
-const getScoreClass = (score) => {
-  if (score > 25) return styles.error;
-  if (score >= 15) return styles.warning;
-  return styles.okay;
-};
+  const getScoreClass = (score) => {
+    if (score > 25) return styles.error;
+    if (score >= 15) return styles.warning;
+    return styles.okay;
+  };
 
-
-// Convert the UTC date to Melbourne timezone
-const utcDate = new Date(`${entry.updated_at}Z`); // Add 'Z' to enforce UTC interpretation
-const melbourneDate = utcToZonedTime(utcDate, melbourneTimeZone); // Convert to Melbourne timezone
-const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { timeZone: melbourneTimeZone });
+  // Convert 'updated_at' to Melbourne Time
+  const utcDate = new Date(`${entry.updated_at}Z`); 
+  const melbourneDate = utcToZonedTime(utcDate, melbourneTimeZone);
+  const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', {
+    timeZone: melbourneTimeZone
+  });
 
   const isSelected = selectedEntries.includes(entry.entry_id);
   const wordCount = entry.generated_content
@@ -61,12 +59,9 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
 
   const handleCheckboxChange = (e) => {
     const { checked } = e.target;
-
     if (e.shiftKey && lastSelectedEntryId !== null) {
-      // Handle shift-click selection
       handlers.handleShiftClickSelection(entry.entry_id, checked);
     } else {
-      // Single selection
       if (checked) {
         setSelectedEntries([...selectedEntries, entry.entry_id]);
       } else {
@@ -78,7 +73,6 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
 
   return (
     <tr data-entry-id={entry.entry_id} className={isSelected ? styles.selectedRow : ''}>
-      {/* Selection Checkbox */}
       <td>
         <input
           type="checkbox"
@@ -86,8 +80,8 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
           onChange={handleCheckboxChange}
         />
       </td>
-      
-      {/* URL Cell */}
+
+      {/* URL / Page Type / Content Type */}
       <td className={styles.urlCell}>
         {entry.url}
         <i
@@ -95,7 +89,6 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
           onClick={() => handleUrlLookup(entry.url)}
         ></i>
         <br />
-        {/* Page Type Badge */}
         {entry.page_type ? (
           <span
             className={`${styles.badge} ${styles.pageTypeBadge} ${styles.badgeSet}`}
@@ -111,7 +104,6 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
             Select Page Type <i className="fas fa-caret-down"></i>
           </span>
         )}
-        {/* Content Type Badge */}
         {entry.content_type ? (
           <span
             className={`${styles.badge} ${styles.contentTypeBadge} ${styles.badgeSet}`}
@@ -129,7 +121,7 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
         )}
       </td>
 
-      {/* Keywords Cell */}
+      {/* Keywords */}
       <td className={styles.keywordsCell}>
         Primary: {entry.primary_keyword}
         <i
@@ -150,35 +142,18 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
         ></i>
       </td>
 
-      {/* Additional Info Cell */}
-      <td className={styles.additionalInfoCell}>{renderAdditionalInfoBlocks(entry)}</td>
+      {/* Additional Info */}
+      <td className={styles.additionalInfoCell}>
+        {renderAdditionalInfoBlocks(entry)}
+      </td>
 
-      {/* Generated Content Cell */}
+      {/* Generated Content Column */}
       <td className={styles.generatedContentCell}>
-      
-        {/* If not humanizing, check generating */}
-        {entry.task_status === 'Queued' && entry.task_id_generate && (
-          <div>
-            <CircularProgress size={20} className={styles.spinner} />
-            <span>Queued (Generating)...</span>
-          </div>
+        {/* If no generate task_id, we interpret as "task done or never started" */}
+        {!entry.task_id_generate && !entry.generated_content && (
+          <>No content generated yet.</>
         )}
-
-        {entry.task_status === 'Processing' && entry.task_id_generate && (
-          <div className={styles.loadingContainer}>
-            <CircularProgress size={20} className={styles.spinner} />
-            <span>Generating...</span>
-          </div>
-        )}
-
-        {entry.task_status === 'Failed' && (
-          <div>
-            <span style={{ color: 'red' }}>Failed: {entry.error_message}</span>
-            {/* Show a regenerate button if desired */}
-            <button onClick={() => handleGenerateContent(entry.entry_id)}>Regenerate</button>
-          </div>
-        )}
-        {entry.task_status === 'Completed' && entry.generated_content && (
+        {!entry.task_id_generate && entry.generated_content && (
           <>
             <span className={styles.generatedContent}>{entry.generated_content}</span>
             <div className={styles.contentActions}>
@@ -202,45 +177,90 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
                 title="View"
                 onClick={() => handleViewContent(entry)}
               ></i>
-              {/* Word Count Badge */}
               <span className={styles.wordCountBadge} title="Word Count">
                 {wordCount} words
               </span>
+              {/* ADD THIS BADGE */}
               <span
                 className={`${styles.wordCountBadge} ${getScoreClass(entry.rephrasy_score_generate)}`}
                 title="AI Detection Score"
               >
                 AI: {entry.rephrasy_score_generate}
               </span>
-              <div className={styles.lastUpdated}>
-              <small>Last Updated: {formattedMelbourneDate}</small>
-
-</div>
-
-
             </div>
           </>
-       )}
-       {entry.task_status === null && !entry.generated_content && (
-         'No content generated yet.'
-       )}
-     </td>
-     <td className={styles.generatedContentCell}>
-      {entry.task_status === 'Queued' && entry.task_id_humanise && (
+        )}
+
+        {entry.task_id_generate && entry.task_status_generate === 'Queued' && (
           <div>
             <CircularProgress size={20} className={styles.spinner} />
-            <span>Queued (Humanizing)...</span>
+            <span>Queued (Generating)...</span>
           </div>
         )}
-
-        {entry.task_status === 'Processing' && entry.task_id_humanise && (
+        {entry.task_id_generate && entry.task_status_generate === 'Processing' && (
           <div className={styles.loadingContainer}>
             <CircularProgress size={20} className={styles.spinner} />
-            <span>Humanizing...</span>
+            <span>Generating...</span>
           </div>
         )}
+        {entry.task_id_generate && entry.task_status_generate === 'Failed' && (
+          <div>
+            <span style={{ color: 'red' }}>Failed: {entry.error_message}</span>
+            <button onClick={() => handleGenerateContent(entry.entry_id)}>
+              Regenerate
+            </button>
+          </div>
+        )}
+        {entry.task_id_generate &&
+          entry.task_status_generate === 'Completed' &&
+          entry.generated_content && (
+            <>
+              <span className={styles.generatedContent}>{entry.generated_content}</span>
+              <div className={styles.contentActions}>
+                <i
+                  className={`fas fa-copy ${styles.contentActionIcon}`}
+                  title="Copy"
+                  onClick={() => handleCopyContent(entry.generated_content)}
+                ></i>
+                <i
+                  className={`fas fa-redo ${styles.contentActionIcon} ${styles.redoActionIcon}`}
+                  title="Regenerate"
+                  onClick={() => handleGenerateContent(entry.entry_id)}
+                ></i>
+                <i
+                  className={`fas fa-edit ${styles.contentActionIcon}`}
+                  title="Edit"
+                  onClick={() => handleEditContent(entry.entry_id)}
+                ></i>
+                <i
+                  className={`fas fa-eye ${styles.contentActionIcon}`}
+                  title="View"
+                  onClick={() => handleViewContent(entry)}
+                ></i>
+                <span className={styles.wordCountBadge} title="Word Count">
+                  {wordCount} words
+                </span>
+                <span
+                  className={`${styles.wordCountBadge} ${getScoreClass(entry.rephrasy_score_generate)}`}
+                  title="AI Detection Score"
+                >
+                  AI: {entry.rephrasy_score_generate}
+                </span>
+                <div className={styles.lastUpdated}>
+                  <small>Last Updated: {formattedMelbourneDate}</small>
+                </div>
+              </div>
+            </>
+          )}
+      </td>
 
-        {entry.task_status === 'Completed' && entry.humanized_content && (
+      {/* Humanised Content Column */}
+      <td className={styles.generatedContentCell}>
+        {/* If no humanise task_id, treat as "done or never started" */}
+        {!entry.task_id_humanise && !entry.humanized_content && (
+          <>Content not humanised yet.</>
+        )}
+        {!entry.task_id_humanise && entry.humanized_content && (
           <>
             <span className={styles.generatedContent}>{entry.humanized_content}</span>
             <div className={styles.contentActions}>
@@ -251,8 +271,8 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
               ></i>
               <i
                 className={`fas fa-redo ${styles.contentActionIcon} ${styles.redoActionIcon}`}
-                title="Regenerate"
-                onClick={() => handleGenerateContent(entry.entry_id)}
+                title="Re-humanize"
+                onClick={() => handleHumanizeContent(entry.entry_id)}
               ></i>
               <i
                 className={`fas fa-edit ${styles.contentActionIcon}`}
@@ -264,61 +284,125 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
                 title="View"
                 onClick={() => handleViewContent(entry)}
               ></i>
-              {/* Word Count Badge */}
               <span className={styles.wordCountBadge} title="Word Count">
                 {humanisedWordCount} words
               </span>
+              {/* ADD THIS BADGE */}
               <span
                 className={`${styles.wordCountBadge} ${getScoreClass(entry.rephrasy_score_humanise)}`}
                 title="AI Detection Score"
               >
                 AI: {entry.rephrasy_score_humanise}
               </span>
-              <div className={styles.lastUpdated}>
-              <small>Last Updated: {formattedMelbourneDate}</small>
-
-</div>
-
-
             </div>
           </>
-       )}
-       {entry.task_status === null && (!entry.humanized_content) && (
-         'Content not humanised yet.'
-       )}
-     </td>
+        )}
+
+        {entry.task_id_humanise && entry.task_status_humanise === 'Queued' && (
+          <div>
+            <CircularProgress size={20} className={styles.spinner} />
+            <span>Queued (Humanizing)...</span>
+          </div>
+        )}
+        {entry.task_id_humanise && entry.task_status_humanise === 'Processing' && (
+          <div className={styles.loadingContainer}>
+            <CircularProgress size={20} className={styles.spinner} />
+            <span>Humanizing...</span>
+          </div>
+        )}
+        {entry.task_id_humanise && entry.task_status_humanise === 'Failed' && (
+          <div>
+            <span style={{ color: 'red' }}>Failed: {entry.error_message}</span>
+            <button onClick={() => handleHumanizeContent(entry.entry_id)}>
+              Re-humanize
+            </button>
+          </div>
+        )}
+        {entry.task_id_humanise &&
+          entry.task_status_humanise === 'Completed' &&
+          entry.humanized_content && (
+            <>
+              <span className={styles.generatedContent}>{entry.humanized_content}</span>
+              <div className={styles.contentActions}>
+                <i
+                  className={`fas fa-copy ${styles.contentActionIcon}`}
+                  title="Copy"
+                  onClick={() => handleCopyContent(entry.humanized_content)}
+                ></i>
+                <i
+                  className={`fas fa-redo ${styles.contentActionIcon} ${styles.redoActionIcon}`}
+                  title="Re-humanize"
+                  onClick={() => handleHumanizeContent(entry.entry_id)}
+                ></i>
+                <i
+                  className={`fas fa-edit ${styles.contentActionIcon}`}
+                  title="Edit"
+                  onClick={() => handleEditContent(entry.entry_id)}
+                ></i>
+                <i
+                  className={`fas fa-eye ${styles.contentActionIcon}`}
+                  title="View"
+                  onClick={() => handleViewContent(entry)}
+                ></i>
+                <span className={styles.wordCountBadge} title="Word Count">
+                  {humanisedWordCount} words
+                </span>
+                <span
+                  className={`${styles.wordCountBadge} ${getScoreClass(entry.rephrasy_score_humanise)}`}
+                  title="AI Detection Score"
+                >
+                  AI: {entry.rephrasy_score_humanise}
+                </span>
+                <div className={styles.lastUpdated}>
+                  <small>Last Updated: {formattedMelbourneDate}</small>
+                </div>
+              </div>
+            </>
+          )}
+      </td>
 
       {/* Actions Cell */}
-       {/* Actions Cell */}
-       <td className={styles.actionsCell}>
-       <button
+      <td className={styles.actionsCell}>
+        <button
           className={styles.actionButton}
           onClick={() => handlers.handleGenerateContent(entry.entry_id)}
-          disabled={entry.task_status === 'Queued' || entry.task_status === 'Processing'}
+          disabled={
+            (entry.task_id_generate &&
+              (entry.task_status_generate === 'Queued' ||
+               entry.task_status_generate === 'Processing'))
+          }
         >
-          {entry.task_status === 'Processing'
+          {entry.task_id_generate &&
+          (entry.task_status_generate === 'Queued' ||
+           entry.task_status_generate === 'Processing')
             ? 'Generating...'
-            : entry.task_status === 'Queued'
-            ? 'Queued...'
             : 'Generate'}
         </button>
 
         <button
           className={styles.actionButton}
           onClick={() => handlers.handleHumanizeContent(entry.entry_id)}
-          disabled={!entry.generated_content || entry.task_status === 'Processing' || entry.task_status === 'Queued'}
+          disabled={
+            !entry.generated_content ||
+            (entry.task_id_humanise &&
+              (entry.task_status_humanise === 'Queued' ||
+               entry.task_status_humanise === 'Processing'))
+          }
         >
-          {entry.task_id_humanise && (entry.task_status === 'Queued' || entry.task_status === 'Processing')
+          {entry.task_id_humanise &&
+          (entry.task_status_humanise === 'Queued' ||
+           entry.task_status_humanise === 'Processing')
             ? 'Humanizing...'
             : 'Humanize'}
         </button>
 
+      
 
-        <button className={styles.deleteButton} onClick={() => handleDeleteEntry(entry.entry_id)}>
-          Delete
-        </button>
-        <FontAwesomeIcon icon={faExclamationCircle} style={{ color: 'red', marginLeft: '8px' }} onClick={() => handleDeleteEntry(entry.entry_id)} />
-
+        <FontAwesomeIcon
+          icon={faTrashCan}
+          style={{ color: 'red', marginLeft: '8px' }}
+          onClick={() => handleDeleteEntry(entry.entry_id)}
+        />
 
         {permissionLevel === 'admin' && (
           <i
@@ -329,7 +413,6 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
           ></i>
         )}
 
-        {/* Display Error Messages */}
         {entry.last_task_generate_failed && (
           <Tooltip title="Last Generate Prompt task failed. Please try again.">
             <span className={styles.errorMessage}>
@@ -337,7 +420,6 @@ const formattedMelbourneDate = format(melbourneDate, 'dd MMM yyyy, hh:mm a', { t
             </span>
           </Tooltip>
         )}
-
         {entry.last_task_humanise_failed && (
           <Tooltip title="Last Humanize task failed. Please try again.">
             <span className={styles.errorMessage}>
