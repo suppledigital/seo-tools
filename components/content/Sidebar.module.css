@@ -1,54 +1,122 @@
-/* Sidebar.module.css */
-
 .sidebar {
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 30vw;
-    height: 100%;
-    background-color: #ededed;
-    border-left: 1px solid #ddd;
-    overflow-y: auto;
-    transition: width 0.3s;
-    z-index: 1000;
-  }
-  
-  .sidebarExpanded {
-    width: 80%;
-  }
-  
-  .sidebarHeader {
-    display: flex;
-  
-    align-items: center;
-    padding: 10px 20px;
-    position: sticky;
-    background-color: #ededed;
-    top: 0px;
-    float: right;
-    border:1px solid green;
-  }
-  
-  .sidebarHeader select {
-    margin-left: 10px;
-  }
-  
-  .sidebarToggleIcon {
-    margin-left: auto;
-    cursor: pointer;
-    padding: 20px;
-    position: fixed;
-    top: 0;
-    background-color: #ffffffb0;
-    border:1px solid green;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 30vw;
+  height: 100%;
+  background-color: #ededed;
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
+  transition: width 0.3s;
+  z-index: 9001;
+}
 
+.sidebarExpanded {
+  width: 80%;
+}
 
-  }
-  
-  .sidebarContent {
-    padding: 10px;
-    transition: all 0.3s ease;
-  }
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Ensures proper spacing between elements */
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  background-color: #ededed;
+  border-bottom: 1px solid #ddd;
+  z-index: 1;
+}
+
+.sidebarToggleIcon {
+  font-size: 16px;
+  cursor: pointer;
+  padding: 10px;
+  background-color: #ffffffb0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebarToggleIcon:hover {
+  background-color: #e0e0e0;
+}
+
+.centerContainer {
+  display: flex;
+  align-items: center; /* Vertically align items */
+  justify-content: flex-start; /* Align items to the start, no even spacing */
+  gap: 8px; /* Add a small consistent space between elements */
+}
+
+.keywordInputContainer {
+  flex: 1; /* Allow the input container to grow */
+  display: flex;
+  align-items: center; /* Ensure the input and icon are aligned */
+}
+
+.keywordInputContainer input {
+  flex-grow: 1; /* Input takes the remaining space */
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 200px; /* Set a fixed width or adjust as needed */
+}
+
+.selectCountryContainer {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top:unset!important;
+}
+
+.fa-paper-plane {
+  margin-left: 8px;
+  cursor: pointer;
+  color: #0070f3;
+}
+
+.fa-paper-plane:hover {
+  color: #005bb5;
+}
+
+.keywordInputContainer i {
+  margin-left: 8px;
+  cursor: pointer;
+  color: #0070f3;
+}
+
+.keywordInputContainer i:hover {
+  color: #005bb5;
+}
+
+.sidebarHeader select {
+  margin-top: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.closeIcon {
+  font-size: 16px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+  background-color: #ffffffb0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeIcon:hover {
+  background-color: #e0e0e0;
+}
+
+.sidebarContent {
+  padding: 10px;
+  transition: all 0.3s ease;
+}
+
   
   /* Keyword Input */
   .keywordInputContainer {

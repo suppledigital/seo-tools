@@ -50,53 +50,65 @@ const Sidebar = ({
       ref={sidebarRef}
       className={`${styles.sidebar} ${sidebarExpanded ? styles.sidebarExpanded : ''}`}
     >
-      <i
-        className={`fas ${sidebarExpanded ? 'fa-arrow-right' : 'fa-arrow-left'} ${
-          styles.sidebarToggleIcon
-        }`}
-        onClick={() => setSidebarExpanded(!sidebarExpanded)}
-      ></i>
+     
       <div className={styles.sidebarHeader}>
-        {/* Keyword Input and Controls */}
-        <div className={styles.keywordInputContainer}>
-          <input
-            type="text"
-            value={keywordInput}
-            onChange={(e) => setKeywordInput(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleKeywordSearch();
+        {/* Expand Icon (Left) */}
+        <i
+          className={`fas ${sidebarExpanded ? 'fa-arrow-right' : 'fa-arrow-left'} ${
+            styles.sidebarToggleIcon
+          }`}
+          onClick={() => setSidebarExpanded(!sidebarExpanded)}
+        ></i>
+
+        {/* Centered Search Bar with Country Selector */}
+        <div className={styles.centerContainer}>
+          <div className={styles.keywordInputContainer}>
+            <input
+              type="text"
+              value={keywordInput}
+              onChange={(e) => setKeywordInput(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleKeywordSearch();
+                }
+              }}
+              placeholder="Enter keyword"
+            />
+           
+          </div>
+          <select className={styles.selectCountryContainer}
+            value={selectedCountry}
+            onChange={(e) => {
+              setSelectedCountry(e.target.value);
+              setLoadingAnalyzeKeyword(true);
+              setLoadingSerpResults(true);
+              setLoadingSemrushData(true);
+              if (sidebarType === 'keyword') {
+                fetchKeywordAnalysis(selectedKeyword, e.target.value);
+                fetchSerpResults(selectedKeyword, e.target.value);
+                fetchSemrushData(selectedKeyword, e.target.value);
+              } else if (sidebarType === 'smartAnalysis') {
+                handleSmartAnalysis(null, selectedKeyword, currentEntryId);
               }
             }}
-            placeholder="Enter keyword"
-          />
+          >
+            <option value="AU">Australia</option>
+            <option value="US">United States</option>
+            <option value="UK">United Kingdom</option>
+            <option value="NZ">New Zealand</option>
+          </select>
           <i className="fas fa-paper-plane" onClick={handleKeywordSearch}></i>
         </div>
-        <br />
-        <select
-          value={selectedCountry}
-          onChange={(e) => {
-            setSelectedCountry(e.target.value);
-            // Re-fetch data with the new country
-            setLoadingAnalyzeKeyword(true);
-            setLoadingSerpResults(true);
-            setLoadingSemrushData(true);
-            if (sidebarType === 'keyword') {
-              fetchKeywordAnalysis(selectedKeyword, e.target.value);
-              fetchSerpResults(selectedKeyword, e.target.value);
-              fetchSemrushData(selectedKeyword, e.target.value);
-            } else if (sidebarType === 'smartAnalysis') {
-              handleSmartAnalysis(null, selectedKeyword, currentEntryId);
-            }
-          }}
-        >
-          <option value="AU">Australia</option>
-          <option value="US">United States</option>
-          <option value="UK">United Kingdom</option>
-          <option value="NZ">New Zealand</option>
-          {/* Add more countries as needed */}
-        </select>
+
+        {/* Close Icon (Right) */}
+        <i
+          className={`fas ${sidebarExpanded ? 'fa-close' : 'fa-close'} ${
+            styles.closeIcon
+          }`}
+          onClick={() => setSidebarExpanded(false)}
+        ></i>
       </div>
+
       <div className={styles.sidebarContent}>
         {sidebarType === 'keyword' && sidebarContent && (
            <KeywordAnalysis
