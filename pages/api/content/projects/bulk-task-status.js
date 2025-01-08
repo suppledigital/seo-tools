@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   try {
     const placeholders = taskIds.map(() => '?').join(',');
     const query = `
-      SELECT task_id, status, result, error, updated_at
+      SELECT task_id, status, result, error, updated_at, task_type
       FROM tasks
       WHERE task_id IN (${placeholders})
     `;
@@ -29,6 +29,7 @@ export default async function handler(req, res) {
         result: row.result,
         error: row.error,
         updated_at: row.updated_at,
+        task_type: row.task_type
       };
     }
 

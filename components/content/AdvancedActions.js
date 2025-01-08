@@ -229,6 +229,18 @@ export default function AdvancedActions({
     }
   };
 
+  const handleRemoveCriteria = (index) => {
+    // If there is only one row left, reset it instead of removing
+    if (selectionCriteriaList.length === 1) {
+      setSelectionCriteriaList([
+        { logicalOperator: null, criteria: '', criteriaOperator: '', value: '' },
+      ]);
+    } else {
+      setSelectionCriteriaList((prevList) => prevList.filter((_, i) => i !== index));
+    }
+  };
+  
+
   const handleApplyBulkAction = async () => {
     let actionValue = null;
 
@@ -330,6 +342,8 @@ export default function AdvancedActions({
     setManualMode(false);
   };
 
+
+
   return (
     <div className={styles.advancedActions}>
       <div className={styles.header}>
@@ -342,12 +356,29 @@ export default function AdvancedActions({
         <div className={styles.actionsContainer}>
           <div className={styles.selectionActions}>
             {selectionCriteriaList.map((criteriaObj, index) => (
+
+              
               <div key={index} className={styles.individualSelectContainer}>
+
+                 {/* This is the new minus icon or button */}
+                 {index > 0 && (
+                  <div
+                    className={styles.removeIcon}
+                    onClick={() => handleRemoveCriteria(index)}
+                    title="Remove this condition"
+                  >
+                    <span className={styles.negativeColor}><i className="fas fa-minus-circle" /></span>
+                  </div>
+                )}
+
+
                 {index > 0 && (
                   <span className={styles.logicalOperatorLabel}>
                     {criteriaObj.logicalOperator}
                   </span>
                 )}
+
+                
 
                 <select
                   value={criteriaObj.criteria}

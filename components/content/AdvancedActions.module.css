@@ -7,7 +7,9 @@
     font-size: 14px;
     background-color: #f9f9f9;
   }
-  
+  .negativeColor{
+    color:red;
+  }
   .header {
     display: flex;
         align-items: flex-start;
@@ -23,7 +25,7 @@
     border-radius: 5px;
     cursor: pointer;
   }
-  
+
   .expandButton:hover {
     background-color: #005bb5;
   }

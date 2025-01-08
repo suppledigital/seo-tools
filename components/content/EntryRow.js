@@ -89,36 +89,78 @@ export default function EntryRow({
           onClick={() => handleUrlLookup(entry.url)}
         ></i>
         <br />
-        {entry.page_type ? (
-          <span
-            className={`${styles.badge} ${styles.pageTypeBadge} ${styles.badgeSet}`}
-            onClick={() => handleBadgeClick(entry.entry_id, 'page_type', entry.page_type)}
+        {entry.editingField === 'page_type' ? (
+          // If user clicked to edit page_type, show a SELECT
+          <select
+            autoFocus
+            value={entry.page_type || ''}
+            onChange={(e) => handleBadgeChange(entry.entry_id, 'page_type', e.target.value)}
+            onBlur={(e) => handleBadgeChange(entry.entry_id, 'page_type', e.target.value)}
           >
-            {entry.page_type} <i className="fas fa-caret-down"></i>
-          </span>
+            <option value="">Select Page Type</option>
+            <option value="Home Page">Home Page</option>
+
+            <option value="Service Page">Service Page</option>
+            <option value="Location Page">Location Page</option>
+
+            <option value="Product Page">Product Page</option>
+            <option value="Product Category Page">Category Page</option>
+            <option value="Blog Post">Blog Post</option>
+            {/* Add more as needed */}
+          </select>
         ) : (
-          <span
-            className={`${styles.badge} ${styles.pageTypeBadge} ${styles.badgeNotSet}`}
-            onClick={() => handleBadgeClick(entry.entry_id, 'page_type', entry.page_type)}
-          >
-            Select Page Type <i className="fas fa-caret-down"></i>
-          </span>
+          // Else, show the clickable badge
+          <>
+            {entry.page_type ? (
+              <span
+                className={`${styles.badge} ${styles.pageTypeBadge} ${styles.badgeSet}`}
+                onClick={() => handleBadgeClick(entry.entry_id, 'page_type', entry.page_type)}
+              >
+                {entry.page_type} <i className="fas fa-caret-down"></i>
+              </span>
+            ) : (
+              <span
+                className={`${styles.badge} ${styles.pageTypeBadge} ${styles.badgeNotSet}`}
+                onClick={() => handleBadgeClick(entry.entry_id, 'page_type', entry.page_type)}
+              >
+                Select Page Type <i className="fas fa-caret-down"></i>
+              </span>
+            )}
+          </>
         )}
-        {entry.content_type ? (
-          <span
-            className={`${styles.badge} ${styles.contentTypeBadge} ${styles.badgeSet}`}
-            onClick={() => handleBadgeClick(entry.entry_id, 'content_type', entry.content_type)}
+
+        {entry.editingField === 'content_type' ? (
+          <select
+            autoFocus
+            value={entry.content_type || ''}
+            onChange={(e) => handleBadgeChange(entry.entry_id, 'content_type', e.target.value)}
+            onBlur={(e) => handleBadgeChange(entry.entry_id, 'content_type', e.target.value)}
           >
-            {entry.content_type} <i className="fas fa-caret-down"></i>
-          </span>
+            <option value="">Select Content Type</option>
+            <option value="New Content">New Content</option>
+            <option value="Rewrite Content">Rewrite Content</option>
+            <option value="Additional Content">Additional Content</option>
+          </select>
         ) : (
-          <span
-            className={`${styles.badge} ${styles.contentTypeBadge} ${styles.badgeNotSet}`}
-            onClick={() => handleBadgeClick(entry.entry_id, 'content_type', entry.content_type)}
-          >
-            Select Content Type <i className="fas fa-caret-down"></i>
-          </span>
+          <>
+            {entry.content_type ? (
+              <span
+                className={`${styles.badge} ${styles.contentTypeBadge} ${styles.badgeSet}`}
+                onClick={() => handleBadgeClick(entry.entry_id, 'content_type', entry.content_type)}
+              >
+                {entry.content_type} <i className="fas fa-caret-down"></i>
+              </span>
+            ) : (
+              <span
+                className={`${styles.badge} ${styles.contentTypeBadge} ${styles.badgeNotSet}`}
+                onClick={() => handleBadgeClick(entry.entry_id, 'content_type', entry.content_type)}
+              >
+                Select Content Type <i className="fas fa-caret-down"></i>
+              </span>
+            )}
+          </>
         )}
+
       </td>
 
       {/* Keywords */}
@@ -271,7 +313,7 @@ export default function EntryRow({
               ></i>
               <i
                 className={`fas fa-redo ${styles.contentActionIcon} ${styles.redoActionIcon}`}
-                title="Re-humanize"
+                title="Re-humanise"
                 onClick={() => handleHumanizeContent(entry.entry_id)}
               ></i>
               <i
@@ -301,20 +343,20 @@ export default function EntryRow({
         {entry.task_id_humanise && entry.task_status_humanise === 'Queued' && (
           <div>
             <CircularProgress size={20} className={styles.spinner} />
-            <span>Queued (Humanizing)...</span>
+            <span>Queued (Humanising)...</span>
           </div>
         )}
         {entry.task_id_humanise && entry.task_status_humanise === 'Processing' && (
           <div className={styles.loadingContainer}>
             <CircularProgress size={20} className={styles.spinner} />
-            <span>Humanizing...</span>
+            <span>Humanising...</span>
           </div>
         )}
         {entry.task_id_humanise && entry.task_status_humanise === 'Failed' && (
           <div>
             <span style={{ color: 'red' }}>Failed: {entry.error_message}</span>
             <button onClick={() => handleHumanizeContent(entry.entry_id)}>
-              Re-humanize
+              Re-humanise
             </button>
           </div>
         )}
@@ -331,7 +373,7 @@ export default function EntryRow({
                 ></i>
                 <i
                   className={`fas fa-redo ${styles.contentActionIcon} ${styles.redoActionIcon}`}
-                  title="Re-humanize"
+                  title="Re-humanise"
                   onClick={() => handleHumanizeContent(entry.entry_id)}
                 ></i>
                 <i
@@ -392,8 +434,8 @@ export default function EntryRow({
           {entry.task_id_humanise &&
           (entry.task_status_humanise === 'Queued' ||
            entry.task_status_humanise === 'Processing')
-            ? 'Humanizing...'
-            : 'Humanize'}
+            ? 'Humanising...'
+            : 'Humanise'}
         </button>
 
       
@@ -421,7 +463,7 @@ export default function EntryRow({
           </Tooltip>
         )}
         {entry.last_task_humanise_failed && (
-          <Tooltip title="Last Humanize task failed. Please try again.">
+          <Tooltip title="Last Humanise task failed. Please try again.">
             <span className={styles.errorMessage}>
               <FontAwesomeIcon icon={faExclamationCircle} style={{ color: 'red', marginLeft: '8px' }} />
             </span>

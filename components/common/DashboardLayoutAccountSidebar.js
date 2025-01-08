@@ -48,8 +48,9 @@ const NAVIGATION = [
     icon: <ArticleIcon />,
     children: [
       { segment: 'generate', title: 'Content Generator', icon: <ArticleIcon /> },
+      { segment: 'editor', title: 'Content Editor', icon: <ArticleIcon /> },
       { segment: 'train', title: 'Content Training', icon: <ArticleIcon /> },
-      { segment: 'mining', title: 'Content Mining', icon: <ArticleIcon /> },
+      //{ segment: 'mining', title: 'Content Mining', icon: <ArticleIcon /> },
 
     ],
   },

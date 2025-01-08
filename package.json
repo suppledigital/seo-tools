@@ -18,11 +18,17 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@google-cloud/bigquery": "^7.9.1",
     "@handsontable/react": "^14.6.0",
+    "@hocuspocus/provider": "^2.15.0",
     "@mui/icons-material": "^6.1.10",
     "@mui/material": "^6.1.10",
     "@mui/x-data-grid": "^7.22.3",
     "@mui/x-date-pickers": "^7.23.3",
     "@mui/x-date-pickers-pro": "^7.23.3",
+    "@tiptap/extension-collaboration": "^2.11.0",
+    "@tiptap/extension-collaboration-cursor": "^2.11.0",
+    "@tiptap/extension-floating-menu": "^2.11.0",
+    "@tiptap/react": "^2.11.0",
+    "@tiptap/starter-kit": "^2.11.0",
     "@toolpad/core": "^0.10.0",
     "@upsetjs/react": "^1.11.0",
     "archiver": "^7.0.1",
@@ -90,9 +96,11 @@
     "uuid": "^11.0.3",
     "venn.js": "^0.2.10",
     "vertical-timeline-component-react": "^4.4.3",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "y-websocket": "^2.1.0",
+    "yjs": "^13.6.21"
   },
-  "devDependencies": {  
+  "devDependencies": {
     "typescript": "5.7.2"
   }
 }

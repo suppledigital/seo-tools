@@ -122,9 +122,12 @@ const permissionLevel = session?.user?.permissions_level || 'user';
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-// Add these state variables
-const [isExporting, setIsExporting] = useState(false);
-const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
+  // Add these state variables
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
+
+  const [searchTerm, setSearchTerm] = useState('');
+
 
 
 
@@ -351,6 +354,27 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
       setIsExporting(false);  // Hide the modal
     }
   };
+
+  const filteredEntries = entries.filter((entry) => {
+    // Convert both fields & searchTerm to lower case so search is case-insensitive
+    const lowerCaseTerm = searchTerm.toLowerCase();
+
+    // You decide which fields to match below:
+    const urlMatch = entry.url?.toLowerCase().includes(lowerCaseTerm);
+    const primaryKeywordMatch = entry.primary_keyword?.toLowerCase().includes(lowerCaseTerm);
+    const secondaryKeywordMatch = entry.secondary_keyword?.toLowerCase().includes(lowerCaseTerm);
+    const generatedContentMatch = entry.generated_content?.toLowerCase().includes(lowerCaseTerm);
+    const humanizedContentMatch = entry.humanized_content?.toLowerCase().includes(lowerCaseTerm);
+
+    // Return true if ANY of these fields contain the searchTerm
+    return (
+      urlMatch ||
+      primaryKeywordMatch ||
+      secondaryKeywordMatch ||
+      generatedContentMatch ||
+      humanizedContentMatch
+    );
+  });
   
   
  /* const handleHumanizeContent = async (entry) => {
@@ -400,23 +424,23 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
       });
   
       if (response.data.success) {
-        toast.success('Content humanization started.');
+        toast.success('Content humanisation started.');
   
         const newTaskId = response.data.task_id;
   
         setEntries((prevEntries) =>
           prevEntries.map((e) =>
             e.entry_id === entryId
-              ? { ...e, task_id_humanise: newTaskId, task_status: 'Queued' }
+              ? { ...e, task_id_humanise: newTaskId, task_status_humanise: 'Queued' }
               : e
           )
         );
       } else {
-        toast.error('Failed to start content humanization.');
+        toast.error('Failed to start content humanisation.');
       }
     } catch (error) {
-      console.error('Error starting content humanization:', error);
-      toast.error('Error starting content humanization.');
+      console.error('Error starting content humanisation:', error);
+      toast.error('Error starting content humanisation.');
     }
   };
   
@@ -712,8 +736,8 @@ const [exportedDocumentUrl, setExportedDocumentUrl] = useState('');
   const handleViewContent = (entry) => {
     setModalContent(entry.generated_content || 'No generated content available.');
     console.log(entry.generated_content);
-    setModalHumanizedContent(entry.humanized_content || 'No humanized content available.');
-    console.log(entry.humanized_content);
+    setModalHumanizedContent(entry.humanized_content || 'No humanised content available.');
+    console.log(entry.humanised_content);
     setIsModalOpen(true);
   };
   
@@ -1331,7 +1355,7 @@ const handleGenerateContent = async (entryId, isBulk = false, force = false) => 
       setEntries((prevEntries) =>
         prevEntries.map((e) =>
           e.entry_id === entryId
-            ? { ...e, task_id_generate: newTaskId, task_status: 'Queued' }
+            ? { ...e, task_id_generate: newTaskId, task_status_generate: 'Queued' }
             : e
         )
       );
@@ -1867,10 +1891,22 @@ const renderAdditionalInfoBlocks = (entry) => {
             setSelectedEntries={setSelectedEntries}
             applyBulkAction={applyBulkAction}
           />
+
+          <div>
+            <TextField
+              label="Search URLs"
+              variant="outlined"
+              size="small"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ marginBottom: '1rem' }}
+            />
+          </div>
+
           
 
           <EntriesTable
-            entries={entries}
+            entries={filteredEntries}
             handlers={handlers}
             loadingEntries={loadingEntries}
             classificationLoading={classificationLoading}
