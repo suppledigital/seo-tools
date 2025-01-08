@@ -1,5 +1,4 @@
 // pages/content/editor/[projectId].js
-
 import { useSession, signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
@@ -36,7 +35,6 @@ function ProjectCollabEditor() {
   const [doc, setDoc] = useState(null)
   const [provider, setProvider] = useState(null)
 
-  // 1) Fetch project + pages from your Next.js API
   useEffect(() => {
     if (status === 'authenticated' && projectId) {
       axios
@@ -49,7 +47,6 @@ function ProjectCollabEditor() {
     }
   }, [status, projectId])
 
-  // 2) Each time the user selects a different page, create a new doc + provider
   useEffect(() => {
     if (!projectId || !pages.length) return
 
@@ -59,7 +56,7 @@ function ProjectCollabEditor() {
     const roomName = `project-${projectId}-page-${currentPage.entry_id}`
     const newDoc = new Y.Doc()
     const newProvider = new HocuspocusProvider({
-      url: 'ws://localhost:1234',  // your Hocuspocus server
+      url: 'ws://localhost:1234',
       name: roomName,
       document: newDoc,
     })
@@ -97,10 +94,10 @@ function ProjectCollabEditor() {
   }
 
   const currentPage = pages[selectedPageIndex] || {}
-  // 3) fallbackHtml: if edited_content is empty, fallback to humanized_content
   const fallbackHtml = currentPage.edited_content?.trim()
     ? currentPage.edited_content
     : currentPage.humanized_content || ''
+
   const handleAddPage = () => {
     const nextId = pages.length ? pages.length + 1 : 1
     const newPage = {
@@ -115,16 +112,7 @@ function ProjectCollabEditor() {
 
   return (
     <Box display="flex" height="100vh">
-      {/* Left Sidebar */}
-      <Box
-        sx={{
-          width: 260,
-          borderRight: '1px solid #ddd',
-          flexShrink: 0,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+      <Box sx={{ width: 260, borderRight: '1px solid #ddd', display: 'flex', flexDirection: 'column' }}>
         <AppBar position="static" color="default" sx={{ p: 1 }}>
           <Box display="flex" alignItems="center">
             <IconButton onClick={() => router.push('/content/editor')}>
@@ -144,25 +132,20 @@ function ProjectCollabEditor() {
                   selected={index === selectedPageIndex}
                   onClick={() => setSelectedPageIndex(index)}
                 >
-                  <Typography variant="body1">{pg.title || `Page ${index + 1}`}</Typography>
+                  <Typography variant="body1">
+                    {pg.title || `Page ${index + 1}`}
+                  </Typography>
                 </ListItemButton>
               </ListItem>
             ))}
           </List>
         </Box>
         <Divider />
-        <Button
-          startIcon={<AddIcon />}
-          onClick={handleAddPage}
-          color="primary"
-          variant="outlined"
-          sx={{ m: 1 }}
-        >
+        <Button startIcon={<AddIcon />} onClick={handleAddPage} color="primary" variant="outlined" sx={{ m: 1 }}>
           Add Page
         </Button>
       </Box>
 
-      {/* Right side: The collaborative editor for the *selected* page */}
       <Box flexGrow={1} display="flex" flexDirection="column">
         <Box sx={{ p: 2 }}>
           <Typography variant="h6">Editing: {currentPage.title}</Typography>
@@ -185,5 +168,4 @@ function ProjectCollabEditor() {
   )
 }
 
-// 4) Disable SSR for Tiptap
 export default dynamic(() => Promise.resolve(ProjectCollabEditor), { ssr: false })

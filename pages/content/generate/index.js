@@ -258,12 +258,20 @@ export default function ContentHome() {
                       {project.project_name}
                     </Typography>
                     <Box display="flex" alignItems="center" mt={1}>
-                      <Chip
-                        size="small"
-                        avatar={<Avatar>{getInitials(project.name)}</Avatar>}
-                        label={project.name || project.user_email}
-                      />
-                    </Box>
+                    <Chip
+                      size="small"
+                      avatar={
+                        <Avatar
+                          src={session?.user?.image || ''}
+                          alt={session?.user?.name || 'User Avatar'}
+                        >
+                          {!session?.user?.image &&
+                            getInitials(session?.user?.name || '')}
+                        </Avatar>
+                      }
+                      label={session?.user?.name || 'Unknown user'}
+                    />
+                  </Box>
                   </CardContent>
                   <CardActions>
                     <Button
@@ -296,12 +304,21 @@ export default function ContentHome() {
                     <Typography variant="body1" sx={{ ml: 2, fontWeight: 500 }}>
                       <Link underline="hover" onClick={() => handleProjectClick(project.project_id)}>{project.project_name}</Link>
                     </Typography>
-                    <Chip
+                   
+                    <Chip color=""
                       size="small"
-                      avatar={<Avatar>{getInitials(project.name)}</Avatar>}
-                      label={project.name || project.user_email}
-                      sx={{ ml: 2 }}
+                      avatar={
+                        <Avatar
+                          src={session?.user?.image || ''}
+                          alt={session?.user?.name || 'User Avatar'}
+                        >
+                          {!session?.user?.image &&
+                            getInitials(session?.user?.name || '')}
+                        </Avatar>
+                      }
+                      label={session?.user?.name || 'Unknown user'}
                     />
+                 
                   </Box>
                   <Box>
                     <Button

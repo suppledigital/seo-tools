@@ -1,5 +1,3 @@
-// components/CollaborationEditor.jsx
-
 import React from 'react'
 import { Box } from '@mui/material'
 import { useEditor, EditorContent } from '@tiptap/react'
@@ -8,9 +6,9 @@ import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 
 export default function CollaborationEditor({ doc, provider, userName, fallbackHtml }) {
-  // 1) We define Tiptap in one step:
-  //    content: fallbackHtml
-  console.log(fallbackHtml);
+  console.log('fallbackHtml in CollaborationEditor:', fallbackHtml)
+
+  // We define Tiptap in one step: fallback content + Collaboration
   const editor = useEditor({
     content: fallbackHtml || '',
     extensions: [
@@ -27,9 +25,7 @@ export default function CollaborationEditor({ doc, provider, userName, fallbackH
     autofocus: true,
   })
 
-  if (!editor) {
-    return <div>Loading Editor...</div>
-  }
+  if (!editor) return <div>Loading Editor...</div>
 
   return (
     <Box flexGrow={1} overflow="auto">
