@@ -1,7 +1,7 @@
 // pages/api/content/editor/projects/[projectId]/index.js
 
 import { getSession } from 'next-auth/react'
-import pool from '../../../../../lib/db' // adjust if needed
+import pool from '../../../../../../lib/db' // adjust if needed
 
 export default async function handler(req, res) {
   const session = await getSession({ req })
