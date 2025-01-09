@@ -56,7 +56,7 @@ function ProjectCollabEditor() {
 
     const newDoc = new Y.Doc()
     const newProvider = new HocuspocusProvider({
-      url: 'ws://localhost:1234',
+      url: 'ws://3.27.66.97:1234',
       name: roomName,
       document: newDoc,
       onConnect: () => {
