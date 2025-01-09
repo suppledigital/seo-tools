@@ -123,4 +123,40 @@
     border-radius: 3px;
     font-size: 0.85rem;
   }
+/* The caret line itself */
+.collaboration-cursor__caret {
+    position: relative;
+    width: 2px;                   /* thickness of caret */
+    background-color: gray; /* or use the user’s color dynamically */
+    z-index: 50;                  /* stay above text */
+  }
   
+  /* The user’s name label above the caret */
+  .collaboration-cursor__label {
+    position: absolute;
+    bottom: 100%;                /* or top: -1.6em; either way is fine */
+    left: -0.5em;
+    transform: translateX(-50%); /* center the label if you prefer */
+    background-color: gray;
+    color: #fff;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    z-index: 999;
+  }
+  
+  /* Optionally tweak the label’s arrow or spacing */
+  .collaboration-cursor__label::after {
+    content: '';
+    position: absolute;
+    top: 100%;        /* if you placed label above the caret */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--red);
+  }

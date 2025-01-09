@@ -1,9 +1,9 @@
-// CollaborationEditor.jsx
 import React, { useEffect, useState } from 'react'
 import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import axios from 'axios'
 
-// Tiptap extensions
+/** Tiptap Extensions (some omitted for brevity) */
 import History from '@tiptap/extension-history'
 import Focus from '@tiptap/extension-focus'
 import Typography from '@tiptap/extension-typography'
@@ -26,7 +26,7 @@ import TableHeader from '@tiptap/extension-table-header'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 
-// Example Material UI icons
+/** Example Material UI icons */
 import FormatBoldIcon from '@mui/icons-material/FormatBold'
 import FormatItalicIcon from '@mui/icons-material/FormatItalic'
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined'
@@ -47,23 +47,27 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import styles from './CollaborationEditor.module.css'
 
 export default function CollaborationEditor({
+  /** Single-page info: */
+  projectId,
+  entryId, // the current page's ID
+  fallbackHtml,
+  
+  /** If you want "Save All," you might need parent's data. For simplicity we do example calls here. */
+  
+  /** Y.js Collab */
   doc,
   provider,
   userName,
-  fallbackHtml,
-  onSave,
-  onSaveAll,
 }) {
   const [users, setUsers] = useState([])
+  const [savingOne, setSavingOne] = useState(false)
+  const [savingAll, setSavingAll] = useState(false)
 
-  // Create Tiptap editor
   const editor = useEditor({
     content: fallbackHtml || '',
     extensions: [
-      // Base
       StarterKit.configure({ history: false }),
       History.configure({ depth: 100 }),
-      // Collaboration
       Collaboration.configure({ document: provider?.document, field: 'root' }),
       CollaborationCursor.configure({
         provider,
@@ -72,7 +76,6 @@ export default function CollaborationEditor({
           color: '#' + Math.floor(Math.random() * 16777215).toString(16),
         },
       }),
-      // Additional
       Focus.configure({ className: 'has-focus', mode: 'deepest' }),
       Typography,
       CharacterCount.configure(),
@@ -87,7 +90,6 @@ export default function CollaborationEditor({
       Link.configure({ openOnClick: true }),
       Strike,
       Underline,
-      // Table
       Table.configure({ resizable: true }),
       TableRow,
       TableCell,
@@ -96,22 +98,82 @@ export default function CollaborationEditor({
     autofocus: true,
   })
 
-  // Listen for presence updates
+  /** Presence updates for other collab users */
   useEffect(() => {
     if (!provider) return
-    const awareness = provider.awareness
+    const aw = provider.awareness
     const handleChange = () => {
-      const states = Array.from(awareness.getStates().values())
+      const states = Array.from(aw.getStates().values())
       setUsers(states.map(s => s.user).filter(Boolean))
     }
-    awareness.on('change', handleChange)
+    aw.on('change', handleChange)
     handleChange()
-    return () => awareness.off('change', handleChange)
+    return () => aw.off('change', handleChange)
   }, [provider])
 
   if (!editor) return <div>Loading Editor…</div>
 
-  // Simple bubble menu for on-selection text
+  /** Single page Save (PUT /api/content/editor/projects/[projectId]/page/[entryId]) */
+  async function handleSaveSingle() {
+    if (!projectId || !entryId) return alert('No project/page ID specified!')
+    setSavingOne(true)
+    try {
+      // Gather updated content from Tiptap
+      const content = editor.getHTML()
+
+      await axios.put(
+        `/api/content/editor/projects/${projectId}/page/${entryId}`,
+        {
+          content, // The new HTML
+          url: '', // Or pass real fields if you have them
+          meta_title: '',
+          meta_description: '',
+          page_type: '',
+          content_type: '',
+        },
+      )
+      alert('Page saved successfully!')
+    } catch (err) {
+      console.error('Error saving single page:', err)
+      alert('Error saving page.')
+    } finally {
+      setSavingOne(false)
+    }
+  }
+
+  /** Save All Pages (PUT /api/content/editor/projects/[projectId]) */
+  async function handleSaveAll() {
+    // Typically you'd gather all pages data from parent or context
+    // For demonstration, we create a single array item. If you have multiple, pass them all
+    setSavingAll(true)
+    try {
+      const content = editor.getHTML()
+      const pagesToSave = [
+        {
+          entry_id: entryId,
+          content,
+          url: '',
+          meta_title: '',
+          meta_description: '',
+          page_type: '',
+          content_type: '',
+        },
+        // or more pages ...
+      ]
+
+      await axios.put(`/api/content/editor/projects/${projectId}`, {
+        pages: pagesToSave,
+      })
+      alert('All pages saved successfully!')
+    } catch (err) {
+      console.error('Error saving all pages:', err)
+      alert('Error saving all pages.')
+    } finally {
+      setSavingAll(false)
+    }
+  }
+
+  /** Bubble menu for text selection (bold/italic/underline) */
   const bubbleMenu = (
     <BubbleMenu editor={editor} className={styles.bubbleMenu}>
       <button
@@ -135,16 +197,17 @@ export default function CollaborationEditor({
     </BubbleMenu>
   )
 
-  // Top toolbar: headings, formatting, etc.
+  /** The top toolbar for headings, formatting, etc. */
   const topToolbar = (
     <div className={styles.topToolbar}>
-      {/* Heading dropdown */}
+
+      {/* Example: heading dropdown or simple H1/H2 buttons */}
       <div className={styles.headingDropdown}>
         <button className={styles.dropdownButton}>
           Headings <ArrowDropDownIcon />
         </button>
         <div className={styles.dropdownContent}>
-          {[1, 2, 3, 4, 5, 6].map(lvl => (
+          {[1, 2, 3, 4, 5, 6].map((lvl) => (
             <button
               key={lvl}
               onClick={() => editor.chain().focus().toggleHeading({ level: lvl }).run()}
@@ -224,30 +287,24 @@ export default function CollaborationEditor({
       </button>
 
       {/* Undo/Redo */}
-      <button
-        onClick={() => editor.chain().focus().undo().run()}
-        disabled={!editor.can().undo()}
-      >
+      <button onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>
         <UndoIcon />
       </button>
-      <button
-        onClick={() => editor.chain().focus().redo().run()}
-        disabled={!editor.can().redo()}
-      >
+      <button onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}>
         <RedoIcon />
       </button>
 
-      {/* Save / Save All - placeholders for your logic */}
-      <button onClick={onSave}>
-        <SaveIcon /> Save
+      {/* Save Single / Save All */}
+      <button onClick={handleSaveSingle} disabled={savingOne}>
+        {savingOne ? 'Saving...' : <><SaveIcon /> Save</>}
       </button>
-      <button onClick={onSaveAll}>
-        <SaveAsIcon /> Save All
+      <button onClick={handleSaveAll} disabled={savingAll}>
+        {savingAll ? 'Saving...' : <><SaveAsIcon /> Save All</>}
       </button>
     </div>
   )
 
-  // Character & word counts
+  // Show character/word counts
   const chars = editor.storage.characterCount.characters()
   const words = editor.storage.characterCount.words()
 
@@ -261,11 +318,9 @@ export default function CollaborationEditor({
       </div>
 
       <div className={styles.bottomPanel}>
+        <div>{chars} chars • {words} words</div>
         <div>
-          {chars} chars • {words} words
-        </div>
-        <div>
-          {users.length} user(s)
+          {users.length} user(s){' '}
           {users.map((u, i) => (
             <span className={styles.userChip} key={i}>{u.name}</span>
           ))}
