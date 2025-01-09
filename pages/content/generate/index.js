@@ -302,7 +302,7 @@ export default function ContentHome() {
                 <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
                   <Box display="flex" alignItems="center">
                     <Typography variant="body1" sx={{ ml: 2, fontWeight: 500 }}>
-                      <Link underline="hover" onClick={() => handleProjectClick(project.project_id)}>{project.project_name}</Link>
+                      <Link underline="hover" onClick={() => handleProjectClick(project.project_id)} sx={{ cursor: 'pointer' }}>{project.project_name}</Link>
                     </Typography>
                    
                     <Chip color=""

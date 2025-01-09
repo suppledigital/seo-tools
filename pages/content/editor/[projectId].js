@@ -1,27 +1,24 @@
 // pages/content/editor/[projectId].js
+import dynamic from 'next/dynamic'
 import { useSession, signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
 import {
-  Box,
-  Button,
-  CircularProgress,
-  Typography,
-  List,
-  ListItem,
-  ListItemButton,
-  Divider,
-  IconButton,
-  AppBar,
-  Toolbar,
+  Box, Button, CircularProgress, Typography, List, ListItem,
+  ListItemButton, Divider, IconButton, AppBar, Toolbar
 } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import AddIcon from '@mui/icons-material/Add'
 import * as Y from 'yjs'
 import { HocuspocusProvider } from '@hocuspocus/provider'
-import CollaborationEditor from '../../../components/CollaborationEditor'
+import styles from './[projectId].module.css';
+
+// Lazy-load your CollaborationEditor
+const CollaborationEditor = dynamic(
+  () => import('../../../components/CollaborationEditor'),
+  { ssr: false },
+)
 
 function ProjectCollabEditor() {
   const { data: session, status } = useSession()
@@ -31,10 +28,10 @@ function ProjectCollabEditor() {
   const [project, setProject] = useState(null)
   const [pages, setPages] = useState([])
   const [selectedPageIndex, setSelectedPageIndex] = useState(0)
-
   const [doc, setDoc] = useState(null)
   const [provider, setProvider] = useState(null)
 
+  // 1) Fetch project + pages from your Next.js API
   useEffect(() => {
     if (status === 'authenticated' && projectId) {
       axios
@@ -43,10 +40,11 @@ function ProjectCollabEditor() {
           setProject(res.data.project)
           setPages(res.data.project.pages || [])
         })
-        .catch((err) => console.error('Error fetching project details:', err))
+        .catch(err => console.error('Error fetching project details:', err))
     }
   }, [status, projectId])
 
+  // 2) On page selection, create doc + provider
   useEffect(() => {
     if (!projectId || !pages.length) return
 
@@ -54,11 +52,16 @@ function ProjectCollabEditor() {
     if (!currentPage) return
 
     const roomName = `project-${projectId}-page-${currentPage.entry_id}`
+    console.log('[client] Creating doc =>', roomName)
+
     const newDoc = new Y.Doc()
     const newProvider = new HocuspocusProvider({
       url: 'ws://localhost:1234',
       name: roomName,
       document: newDoc,
+      onConnect: () => {
+        console.log('[client] Hocuspocus connected =>', roomName)
+      },
     })
 
     setDoc(newDoc)
@@ -70,6 +73,7 @@ function ProjectCollabEditor() {
     }
   }, [projectId, pages, selectedPageIndex])
 
+  // loading states
   if (status === 'loading') {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -93,10 +97,9 @@ function ProjectCollabEditor() {
     )
   }
 
+  // 3) fallback if doc is empty
   const currentPage = pages[selectedPageIndex] || {}
-  const fallbackHtml = currentPage.edited_content?.trim()
-    ? currentPage.edited_content
-    : currentPage.humanized_content || ''
+  const fallbackHtml = currentPage.edited_content?.trim() || currentPage.humanized_content || ''
 
   const handleAddPage = () => {
     const nextId = pages.length ? pages.length + 1 : 1
@@ -111,8 +114,9 @@ function ProjectCollabEditor() {
   }
 
   return (
-    <Box display="flex" height="100vh">
-      <Box sx={{ width: 260, borderRight: '1px solid #ddd', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ height: '100vh', display: 'flex' }} display="flex" className={styles.editorWindow}>
+      {/* Left sidebar */}
+      <Box sx={{ width: 260, borderRight: '1px solid #ddd', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
         <AppBar position="static" color="default" sx={{ p: 1 }}>
           <Box display="flex" alignItems="center">
             <IconButton onClick={() => router.push('/content/editor')}>
@@ -132,9 +136,7 @@ function ProjectCollabEditor() {
                   selected={index === selectedPageIndex}
                   onClick={() => setSelectedPageIndex(index)}
                 >
-                  <Typography variant="body1">
-                    {pg.title || `Page ${index + 1}`}
-                  </Typography>
+                  <Typography variant="body1">{pg.title || `Page ${index + 1}`}</Typography>
                 </ListItemButton>
               </ListItem>
             ))}
@@ -146,6 +148,7 @@ function ProjectCollabEditor() {
         </Button>
       </Box>
 
+      {/* Right side: main editor */}
       <Box flexGrow={1} display="flex" flexDirection="column">
         <Box sx={{ p: 2 }}>
           <Typography variant="h6">Editing: {currentPage.title}</Typography>
@@ -157,6 +160,7 @@ function ProjectCollabEditor() {
           </Box>
         ) : (
           <CollaborationEditor
+            key={currentPage.entry_id} // Force re-mount on page change
             doc={doc}
             provider={provider}
             userName={session?.user?.name || 'Unknown'}
