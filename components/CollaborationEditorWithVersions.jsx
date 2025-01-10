@@ -62,7 +62,7 @@ export default function CollaborationEditorWithVersions({
     content: fallbackHtml || '',
     extensions: [
       StarterKit.configure({ history: false }),
-      FloatingMenuExtension.configure({ /* optional pluginKey config here */ }),
+      FloatingMenuExtension,
       Collaboration.configure({ document: doc, field: 'root' }),
       CollaborationCursor.configure({
         provider,
@@ -84,7 +84,6 @@ export default function CollaborationEditorWithVersions({
     ],
     autofocus: true,
     editorProps: {
-      // prevents Tiptap from rendering content before it’s fully mounted
       immediatelyRender: false,
     },
   })
@@ -107,7 +106,9 @@ export default function CollaborationEditorWithVersions({
 
   // 3) Save Single
   async function handleSaveSingle() {
-    if (!projectId || !entryId) return alert('No project/page ID specified!')
+    if (!projectId || !entryId) {
+      return alert('No project/page ID specified!')
+    }
     setSavingOne(true)
     try {
       const content = editor.getHTML()
@@ -158,7 +159,9 @@ export default function CollaborationEditorWithVersions({
   }
 
   async function handleRevert(versionId) {
-    const confirmRevert = confirm(`Revert to version #${versionId}? Unsaved changes will be lost.`)
+    const confirmRevert = confirm(
+      `Revert to version #${versionId}? Unsaved changes will be lost.`
+    )
     if (!confirmRevert) return
 
     const newVerName = `Revert #${versionId} (${new Date().toLocaleString()})`
@@ -167,33 +170,27 @@ export default function CollaborationEditorWithVersions({
       versionId,
       newVersionName: newVerName,
     }))
-    alert(`Reverted to version #${versionId} - new version name: ${newVerName}`)
+    alert(`Reverted to version #${versionId}`)
   }
 
-  // 6) Bubble Menu for text selection
+  // 6) Bubble Menu for selected text
   const bubbleMenu = (
     <BubbleMenu editor={editor} className={styles.bubbleMenu}>
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
-        className={clsx(
-          editor.isActive('bold') && 'is-active',
-        )}
+        className={clsx(editor.isActive('bold') && 'is-active')}
       >
         <FormatBoldIcon />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleItalic().run()}
-        className={clsx(
-          editor.isActive('italic') && 'is-active',
-        )}
+        className={clsx(editor.isActive('italic') && 'is-active')}
       >
         <FormatItalicIcon />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleUnderline().run()}
-        className={clsx(
-          editor.isActive('underline') && 'is-active',
-        )}
+        className={clsx(editor.isActive('underline') && 'is-active')}
       >
         <FormatUnderlinedIcon />
       </button>
@@ -203,6 +200,7 @@ export default function CollaborationEditorWithVersions({
   // 7) Top toolbar
   const topToolbar = (
     <div className={styles.topToolbar}>
+      {/* Heading Dropdown */}
       <div className={styles.headingDropdown}>
         <button className={styles.dropdownButton}>
           Headings <ArrowDropDownIcon />
@@ -211,7 +209,9 @@ export default function CollaborationEditorWithVersions({
           {[1, 2, 3, 4, 5, 6].map(lvl => (
             <button
               key={lvl}
-              onClick={() => editor.chain().focus().toggleHeading({ level: lvl }).run()}
+              onClick={() =>
+                editor.chain().focus().toggleHeading({ level: lvl }).run()
+              }
               className={clsx(
                 editor.isActive('heading', { level: lvl }) && 'is-active'
               )}
@@ -224,18 +224,14 @@ export default function CollaborationEditorWithVersions({
 
       <button
         onClick={() => editor.chain().focus().toggleStrike().run()}
-        className={clsx(
-          editor.isActive('strike') && 'is-active',
-        )}
+        className={clsx(editor.isActive('strike') && 'is-active')}
       >
         <FormatStrikethroughIcon />
       </button>
 
       <button
         onClick={() => editor.chain().focus().toggleHighlight().run()}
-        className={clsx(
-          editor.isActive('highlight') && 'is-active',
-        )}
+        className={clsx(editor.isActive('highlight') && 'is-active')}
       >
         <HighlightIcon />
       </button>
@@ -249,18 +245,14 @@ export default function CollaborationEditorWithVersions({
             editor.chain().focus().unsetLink().run()
           }
         }}
-        className={clsx(
-          editor.isActive('link') && 'is-active',
-        )}
+        className={clsx(editor.isActive('link') && 'is-active')}
       >
         <LinkIcon />
       </button>
 
       <button
         onClick={() => editor.chain().focus().toggleCode().run()}
-        className={clsx(
-          editor.isActive('code') && 'is-active',
-        )}
+        className={clsx(editor.isActive('code') && 'is-active')}
       >
         <CodeIcon />
       </button>
@@ -271,17 +263,13 @@ export default function CollaborationEditorWithVersions({
 
       <button
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={clsx(
-          editor.isActive('orderedList') && 'is-active',
-        )}
+        className={clsx(editor.isActive('orderedList') && 'is-active')}
       >
         <FormatListNumberedIcon />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={clsx(
-          editor.isActive('bulletList') && 'is-active',
-        )}
+        className={clsx(editor.isActive('bulletList') && 'is-active')}
       >
         <FormatListBulletedIcon />
       </button>
@@ -334,8 +322,8 @@ export default function CollaborationEditorWithVersions({
   const chars = editor.storage.characterCount.characters()
   const words = editor.storage.characterCount.words()
 
-   // 1) A floating menu for formatting
-   const formattingMenu = (
+  // Additional floating menus
+  const formattingMenu = (
     <FloatingMenu
       editor={editor}
       pluginKey="formattingMenu"
@@ -350,28 +338,21 @@ export default function CollaborationEditorWithVersions({
       <div className={styles.floatingMenu}>
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={clsx(
-            styles.floatingBtnItem,
-            editor.isActive('bold') && 'is-active'
-          )}
+          className={clsx(styles.floatingBtnItem, editor.isActive('bold') && 'is-active')}
         >
           <FormatBoldIcon />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={clsx(
-            styles.floatingBtnItem,
-            editor.isActive('italic') && 'is-active'
-          )}
+          className={clsx(styles.floatingBtnItem, editor.isActive('italic') && 'is-active')}
         >
           <FormatItalicIcon />
         </button>
-        {/* ... more buttons for heading, bullet list, etc. */}
+        {/* more buttons if desired */}
       </div>
     </FloatingMenu>
   )
 
-  // 2) Another floating menu for AI or custom actions
   const customActionsMenu = (
     <FloatingMenu
       editor={editor}
@@ -384,10 +365,16 @@ export default function CollaborationEditorWithVersions({
       }}
     >
       <div className={styles.floatingMenu}>
-        <button className={styles.floatingBtnItem} onClick={() => alert('Summarize')}>
+        <button
+          className={styles.floatingBtnItem}
+          onClick={() => alert('Summarize')}
+        >
           Summarize
         </button>
-        <button className={styles.floatingBtnItem} onClick={() => alert('Generate')}>
+        <button
+          className={styles.floatingBtnItem}
+          onClick={() => alert('Generate')}
+        >
           Generate
         </button>
       </div>
@@ -401,8 +388,10 @@ export default function CollaborationEditorWithVersions({
 
       <div style={{ display: 'flex', gap: '2rem' }}>
         {customActionsMenu}
+        {formattingMenu}
       </div>
 
+      {/* Versions sidebar */}
       {showVersionSidebar && (
         <div className={styles.sidebar}>
           <h3>Versions</h3>

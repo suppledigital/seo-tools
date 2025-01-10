@@ -27,8 +27,8 @@
   .topToolbar button:hover {
     background: #eee;
   }
-  .isActive {
-    background-color: #ddd;
+  .is-active {
+    background-color: #ddd !important;
   }
   
   /* The heading dropdown within the top toolbar */
@@ -69,11 +69,27 @@
   .dropdownContent button:hover {
     background: #eee;
   }
+  
+  /* Focus extension highlighting */
   .has-focus {
     border-radius: 3px;
-    box-shadow: 0 0 0 2px var(--purple);
+    box-shadow: 0 0 0 2px purple;
   }
-  /* The bubble menu for on-selection quick actions */
+  
+  /* Important: ensure p is position: relative so ::after can appear. */
+  .editorContent p.has-focus {
+    position: relative;
+  }
+  .editorContent p.has-focus::after {
+    content: '⚑';
+    position: absolute;
+    right: -20px;
+    top: 0;
+    font-size: 16px;
+    color: red;
+  }
+  
+  /* Bubble menu for on-selection quick actions */
   .bubbleMenu {
     display: flex;
     gap: 0.5rem;
@@ -95,7 +111,7 @@
   .editorContent {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 10px 25rem; /* wide padding to make "sidebar" effect around text */
     background: #fff;
     border: 1px solid #ccc;
   }
@@ -125,7 +141,6 @@
     border-radius: 3px;
     font-size: 0.85rem;
   }
-
   
   /* The versions sidebar */
   .sidebar {
@@ -137,40 +152,10 @@
     border: 1px solid #ccc;
     padding: 0.5rem;
     z-index: 999;
-    /* you can limit the height or let it grow:
-       height: 80vh;
-       overflow-y: auto;
-    */
   }
+  
+  /* Floating menus */
   .floatingMenu {
-   display: flex;
-    gap: 0.5rem;
-    background: rgba(61, 37, 20, 0.12);
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    /* etc. */
-  }
-  .floatingMenu button {
-    background-color: rgba(0, 0, 0, 0);
-    border-radius: 0.3rem;
-    color:black;
-  }
-.floatingMenu button:hover{
-        background-color: rgba(61, 37, 20, 0.12);
-     
-}
-
-  .aiMenu{
-    display:flex;
-    position:relative
-
-  }
-  .sectionMenu{
-    display:flex;
-    margin-left:150px;
-
-  }
-  .aiMenu, .sectionMenu{
     display: flex;
     gap: 0.5rem;
     background: #fff;
@@ -178,3 +163,21 @@
     padding: 0.3rem 0.6rem;
     border-radius: 4px;
   }
+  .floatingMenu button {
+    background: white;
+    border: none;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    display: inline-flex;
+    align-items: center;
+  }
+  .floatingMenu button:hover {
+    background-color: rgba(61, 37, 20, 0.12);
+  }
+  
+.floatingMenu{
+    margin-left:50px;
+}
+.floatingMenu:before{
+    margin-left:50px;
+}
