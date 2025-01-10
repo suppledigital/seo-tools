@@ -199,7 +199,7 @@ export default function DashboardLayoutAccountSidebar({ children }) {
       authentication={authentication}
       session={session}
     >
-      <DashboardLayout slots={{ sidebarFooter: SidebarFooterAccount }}>
+      <DashboardLayout defaultSidebarCollapsed slots={{ sidebarFooter: SidebarFooterAccount }}>
         {children}
       </DashboardLayout>
     </AppProvider>

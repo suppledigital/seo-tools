@@ -31,6 +31,8 @@ export default async function handler(req, res) {
            meta_title,
            meta_description,
            page_type,
+           primary_keyword,
+           secondary_keyword,
            content_type,
            humanized_content,
            edited_content
@@ -45,6 +47,8 @@ export default async function handler(req, res) {
         entry_id: entry.entry_id,
         title: `Page ${pageNumber++}`,
         url: entry.url || '',
+        primary_keyword: entry.primary_keyword || '',
+        secondary_keyword: entry.secondary_keyword || '',
         meta_title: entry.meta_title || '',
         meta_description: entry.meta_description || '',
         page_type: entry.page_type || '',

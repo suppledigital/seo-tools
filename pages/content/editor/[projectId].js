@@ -1,4 +1,3 @@
-// pages/content/editor/[projectId].js
 import dynamic from 'next/dynamic'
 import { useSession, signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
@@ -6,17 +5,16 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import {
   Box, Button, CircularProgress, Typography, List, ListItem,
-  ListItemButton, Divider, IconButton, AppBar, Toolbar
+  ListItemButton, Divider, IconButton, AppBar, Avatar
 } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import AddIcon from '@mui/icons-material/Add'
 import * as Y from 'yjs'
 import { HocuspocusProvider } from '@hocuspocus/provider'
-import styles from './[projectId].module.css';
+import styles from './[projectId].module.css'
 
-// Lazy-load your CollaborationEditor
-const CollaborationEditor = dynamic(
-  () => import('../../../components/CollaborationEditor'),
+const CollaborationEditorWithVersions = dynamic(
+  () => import('../../../components/CollaborationEditorWithVersions'),
   { ssr: false },
 )
 
@@ -31,7 +29,11 @@ function ProjectCollabEditor() {
   const [doc, setDoc] = useState(null)
   const [provider, setProvider] = useState(null)
 
-  // 1) Fetch project + pages from your Next.js API
+  const [presenceDoc, setPresenceDoc] = useState(null)
+  const [presenceProvider, setPresenceProvider] = useState(null)
+  const [pageMap, setPageMap] = useState({})
+
+  // 1) Fetch project + pages
   useEffect(() => {
     if (status === 'authenticated' && projectId) {
       axios
@@ -44,7 +46,7 @@ function ProjectCollabEditor() {
     }
   }, [status, projectId])
 
-  // 2) On page selection, create doc + provider
+  // 2) On page selection => new doc + provider
   useEffect(() => {
     if (!projectId || !pages.length) return
 
@@ -56,7 +58,7 @@ function ProjectCollabEditor() {
 
     const newDoc = new Y.Doc()
     const newProvider = new HocuspocusProvider({
-      url: 'ws://3.27.66.97:1234',
+      url: 'wss://sync.supple.tools',
       name: roomName,
       document: newDoc,
       onConnect: () => {
@@ -68,12 +70,80 @@ function ProjectCollabEditor() {
     setProvider(newProvider)
 
     return () => {
+      console.log('[client] Unmount doc =>', roomName)
+      newProvider.awareness.setLocalState(null)
       newProvider.disconnect()
       newDoc.destroy()
     }
   }, [projectId, pages, selectedPageIndex])
 
-  // loading states
+  // Presence doc
+  useEffect(() => {
+    if (!projectId) return
+
+    const pDoc = new Y.Doc()
+    const pProvider = new HocuspocusProvider({
+      url: 'wss://sync.supple.tools',
+      name: `project-${projectId}-presence`,
+      document: pDoc,
+      onConnect: () => {
+        console.log(`[presence] connected => project-${projectId}-presence`)
+      },
+    })
+
+    setPresenceDoc(pDoc)
+    setPresenceProvider(pProvider)
+
+    return () => {
+      pProvider.disconnect()
+      pDoc.destroy()
+    }
+  }, [projectId])
+
+  // Update presence
+  useEffect(() => {
+    if (!presenceProvider || !pages.length) return
+    const currentPage = pages[selectedPageIndex]
+    if (!currentPage) return
+
+    presenceProvider.awareness.setLocalStateField('userInfo', {
+      userId: session?.user?.id,
+      userName: session?.user?.name,
+      userImage: session?.user?.image,
+      pageId: currentPage.entry_id,
+    })
+  }, [presenceProvider, selectedPageIndex, pages])
+
+  // Build pageMap => pageId => array of { userId, userName, userImage }
+  useEffect(() => {
+    if (!presenceProvider) return
+
+    const aw = presenceProvider.awareness
+
+    const handlePresenceChange = () => {
+      const states = Array.from(aw.getStates().values())
+      const newMap = {}
+      for (const st of states) {
+        const ui = st.userInfo
+        if (!ui || !ui.pageId) continue
+        if (!newMap[ui.pageId]) newMap[ui.pageId] = []
+        newMap[ui.pageId].push({
+          userId: ui.userId,
+          userName: ui.userName,
+          userImage: ui.userImage,
+        })
+      }
+      setPageMap(newMap)
+    }
+
+    aw.on('change', handlePresenceChange)
+    handlePresenceChange()
+
+    return () => {
+      aw.off('change', handlePresenceChange)
+    }
+  }, [presenceProvider])
+
   if (status === 'loading') {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -97,7 +167,6 @@ function ProjectCollabEditor() {
     )
   }
 
-  // 3) fallback if doc is empty
   const currentPage = pages[selectedPageIndex] || {}
   const fallbackHtml = currentPage.edited_content?.trim() || currentPage.humanized_content || ''
 
@@ -130,16 +199,34 @@ function ProjectCollabEditor() {
 
         <Box flexGrow={1} overflow="auto">
           <List>
-            {pages.map((pg, index) => (
-              <ListItem disablePadding key={pg.entry_id}>
-                <ListItemButton
-                  selected={index === selectedPageIndex}
-                  onClick={() => setSelectedPageIndex(index)}
-                >
-                  <Typography variant="body1">{pg.title || `Page ${index + 1}`}</Typography>
-                </ListItemButton>
-              </ListItem>
-            ))}
+            {pages.map((pg, index) => {
+              const theseEditors = pageMap[pg.entry_id] || []
+              return (
+                <ListItem disablePadding key={`page-${pg.entry_id}-${index}`}>
+                  <ListItemButton
+                    selected={index === selectedPageIndex}
+                    onClick={() => setSelectedPageIndex(index)}
+                  >
+                    <Typography variant="body1">
+                      {pg.title || `Page ${index + 1}`} <small>{pg.entry_id}</small>
+                    </Typography>
+
+                    {theseEditors.length > 0 && (
+                      <Box sx={{ display: 'flex', gap: 1, ml: 2 }}>
+                        {theseEditors.map((u, idx2) => (
+                          <Avatar
+                            key={`presence-${u.userId}-${idx2}`}
+                            src={u.userImage}
+                            alt={u.userName}
+                            sx={{ width: 24, height: 24 }}
+                          />
+                        ))}
+                      </Box>
+                    )}
+                  </ListItemButton>
+                </ListItem>
+              )
+            })}
           </List>
         </Box>
         <Divider />
@@ -151,7 +238,13 @@ function ProjectCollabEditor() {
       {/* Right side: main editor */}
       <Box flexGrow={1} display="flex" flexDirection="column">
         <Box sx={{ p: 2 }}>
-          <Typography variant="h6">Editing: {currentPage.title}</Typography>
+          <Typography variant="h6">
+            Editing: {currentPage.title} <small>(Page ID: {currentPage.entry_id})</small>
+          </Typography>
+          <Typography variant="body1">URL: {currentPage.url}</Typography>
+          <Typography variant="body1">
+            Keywords: {currentPage.primary_keyword} {currentPage.secondary_keyword}
+          </Typography>
         </Box>
 
         {!doc || !provider ? (
@@ -159,10 +252,12 @@ function ProjectCollabEditor() {
             <CircularProgress />
           </Box>
         ) : (
-          <CollaborationEditor
-            key={currentPage.entry_id} // Force re-mount on page change
-            doc={doc}
+          <CollaborationEditorWithVersions
+             key={`${currentPage.entry_id}-${doc.guid}`} // fix
+             doc={doc}
             provider={provider}
+            projectId={projectId}
+            entryId={currentPage.entry_id}
             userName={session?.user?.name || 'Unknown'}
             fallbackHtml={fallbackHtml}
           />

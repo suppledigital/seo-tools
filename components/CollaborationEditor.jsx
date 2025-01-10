@@ -47,6 +47,8 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import styles from './CollaborationEditor.module.css'
 
 export default function CollaborationEditor({
+
+    
   /** Single-page info: */
   projectId,
   entryId, // the current page's ID

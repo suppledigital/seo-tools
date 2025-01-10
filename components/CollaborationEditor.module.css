@@ -1,5 +1,3 @@
-/* CollaborationEditor.module.css */
-
 .editorContainer {
     display: flex;
     flex-direction: column;
@@ -67,12 +65,14 @@
     padding: 0.3rem 0.8rem;
     text-align: left;
     cursor: pointer;
-  
   }
   .dropdownContent button:hover {
     background: #eee;
   }
-  
+  .has-focus {
+    border-radius: 3px;
+    box-shadow: 0 0 0 2px var(--purple);
+  }
   /* The bubble menu for on-selection quick actions */
   .bubbleMenu {
     display: flex;
@@ -99,7 +99,9 @@
     background: #fff;
     border: 1px solid #ccc;
   }
-  .editorContent h1, .editorContent h2, .editorContent h3 {
+  .editorContent h1,
+  .editorContent h2,
+  .editorContent h3 {
     margin: 0.5em 0;
   }
   .editorContent p {
@@ -123,40 +125,56 @@
     border-radius: 3px;
     font-size: 0.85rem;
   }
-/* The caret line itself */
-.collaboration-cursor__caret {
-    position: relative;
-    width: 2px;                   /* thickness of caret */
-    background-color: gray; /* or use the user’s color dynamically */
-    z-index: 50;                  /* stay above text */
-  }
+
   
-  /* The user’s name label above the caret */
-  .collaboration-cursor__label {
+  /* The versions sidebar */
+  .sidebar {
     position: absolute;
-    bottom: 100%;                /* or top: -1.6em; either way is fine */
-    left: -0.5em;
-    transform: translateX(-50%); /* center the label if you prefer */
-    background-color: gray;
-    color: #fff;
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    line-height: 1.2;
-    white-space: nowrap;
+    top: 4rem;
+    right: 1rem;
+    width: 250px;
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
     z-index: 999;
+    /* you can limit the height or let it grow:
+       height: 80vh;
+       overflow-y: auto;
+    */
   }
-  
-  /* Optionally tweak the label’s arrow or spacing */
-  .collaboration-cursor__label::after {
-    content: '';
-    position: absolute;
-    top: 100%;        /* if you placed label above the caret */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid var(--red);
+  .floatingMenu {
+   display: flex;
+    gap: 0.5rem;
+    background: rgba(61, 37, 20, 0.12);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    /* etc. */
+  }
+  .floatingMenu button {
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 0.3rem;
+    color:black;
+  }
+.floatingMenu button:hover{
+        background-color: rgba(61, 37, 20, 0.12);
+     
+}
+
+  .aiMenu{
+    display:flex;
+    position:relative
+
+  }
+  .sectionMenu{
+    display:flex;
+    margin-left:150px;
+
+  }
+  .aiMenu, .sectionMenu{
+    display: flex;
+    gap: 0.5rem;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
   }
